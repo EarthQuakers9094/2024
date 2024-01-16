@@ -11,7 +11,7 @@ class Lights(private val stripPWM: Int, private val stripLength: Int) : Subsyste
 
     private val ledStrip = AddressableLED(stripPWM).let { it.setLength(stripLength); it }
     private var ledbuffer = AddressableLEDBuffer(stripLength)
-    private var currentEffect: LightEffect = NoLightEffect()
+    var currentEffect: LightEffect = NoLightEffect()
         set(value) { field = value; tick = 0 }
     private var tick = 0
 
