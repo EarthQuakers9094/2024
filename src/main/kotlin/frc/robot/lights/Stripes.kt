@@ -8,7 +8,7 @@ class Stripes(private val colors: List<Color>) : LightEffect {
     override fun nextBuffer(tick: Int, addressableLEDBuffer: AddressableLEDBuffer) {
         val stripes = colors.size;
         for (i in 0 until addressableLEDBuffer.length) {
-            val index:Int = i/stripes;
+            val index:Int = i*stripes/(addressableLEDBuffer.length);
             val color = colors[index];
             addressableLEDBuffer.setRGB(i, color.r, color.g, color.b)
         }
