@@ -1,8 +1,11 @@
 package frc.robot
 
+import edu.wpi.first.hal.HAL
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.hal.FRCNetComm.tInstances
+import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 
 /**
@@ -25,6 +28,9 @@ class Robot : TimedRobot() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         robotContainer = RobotContainer()
+
+        // Dean Kamen himself demands to know that we are using kotlin
+        HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin);
     }
 
     /**
