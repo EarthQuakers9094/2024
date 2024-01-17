@@ -9,6 +9,7 @@ import com.pathplanner.lib.commands.FollowPathHolonomic
 import com.pathplanner.lib.commands.PathfindThenFollowPathHolonomic
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import java.util.function.Consumer
