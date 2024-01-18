@@ -1,7 +1,40 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
+      "Shuffleboard": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "Encoders": {
+          "open": true
+        },
+        "Field": {
+          "double[]##v_/SmartDashboard/Field/Robot": {
+            "open": true
+          },
+          "open": true
+        },
+        "Motors": {
+          "open": true
+        },
+        "Pigeon 2 (v6) [0]": {
+          "open": true
+        },
+        "open": true,
+        "swerve": {
+          "open": true
+        }
+      }
     }
   },
   "NetworkTables Info": {
