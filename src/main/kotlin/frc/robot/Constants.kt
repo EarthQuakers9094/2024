@@ -32,8 +32,12 @@ object Constants {
         const val speed = 1.0
     }
     object Shooter {
+        const val mainShooterID = -1
+        const val followerShooterID = -1
         const val p = 0.0
         const val i = 0.0
         const val d = 0.0
+        const val velocityConversionFactor = 1.0
+        const val tolerance = 30.0
     }
 }
