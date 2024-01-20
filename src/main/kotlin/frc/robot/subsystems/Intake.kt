@@ -20,6 +20,10 @@ class Intake(private val intakeCANId: Int, private val limitSwitchId: Int) : Sub
     private val limitSwitch = DigitalInput(limitSwitchId)
     private var state = State.Looking
 
+    init {
+        intakeSparkMax.restoreFactoryDefaults()
+    }
+
     /** This method will be called once per scheduler run */
     override fun periodic() {
         when (state) {

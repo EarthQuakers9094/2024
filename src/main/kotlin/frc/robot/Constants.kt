@@ -31,4 +31,9 @@ object Constants {
     object Intake {
         const val speed = 1.0
     }
+    object Shooter {
+        const val p = 0.0
+        const val i = 0.0
+        const val d = 0.0
+    }
 }
