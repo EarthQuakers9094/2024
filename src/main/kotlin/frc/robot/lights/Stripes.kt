@@ -6,8 +6,10 @@ class Stripes(private val colors: Array<Color>) : LightEffect {
     override fun nextBuffer(tick: Int, addressableLEDBuffer: AddressableLEDBuffer) {
         val stripes = colors.size
         for (i in 0 until addressableLEDBuffer.length) {
+
             val index: Int = i * stripes / (addressableLEDBuffer.length)
             val color = colors[index]
+
             addressableLEDBuffer.setRGB(i, color.r, color.g, color.b)
         }
     }
@@ -16,13 +18,17 @@ class Stripes(private val colors: Array<Color>) : LightEffect {
         fun lesbian(): Stripes {
             return Stripes(
                     arrayOf(
-                            Color(0xd6, 0x28, 0),
+                            Color(0xd6, 0x28, 0x00),
                             Color(0xff, 0x9b, 0x56),
                             Color(0xff, 0xff, 0xff),
                             Color(0xd4, 0x62, 0xa6),
                             Color(0xa4, 0x00, 0x62)
                     )
             )
+        }
+
+        fun solidColor(color: Color): Stripes {
+            return Stripes(arrayOf(color))
         }
 
         fun india(): Stripes {
@@ -60,8 +66,10 @@ class Stripes(private val colors: Array<Color>) : LightEffect {
             return Stripes(
                     arrayOf(
                             Color(0xd7, 0x00, 0x71),
+                            Color(0xd7, 0x00, 0x71),
                             Color(0x9c, 0x4e, 0x97),
-                            Color(0x00, 0x35, 0xaa)
+                            Color(0x00, 0x35, 0xaa),
+                            Color(0x00, 0x35, 0xaa),
                     )
             )
         }

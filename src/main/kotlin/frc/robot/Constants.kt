@@ -18,7 +18,7 @@ object Constants {
 
         const val MAX_ACCEL = 1.0
         const val MAX_ANGULAR_ACCELERATION = 0.5
-        const val MAX_TURNING_SPEEDS = 3.0
+        const val MAX_TURNING_SPEEDS = 9.0
 
         val TRANSLATION_PID = PIDConstants(0.2, 0.0, 0.0)
         val ROTATION_PID = PIDConstants(0.2, 0.0, 0.0)
