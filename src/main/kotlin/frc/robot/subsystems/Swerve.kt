@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import java.io.File
 import swervelib.SwerveController
 import swervelib.SwerveDrive
+import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
@@ -21,10 +22,10 @@ class Swerve : SubsystemBase() {
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "swerve")
     var swerveDrive: SwerveDrive
 
-    var frontleftCanCoder = CANcoder(33)
-    var backleftCanCoder = CANcoder(35)
-    var frontrightCanCoder = CANcoder(32)
-    var backrightCanCoder = CANcoder(34)
+    var frontleftCanCoder = CANcoder(11)
+    var backleftCanCoder = CANcoder(12)
+    var frontrightCanCoder = CANcoder(13)
+    var backrightCanCoder = CANcoder(14)
 
     init {
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
@@ -39,6 +40,10 @@ class Swerve : SubsystemBase() {
         SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
+
+        var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(12.8, 1.0)
+
+        SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
     }
 
     fun drive(translation: Translation2d, rotation: Double, fieldRelative: Boolean) {

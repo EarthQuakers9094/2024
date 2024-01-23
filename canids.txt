@@ -1,0 +1,14 @@
+back left turn
+back left drive
+back right turnin
+back right drive
+front right drive
+front right turning
+front left drive
+front left turn
+rev pdh
+pigeon
+front left
+back left can coder
+front right can coder
+back right can coder
