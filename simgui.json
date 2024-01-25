@@ -3,7 +3,15 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro"
+      "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -28,6 +36,9 @@
           "open": true
         },
         "Pigeon 2 (v6) [0]": {
+          "open": true
+        },
+        "Swerve Drive": {
           "open": true
         },
         "open": true,

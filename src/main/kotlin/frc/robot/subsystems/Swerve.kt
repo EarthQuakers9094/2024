@@ -1,14 +1,22 @@
 package frc.robot.subsystems
 
 import com.ctre.phoenix6.hardware.CANcoder
+import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.path.PathConstraints
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig
+import com.pathplanner.lib.util.ReplanningConfig
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.util.Units
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
+import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.Constants
 import java.io.File
+import java.util.function.Consumer
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -27,10 +35,80 @@ class Swerve : SubsystemBase() {
     var frontrightCanCoder = CANcoder(13)
     var backrightCanCoder = CANcoder(14)
 
+    var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
+
     init {
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
+
+        var getPose = {
+            var pose = this.getPos()
+            SmartDashboard.putNumber("get pose pathplanner x", pose.getX())
+            SmartDashboard.putNumber("get pose pathplanner y", pose.getY())
+            SmartDashboard.putNumber("get pose pathplanner rotation", pose.rotation.degrees)
+
+            pose
+        }
+
+        var setPose: Consumer<Pose2d> = Consumer { pose -> this.resetOdomentry(pose) }
+
+        var getSpeeds = { this.getSpeeds() }
+        var drive: Consumer<ChassisSpeeds> = Consumer { speeds ->
+            SmartDashboard.putNumber("path planner direction x", speeds.vxMetersPerSecond)
+            SmartDashboard.putNumber("path planner direction y", speeds.vyMetersPerSecond)
+            SmartDashboard.putNumber(
+                    "path planner direction rotationSpeed",
+                    speeds.omegaRadiansPerSecond
+            )
+
+            this.driveRobotRel(speeds)
+        }
+
+        var replanning = ReplanningConfig()
+
+        var config =
+                HolonomicPathFollowerConfig(
+                        Constants.Drivebase.TRANSLATION_PID,
+                        Constants.Drivebase.ROTATION_PID,
+                        Constants.Drivebase.MAX_AUTO_SPEEDS,
+                        Constants.Drivebase.RADIUS,
+                        replanning
+                )
+
+        var pathConstraints =
+                PathConstraints(
+                        Constants.Drivebase.MAX_AUTO_SPEEDS,
+                        Constants.Drivebase.MAX_ACCEL,
+                        Constants.Drivebase.MAX_TURNING_SPEEDS,
+                        Constants.Drivebase.MAX_ANGULAR_ACCELERATION,
+                )
+
+        var flip = {
+            // Boolean supplier that controls when the path will be mirrored for the
+            // red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+            var alliance = DriverStation.getAlliance()
+            var ret = false
+            if (alliance.isPresent()) {
+                ret = alliance.get() == DriverStation.Alliance.Red
+            }
+            ret
+        }
+
+        AutoBuilder.configureHolonomic(
+                getPose, // Robot pose supplier
+                setPose, // Method to reset odometry (will be called if your auto
+                // has a starting pose)
+                getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                drive, // Method that will drive the robot given ROBOT RELATIVE
+                // ChassisSpeeds
+                config,
+                flip,
+                this // Reference to this subsystem to set requirements
+        )
     }
 
     /** This method will be called once per scheduler run */
@@ -41,9 +119,20 @@ class Swerve : SubsystemBase() {
         SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
-        var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(12.8, 1.0)
+        var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
+        // var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
+
+        var driveConversionFactor =
+                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.0), 6.12, 1.0)
 
         SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
+        SmartDashboard.putNumber("drive conversion MEOW", driveConversionFactor)
+
+        SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
+        SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))
+
+        SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
+        SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
     }
 
     fun drive(translation: Translation2d, rotation: Double, fieldRelative: Boolean) {

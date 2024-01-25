@@ -25,8 +25,8 @@ object Constants {
     }
     object OperatorConstants {
         const val kDriverControllerPort = 0
-        const val LEFT_X_DEADBAND = 0.01
-        const val LEFT_Y_DEADBAND = 0.01
+        const val LEFT_X_DEADBAND = 2.0
+        const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
         const val speed = 1.0

@@ -1,9 +1,9 @@
 package frc.robot
 
+import RunAuto
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
@@ -39,7 +39,12 @@ class RobotContainer {
             )
         }
 
-        val omega = { driverXbox.getRawAxis(2) }
+        val omega = {
+            MathUtil.applyDeadband(
+                    driverXbox.getRawAxis(2),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
+            )
+        }
 
         val driveMode = { true }
 
@@ -77,7 +82,7 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return Commands.waitSeconds(5.0)
+            return RunAuto("MOVIE")
             // return Autos.exampleAuto(exampleSubsystem)
         }
 }

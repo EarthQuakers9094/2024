@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
@@ -111,17 +112,20 @@ public class SwerveModule {
     // Config angle encoders
     absoluteEncoder = moduleConfiguration.absoluteEncoder;
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle);
+    angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
     if (absoluteEncoder != null) {
       absoluteEncoder.factoryDefault();
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
       angleMotor.setPosition(getAbsolutePosition());
+    } else {
+      DriverStation.reportError(":3" + configuration.name + absoluteEncoder, new StackTraceElement[0]);
     }
 
     // Config angle motor/controller
 
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(0, 180);
-    angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
+
     angleMotor.setMotorBrake(false);
 
     // Config drive motor/controller
@@ -133,20 +137,22 @@ public class SwerveModule {
     driveMotor.burnFlash();
     angleMotor.burnFlash();
 
-    if (SwerveDriveTelemetry.isSimulation) {
+    if (SwerveDriveTelemetry.isSimulation)
+
+    {
       simModule = new SwerveModuleSimulation();
     }
 
-    lastState = getState();
+    lastState =
 
-    noEncoderWarning = new Alert("Motors",
-        "There is no Absolute Encoder on module #" +
-            moduleNumber,
+        getState();
+
+    noEncoderWarning = new Alert("Motors", "There is no Absolute Encoder on module #" + moduleNumber,
         Alert.AlertType.WARNING);
     encoderOffsetWarning = new Alert("Motors",
-        "Pushing the Absolute Encoder offset to the encoder failed on module #" +
-            moduleNumber,
+        "Pushing the Absolute Encoder offset to the encoder failed on module #" + moduleNumber,
         Alert.AlertType.WARNING);
+
   }
 
   /**
@@ -453,6 +459,8 @@ public class SwerveModule {
     SmartDashboard.putNumber("Module[" + configuration.name + "] Raw Angle Encoder", angleMotor.getPosition());
     SmartDashboard.putNumber("Module[" + configuration.name + "] Raw Drive Encoder", driveMotor.getPosition());
     SmartDashboard.putNumber("Module[" + configuration.name + "] Adjusted Absolute Encoder", getAbsolutePosition());
+    SmartDashboard.putNumber("Module[" + configuration.name + "] speed", driveMotor.getVelocity());
+
     SmartDashboard.putNumber("Module[" + configuration.name + "] Absolute Encoder Read Issue",
         getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
