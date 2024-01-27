@@ -20,7 +20,7 @@ class MovingAverage(private val numberValues: Int) {
 
     fun setAverage(value: Double) {
         currentSum = numberValues * value
-        for (i in 0..numberValues) {
+        for (i in 0..(numberValues - 1)) {
             values.set(i, value)
         }
     }

@@ -12,3 +12,8 @@ front left
 back left can coder
 front right can coder
 back right can coder
+elevator motor
+shooter top canid
+shooter bottom canid
+shooter joint1
+shooter joint2

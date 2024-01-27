@@ -1,10 +1,21 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [18]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro",
-      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro"
+      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro",
+      "/SmartDashboard/joint pid": "PIDController",
+      "/SmartDashboard/sim pid": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {
@@ -15,8 +26,23 @@
     }
   },
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "transitory": {
       "LiveWindow": {
+        "open": true
+      },
+      "PathPlanner": {
+        "HotReload": {
+          "open": true
+        },
+        "double[]##v_/PathPlanner/currentPose": {
+          "open": true
+        },
+        "double[]##v_/PathPlanner/targetPose": {
+          "open": true
+        },
         "open": true
       },
       "Shuffleboard": {
@@ -29,26 +55,77 @@
         "Field": {
           "double[]##v_/SmartDashboard/Field/Robot": {
             "open": true
-          },
-          "open": true
-        },
-        "Motors": {
-          "open": true
+          }
         },
         "Pigeon 2 (v6) [0]": {
           "open": true
         },
-        "Swerve Drive": {
+        "joint pid": {
           "open": true
         },
         "open": true,
-        "swerve": {
+        "sim pid": {
           "open": true
         }
       }
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "max": 0.8
+            }
+          ],
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 364,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/current set speed launcher"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/current motor speed launcher"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "SPARK MAX [18]-Position"
+            }
+          ]
+        }
+      ]
+    }
   }
 }
