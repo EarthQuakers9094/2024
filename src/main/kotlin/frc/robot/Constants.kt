@@ -6,8 +6,9 @@ import edu.wpi.first.math.Nat
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Translation3d
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -51,15 +52,15 @@ object Constants {
             mat.set(2,0, 1.0)
             mat
         }
+        val cameraTransform = Transform3d(Translation3d(0.0, 0.0, 0.0), Rotation3d(0.0, 0.0, 0.0))
+        val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
 
     }
 
-        val cameraTransform = Pose2d(0.0, 0.0, Rotation2d(0.0))
-        val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
-    }
+
     object Shooter {
 
         const val angleOffset = 0.0

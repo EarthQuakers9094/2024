@@ -18,6 +18,7 @@ import java.io.File
 import java.util.function.Consumer
 import org.photonvision.EstimatedRobotPose
 import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import org.photonvision.PhotonUtils
 import swervelib.SwerveController
 import swervelib.SwerveDrive
