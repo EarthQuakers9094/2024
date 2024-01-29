@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import java.io.File
 import java.util.function.Consumer
+import org.photonvision.PhotonCamera
+import org.photonvision.PhotonUtils
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -24,7 +26,7 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 
-class Swerve : SubsystemBase() {
+class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "swerve")
@@ -153,6 +155,17 @@ class Swerve : SubsystemBase() {
     }
 
     fun getPos(): Pose2d {
+        val result = camera.latestResult
+        if (result.hasTargets()) {
+            val target = result.bestTarget
+
+            val pos =
+                    PhotonUtils.estimateFieldToRobotAprilTag(
+                            target.bestCameraToTarget,
+                            fieldRelativeTagPose,
+                            Constants.Camera.cameraTransform
+                    )
+        }
         return swerveDrive.pose
     }
 
