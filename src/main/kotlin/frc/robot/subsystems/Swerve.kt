@@ -18,6 +18,7 @@ import frc.robot.Constants
 import java.io.File
 import java.util.function.Consumer
 import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import org.photonvision.PhotonUtils
 import swervelib.SwerveController
 import swervelib.SwerveDrive
@@ -36,6 +37,13 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
     var backleftCanCoder = CANcoder(12)
     var frontrightCanCoder = CANcoder(13)
     var backrightCanCoder = CANcoder(14)
+
+    val poseEstimator =
+            PhotonPoseEstimator(
+                    Constants.Camera.aprilTagFieldLayout,
+                    PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY,
+                    Constants.Camera.cameraTransform
+            )
 
     var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
@@ -115,7 +123,10 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
-        SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
+        poseEstimator.SmartDashboard.putNumber(
+                "front left",
+                frontleftCanCoder.getAbsolutePosition().value
+        )
         SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)

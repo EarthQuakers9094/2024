@@ -14,7 +14,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to spike 2"
+            "pathName": "start to spike 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "spike 1 to spike 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "spike2 to spike3"
           }
         }
       ]
