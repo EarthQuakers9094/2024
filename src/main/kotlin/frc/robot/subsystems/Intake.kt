@@ -7,43 +7,46 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 
 /** Creates a new ExampleSubsystem. */
-class Intake(private val intakeCANId: Int, private val limitSwitchId: Int) : SubsystemBase() {
+class Intake(private val io: IntakeIO) : SubsystemBase() {
 
     private enum class State {
         Looking,
         // Idle,
         Holding
     }
+    
+    private var input = IntakeIO.IntakeIOInputsAutoLogged();
 
-    private val intakeSparkMax = CANSparkMax(intakeCANId, CANSparkLowLevel.MotorType.kBrushless)
-
-    private val limitSwitch = DigitalInput(limitSwitchId)
     private var state = State.Looking
 
     init {
-        intakeSparkMax.restoreFactoryDefaults()
+        io.updateInputs(inputs);
+        Logger.processInputs("Intake",inputs);
     }
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Intake",inputs);
+    
         when (state) {
             // State.Idle -> {
-            //     if (!limitSwitch.get()) {
+            //     if (!input.limitSwitch) {
             //         state = State.Looking
             //     }
-            //     intakeSparkMax.set(0.0)
+            //     io.setSpeed(0.0)
             // }
             State.Looking -> {
-                intakeSparkMax.set(Constants.Intake.speed)
+                io.setSpeed(Constants.Intake.speed);
 
-                if (limitSwitch.get()) {
+                if (inputs.limitSwitch) {
                     state = State.Holding
                 }
             }
             State.Holding -> {
-                intakeSparkMax.set(0.0)
+                io.setSpeed(0.0);
 
-                if (!limitSwitch.get()) {
+                if (!inputs.limitSwitch) {
                     state = State.Looking
                 }
             }
