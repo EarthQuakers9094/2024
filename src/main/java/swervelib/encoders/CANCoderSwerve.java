@@ -118,7 +118,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    * @return Absolute position in degrees from [0, 360).
    */
   @Override
-  public double getAbsolutePosition()
+  public double getAbsolutePositionInternal()
   {
     readingError = false;
     MagnetHealthValue strength = encoder.getMagnetHealth().getValue();
@@ -206,7 +206,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    * @return velocity in degrees/sec.
    */
   @Override
-  public double getVelocity()
+  public double getVelocityInternal()
   {
     return encoder.getVelocity().getValue() * 360;
   }

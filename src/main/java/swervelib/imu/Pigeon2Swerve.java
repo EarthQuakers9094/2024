@@ -99,7 +99,7 @@ public class Pigeon2Swerve extends SwerveIMU
    * @return {@link Rotation3d} from the IMU.
    */
   @Override
-  public Rotation3d getRawRotation3d()
+  public Rotation3d getRawRotation3dInternal()
   {
     // TODO: Switch to suppliers.
     StatusSignal<Double> w       = imu.getQuatW();
@@ -119,7 +119,7 @@ public class Pigeon2Swerve extends SwerveIMU
    * @return {@link Rotation3d} from the IMU.
    */
   @Override
-  public Rotation3d getRotation3d()
+  public Rotation3d getRotation3dInternal()
   {
     return getRawRotation3d().minus(offset);
   }
@@ -131,7 +131,7 @@ public class Pigeon2Swerve extends SwerveIMU
    * @return {@link Translation3d} of the acceleration as an {@link Optional}.
    */
   @Override
-  public Optional<Translation3d> getAccel()
+  public Optional<Translation3d> getAccelInternal()
   {
     // TODO: Switch to suppliers.
     StatusSignal<Double> xAcc = imu.getAccelerationX();

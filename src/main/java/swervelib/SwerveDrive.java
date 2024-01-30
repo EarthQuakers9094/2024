@@ -131,6 +131,14 @@ public class SwerveDrive
    */
   private       double                   maxSpeedMPS;
 
+  public void updateInputs() {
+    for (int i = 0; i < swerveModules.size(); i++) {
+        swerveModules[i].updateInputs();
+    }
+
+    imu.updateInputs();
+  }
+
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
    * {@link SwerveDrive#setRawModuleStates} method. The {@link SwerveDrive#drive} method incorporates kinematics-- it

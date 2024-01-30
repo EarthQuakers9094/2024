@@ -38,6 +38,7 @@ class Swerve : SubsystemBase() {
     var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
     init {
+        swerveDrive.updateInputs();
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
@@ -113,6 +114,7 @@ class Swerve : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
+        swerveDrive.updateInputs();
         SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)

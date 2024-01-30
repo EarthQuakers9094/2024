@@ -59,8 +59,9 @@ public class SparkFlexSwerve extends SwerveMotor
    * @param motor        The SwerveMotor as a SparkFlex object.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    */
-  public SparkFlexSwerve(CANSparkFlex motor, boolean isDriveMotor)
+  public SparkFlexSwerve(CANSparkFlex motor, boolean isDriveMotor, int moduleNumber)
   {
+    super(moduleNumber);
     this.motor = motor;
     this.isDriveMotor = isDriveMotor;
     factoryDefaults();
@@ -90,9 +91,9 @@ public class SparkFlexSwerve extends SwerveMotor
    * @param id           CAN ID of the SparkMax.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    */
-  public SparkFlexSwerve(int id, boolean isDriveMotor)
+  public SparkFlexSwerve(int id, boolean isDriveMotor, int moduleNumber)
   {
-    this(new CANSparkFlex(id, MotorType.kBrushless), isDriveMotor);
+    this(new CANSparkFlex(id, MotorType.kBrushless), isDriveMotor, moduleNumber);
   }
 
   /**
@@ -410,7 +411,7 @@ public class SparkFlexSwerve extends SwerveMotor
    * @return velocity
    */
   @Override
-  public double getVelocity()
+  public double getVelocityInternal()
   {
     return absoluteEncoder == null ? encoder.getVelocity() : absoluteEncoder.getVelocity();
   }
@@ -421,7 +422,7 @@ public class SparkFlexSwerve extends SwerveMotor
    * @return Position
    */
   @Override
-  public double getPosition()
+  public double getPositionInternal()
   {
     return absoluteEncoder == null ? encoder.getPosition() : absoluteEncoder.getAbsolutePosition();
   }

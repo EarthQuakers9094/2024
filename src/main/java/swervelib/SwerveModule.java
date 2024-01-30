@@ -73,6 +73,12 @@ public class SwerveModule {
    */
   private boolean synchronizeEncoderQueued = false;
 
+  public void updateInputs() {
+    driveMotor.updateInputs();
+    angleMotor.updateInputs();
+    absoluteEncoder.updateInputs();
+  }
+
   /**
    * Construct the swerve module and initialize the swerve module motors and
    * absolute encoder.
