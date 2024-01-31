@@ -1,5 +1,8 @@
 {
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "retained": {
       "SmartDashboard": {
         "open": true
@@ -40,7 +43,10 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro"
+      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
+      "/SmartDashboard/joint pid": "PIDController",
+      "/SmartDashboard/sim pid": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {

@@ -6,6 +6,7 @@ import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
 import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.util.Units
@@ -19,7 +20,6 @@ import java.io.File
 import java.util.function.Consumer
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
-import org.photonvision.PhotonUtils
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -38,6 +38,8 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
     var frontrightCanCoder = CANcoder(13)
     var backrightCanCoder = CANcoder(14)
 
+    var lastEstimate: Pose3d? = null
+
     val poseEstimator =
             PhotonPoseEstimator(
                     Constants.Camera.aprilTagFieldLayout,
@@ -48,6 +50,7 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
     var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
     init {
+
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
@@ -123,10 +126,19 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
-        poseEstimator.SmartDashboard.putNumber(
-                "front left",
-                frontleftCanCoder.getAbsolutePosition().value
-        )
+        val newEstimate = poseEstimator.update()
+
+        lastEstimate =
+                newEstimate
+                        .let { if (it.isPresent) it.get() else null }
+                        ?.let { if (it.targetsUsed.size > 0) it else null }
+                        ?.estimatedPose
+        lastEstimate?.let {
+            swerveDrive.resetOdometry(it.toPose2d())
+            println("New pose")
+        }
+
+        SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
@@ -166,17 +178,6 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
     }
 
     fun getPos(): Pose2d {
-        val result = camera.latestResult
-        if (result.hasTargets()) {
-            val target = result.bestTarget
-
-            val pos =
-                    PhotonUtils.estimateFieldToRobotAprilTag(
-                            target.bestCameraToTarget,
-                            fieldRelativeTagPose,
-                            Constants.Camera.cameraTransform
-                    )
-        }
         return swerveDrive.pose
     }
 
