@@ -14,7 +14,7 @@ object Constants {
     object Drivebase {
         const val WHEEL_LOCK_TIME = 10.0
         const val MAX_AUTO_SPEEDS = 3.0
-        const val RADIUS = 0.5
+        const val RADIUS = 0.6
 
         const val MAX_ACCEL = 1.0
         const val MAX_ANGULAR_ACCELERATION = 0.5
@@ -25,11 +25,13 @@ object Constants {
     }
     object OperatorConstants {
         const val kDriverControllerPort = 0
-        const val LEFT_X_DEADBAND = 2.0
+        const val LEFT_X_DEADBAND = 0.1
         const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
-        const val speed = 1.0
+        const val speed = 0.6
+        const val motorid = 24
+        const val followMotorId = 25
     }
     object Shooter {
         const val mainShooterID = -1

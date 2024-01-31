@@ -30,12 +30,12 @@ class Swerve : SubsystemBase() {
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "swerve")
     var swerveDrive: SwerveDrive
 
-    var frontleftCanCoder = CANcoder(11)
-    var backleftCanCoder = CANcoder(12)
-    var frontrightCanCoder = CANcoder(13)
-    var backrightCanCoder = CANcoder(14)
+    var frontleftCanCoder = CANcoder(12)
+    var backleftCanCoder = CANcoder(10)
+    var frontrightCanCoder = CANcoder(6)
+    var backrightCanCoder = CANcoder(8)
 
-    var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
+    var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
     init {
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
