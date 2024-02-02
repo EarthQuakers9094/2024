@@ -25,11 +25,13 @@ object Constants {
     }
     object OperatorConstants {
         const val kDriverControllerPort = 0
+        const val driverLeftStickPort = 0
+        const val driverRightStickPort = 0
         const val LEFT_X_DEADBAND = 0.1
         const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
-        const val speed = 0.6
+        const val speed = -.75
         const val motorid = 24
         const val followMotorId = 25
     }
