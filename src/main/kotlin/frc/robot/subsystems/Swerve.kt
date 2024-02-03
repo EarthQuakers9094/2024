@@ -1,6 +1,5 @@
 package frc.robot.subsystems
 
-import com.ctre.phoenix6.hardware.CANcoder
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
@@ -27,13 +26,8 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 class Swerve : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
-    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "swerve")
+    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "testswerve")
     var swerveDrive: SwerveDrive
-
-    var frontleftCanCoder = CANcoder(12)
-    var backleftCanCoder = CANcoder(10)
-    var frontrightCanCoder = CANcoder(6)
-    var backrightCanCoder = CANcoder(8)
 
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
@@ -44,7 +38,7 @@ class Swerve : SubsystemBase() {
 
         var getPose = {
             var pose = this.getPos()
-            SmartDashboard.putNumber("get pose pathplanner x", pose.getX())
+            SmartDashboard.putNumber("get pose pathplanner x moewjrek", pose.getX())
             SmartDashboard.putNumber("get pose pathplanner y", pose.getY())
             SmartDashboard.putNumber("get pose pathplanner rotation", pose.rotation.degrees)
 
@@ -113,10 +107,6 @@ class Swerve : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
-        SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
         var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)

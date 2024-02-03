@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
-import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Swerve
 
 /**
@@ -28,11 +27,11 @@ class RobotContainer {
     //                 Constants.Shooter.shooterJointCanID,
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
-    private val intake =
-            Intake(
-                    Constants.Intake.motorid,
-                    Constants.Intake.followMotorId,
-            )
+    // private val intake =
+    //         Intake(
+    //                 Constants.Intake.motorid,
+    //                 Constants.Intake.followMotorId,
+    //         )
 
     val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
 
@@ -98,7 +97,7 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("4 piece")
+            return RunAuto("4 piece Inner")
             // return Autos.exampleAuto(exampleSubsystem)
         }
 }

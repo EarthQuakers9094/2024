@@ -20,13 +20,13 @@ object Constants {
         const val MAX_ANGULAR_ACCELERATION = 0.5
         const val MAX_TURNING_SPEEDS = 9.0
 
-        val TRANSLATION_PID = PIDConstants(0.8, 0.0, 0.4)
+        val TRANSLATION_PID = PIDConstants(6.0, 0.0, 0.0)
         val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
     }
     object OperatorConstants {
         const val kDriverControllerPort = 0
-        const val LEFT_X_DEADBAND = 0.1
-        const val LEFT_Y_DEADBAND = 0.1
+        const val LEFT_X_DEADBAND = 0.05
+        const val LEFT_Y_DEADBAND = 0.05
     }
     object Intake {
         const val speed = 0.6
