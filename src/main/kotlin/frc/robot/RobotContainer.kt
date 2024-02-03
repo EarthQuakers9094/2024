@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
+import org.photonvision.PhotonCamera
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -16,7 +17,7 @@ import frc.robot.subsystems.Swerve
  */
 class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private val swerveDrive = Swerve()
+    private val swerveDrive = Swerve(PhotonCamera(Constants.Camera.arducamOne))
 
     // private val elevator = Elevator(Constants.Elevator.motorID)
 

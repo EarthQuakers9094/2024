@@ -25,13 +25,16 @@ object Constants {
     }
     object OperatorConstants {
         const val kDriverControllerPort = 0
-        const val LEFT_X_DEADBAND = 0.05
+        const val LEFT_X_DEADBAND = 0.055
         const val LEFT_Y_DEADBAND = 0.05
     }
     object Intake {
         const val speed = 0.6
         const val motorid = 24
         const val followMotorId = 25
+    }
+    object Camera {
+        const val arducamOne = "Arducam1"
     }
     object Shooter {
         const val mainShooterID = -1

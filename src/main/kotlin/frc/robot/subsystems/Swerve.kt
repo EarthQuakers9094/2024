@@ -4,18 +4,24 @@ import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import java.io.File
 import java.util.function.Consumer
+
+import org.photonvision.EstimatedRobotPose
+import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -23,15 +29,27 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 
-class Swerve : SubsystemBase() {
+class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "testswerve")
     var swerveDrive: SwerveDrive
 
+    val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
+
+    val aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
+    val poseEstimator =
+            PhotonPoseEstimator(
+                    aprilTagFieldLayout,
+                    PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+                    camera,
+                    robotToCam
+            )
+    val lastEstimate: EstimatedRobotPose? = null
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
     init {
+        poseEstimator.referencePose = Pose3d()
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
@@ -107,6 +125,32 @@ class Swerve : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
+        DriverStation.reportWarning("connected: " + camera.latestResult.targets.size, false)
+        if (lastEstimate != null) {
+            poseEstimator.referencePose = lastEstimate!!.estimatedPose
+        }
+        val newEstimate =
+                poseEstimator.update(camera.latestResult).let {
+                    if (it.isPresent()) it.get() else null
+                }
+        DriverStation.reportWarning("estimate  " + newEstimate.toString(), false)
+        // val res = camera.latestResult
+        // if (res.hasTargets()) {
+        //     PhotonUtils.estimateFieldToRobotAprilTag(
+        //             res.bestTarget.bestCameraToTarget,
+        //             aprilTagFieldLayout.getTagPose(res.bestTarget.fiducialId).get(),
+        //             robotToCam
+        //     )
+        //     val pose = res.bestTarget.bestCameraToTarget.plus(robotToCam.inverse())
+        //     DriverStation.reportWarning("pose: " + res.bestTarget.alternateCameraToTarget, false)
+        // }
+
+        if (newEstimate != null) {
+            DriverStation.reportError("new thing ", arrayOf())
+            swerveDrive.addVisionMeasurement(newEstimate.estimatedPose.toPose2d(), Timer.getFPGATimestamp())
+            swerveDrive.resetOdometry(newEstimate.estimatedPose.toPose2d())
+        }
+
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
         var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
