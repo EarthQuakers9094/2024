@@ -23,7 +23,7 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
-import Config
+import frc.robot.utils.Config
 
 class Swerve : SubsystemBase() {
 

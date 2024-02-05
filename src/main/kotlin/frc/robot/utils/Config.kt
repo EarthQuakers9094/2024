@@ -1,3 +1,4 @@
+package frc.robot.utils
 import edu.wpi.first.hal.HALUtil
 
 class Config<T>(testBot:T,realBot:T) {
