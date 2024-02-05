@@ -14,7 +14,8 @@ import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Shooter
-import Config
+import frc.robot.utils.Config
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
