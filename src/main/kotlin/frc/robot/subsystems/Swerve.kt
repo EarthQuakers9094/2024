@@ -23,17 +23,13 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
+import Config
 
 class Swerve : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
-    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "swerve")
+    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
     var swerveDrive: SwerveDrive
-
-    var frontleftCanCoder = CANcoder(12)
-    var backleftCanCoder = CANcoder(10)
-    var frontrightCanCoder = CANcoder(6)
-    var backrightCanCoder = CANcoder(8)
 
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
@@ -109,15 +105,6 @@ class Swerve : SubsystemBase() {
                 flip,
                 this // Reference to this subsystem to set requirements
         )
-    }
-
-    /** This method will be called once per scheduler run */
-    override fun periodic() {
-        SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
         var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
         // var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
@@ -127,6 +114,13 @@ class Swerve : SubsystemBase() {
 
         SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
         SmartDashboard.putNumber("drive conversion MEOW", driveConversionFactor)
+    }
+
+    /** This method will be called once per scheduler run */
+    override fun periodic() {
+        SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
+
+
 
         SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
         SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))

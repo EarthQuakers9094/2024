@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Swerve
+import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Shooter
+import Config
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,47 +23,61 @@ class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private val swerveDrive = Swerve()
 
-    // private val elevator = Elevator(Constants.Elevator.motorID)
+    private var elevator: Elevator? = null;
+    // (Constants.Elevator.motorID)
 
-    // private val shooter =
+    private var shooter: Shooter? = null;
     //         Shooter(
     //                 Constants.Shooter.topCanid,
     //                 Constants.Shooter.bottomCanID,
     //                 Constants.Shooter.shooterJointCanID,
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
-    private val intake =
-            Intake(
-                    Constants.Intake.motorid,
-                    Constants.Intake.followMotorId,
-            )
+
+    private var intake:Intake? = null;
+            // Intake(
+            //         Constants.Intake.motorid,
+            //         Constants.Intake.followMotorId,
+            // )
 
     val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
-    // val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
-    // val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
+    val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
+    val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
         // Configure the trigger bindings
         configureBindings()
 
+        val onTest = Config(true,false);
+
+        if (!onTest.config) {
+            intake = Intake(Constants.Intake.motorid,Constants.Intake.followMotorId);
+            // shooter = Shooter(
+            //         Constants.Shooter.topCanid,
+            //         Constants.Shooter.bottomCanID,
+            //         Constants.Shooter.shooterJointCanID,
+            //         Constants.Shooter.shooterJoint2CanID);
+            // elevator = Elevator(Constants.Elevator.motorID);
+        }
+
         val leftY = {
             MathUtil.applyDeadband(
-                    driverXbox.getLeftY(),
+                    driverLeftStick.getY(),
                     Constants.OperatorConstants.LEFT_Y_DEADBAND
             )
         }
 
         val leftX = {
             MathUtil.applyDeadband(
-                    driverXbox.getLeftX(),
+                    driverLeftStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
         val omega = {
             MathUtil.applyDeadband(
-                    driverXbox.getRightX(),
+                    driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
