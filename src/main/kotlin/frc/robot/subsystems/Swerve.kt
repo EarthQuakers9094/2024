@@ -6,6 +6,7 @@ import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
 import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.util.Units
@@ -17,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import java.io.File
 import java.util.function.Consumer
+import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -25,15 +28,21 @@ import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import frc.robot.utils.Config
 
-class Swerve : SubsystemBase() {
+class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
     var swerveDrive: SwerveDrive
 
-    var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
+    var frontleftCanCoder = CANcoder(11)
+    var backleftCanCoder = CANcoder(12)
+    var frontrightCanCoder = CANcoder(13)
+    var backrightCanCoder = CANcoder(14)
+
+    var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
     init {
+
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
@@ -105,22 +114,11 @@ class Swerve : SubsystemBase() {
                 flip,
                 this // Reference to this subsystem to set requirements
         )
-
-        var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
-        // var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
-
-        var driveConversionFactor =
-                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.0), 6.12, 1.0)
-
-        SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
-        SmartDashboard.putNumber("drive conversion MEOW", driveConversionFactor)
     }
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
-
-
 
         SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
         SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))
