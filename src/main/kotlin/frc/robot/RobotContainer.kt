@@ -12,6 +12,9 @@ import frc.robot.commands.SpeakerAlign
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
+import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Shooter
+import Config
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,24 +29,23 @@ class RobotContainer {
     private val aprilCamera = PhotonCamera("acam")
     private val swerveDrive = Swerve(/*aprilCamera*/)
 
-    // private val elevator = Elevator(Constants.Elevator.motorID)
+    private var elevator: Elevator? = null;
+    // (Constants.Elevator.motorID)
 
-    // private val shooter =
+    private var shooter: Shooter? = null;
     //         Shooter(
     //                 Constants.Shooter.topCanid,
     //                 Constants.Shooter.bottomCanID,
     //                 Constants.Shooter.shooterJointCanID,
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
-    //     private val intake =
-    //             Intake(
-    //                     Constants.Intake.motorid,
-    //                     Constants.Intake.followMotorId,
-    //             )
+
+    private var intake:Intake? = null;
+
 
     val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
-    // val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
-    // val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
+    val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
+    val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
@@ -53,17 +55,35 @@ class RobotContainer {
         // Configure the trigger bindings
         configureBindings()
 
+        val onTest = Config(true,false);
+
+        if (!onTest.config) {
+            intake = Intake(Constants.Intake.motorid,Constants.Intake.followMotorId);
+            // shooter = Shooter(
+            //         Constants.Shooter.topCanid,
+            //         Constants.Shooter.bottomCanID,
+            //         Constants.Shooter.shooterJointCanID,
+            //         Constants.Shooter.shooterJoint2CanID);
+            // elevator = Elevator(Constants.Elevator.motorID);
+        }
+
         val leftY = {
-            MathUtil.applyDeadband(driverXbox.leftY, Constants.OperatorConstants.LEFT_Y_DEADBAND)
+            MathUtil.applyDeadband(
+                    driverLeftStick.getY(),
+                    Constants.OperatorConstants.LEFT_Y_DEADBAND
+            )
         }
 
         val leftX = {
-            MathUtil.applyDeadband(driverXbox.leftX, Constants.OperatorConstants.LEFT_X_DEADBAND)
+            MathUtil.applyDeadband(
+                    driverLeftStick.getX(),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
+            )
         }
 
         val omega = {
             MathUtil.applyDeadband(
-                    driverXbox.getRightX(),
+                    driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }

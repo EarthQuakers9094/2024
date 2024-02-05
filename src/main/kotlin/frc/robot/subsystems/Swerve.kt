@@ -23,11 +23,12 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
+import Config
 
 class Swerve(/*private val camera: PhotonCamera*/ ) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
-    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), "testswerve")
+    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
     var swerveDrive: SwerveDrive
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
@@ -41,6 +42,8 @@ class Swerve(/*private val camera: PhotonCamera*/ ) : SubsystemBase() {
     //                    robotToCam
     //            )
     val lastEstimate: EstimatedRobotPose? = null
+
+
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
     init {
@@ -161,6 +164,13 @@ class Swerve(/*private val camera: PhotonCamera*/ ) : SubsystemBase() {
 
         SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
         SmartDashboard.putNumber("drive conversion MEOW", driveConversionFactor)
+    }
+
+    /** This method will be called once per scheduler run */
+    override fun periodic() {
+        SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
+
+
 
         //        SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
         //        SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))

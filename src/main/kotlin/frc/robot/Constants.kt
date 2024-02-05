@@ -27,14 +27,14 @@ object Constants {
         val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
     }
     object OperatorConstants {
-        const val kDriverControllerPort = 0
+        const val kDriverControllerPort = 2
         const val driverLeftStickPort = 0
-        const val driverRightStickPort = 0
+        const val driverRightStickPort = 1
         const val LEFT_X_DEADBAND = 0.1
         const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
-        const val speed = -.75
+        const val speed = -0.60
         const val motorid = 24
         const val followMotorId = 25
     }
