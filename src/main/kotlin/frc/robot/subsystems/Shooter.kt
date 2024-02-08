@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
+import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.RobotBase
@@ -12,14 +13,19 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import kotlin.sequences.sequence
 
 class Shooter(
         private val shooterCanID: Int,
         private val secondaryShooterID: Int,
-        private val jointMotor1ID: Int,
-        private val jointMotor2ID: Int
+        private val shooterJointCanID: Int,
+        private val shooterJoint2CanID: Int,
+        private val intakeMotorID: Int
 ) : SubsystemBase() {
 
     private var speed = 0.0
@@ -30,8 +36,10 @@ class Shooter(
     private val followerSparkMax =
             CANSparkFlex(secondaryShooterID, CANSparkLowLevel.MotorType.kBrushless)
 
-    private val jointMotor1 = CANSparkMax(jointMotor1ID, CANSparkLowLevel.MotorType.kBrushless)
-    private val jointMotor2 = CANSparkMax(jointMotor2ID, CANSparkLowLevel.MotorType.kBrushless)
+    private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
+    private val jointMotor2 = CANSparkMax(shooterJoint2CanID, CANSparkLowLevel.MotorType.kBrushless)
+
+    private val intakingMotor = CANSparkFlex(15, CANSparkLowLevel.MotorType.kBrushless)
 
     private var currentSetPoint = 0.0
     private var currentAverage = MovingAverage(10)
@@ -69,6 +77,7 @@ class Shooter(
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
         jointMotor2.restoreFactoryDefaults()
+        intakingMotor.restoreFactoryDefaults()
 
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
         jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
@@ -96,6 +105,9 @@ class Shooter(
         SmartDashboard.putNumber("current set speed launcher", 0.0)
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
+        followerSparkMax.follow(shooterSparkMax)
+        //shooterSparkMax.set(Constants.Shooter.speed)
+        //intakingMotor.set(0.75)
     }
 
     override fun periodic() {
@@ -122,6 +134,54 @@ class Shooter(
     fun atSpeed(): Boolean {
         val av = currentAverage.getAverage()
         return Math.abs(currentSetPoint - av) <= Constants.Shooter.tolerance
+    }
+
+    fun setIntakingSpeed(speed: Double) {
+        intakingMotor.set(speed);
+    }
+
+    fun intake() {
+        setIntakingSpeed(Constants.Shooter.intakeSpeed);
+    }
+
+    fun stopIntaking() {
+        setIntakingSpeed(0.0)
+    }
+
+    fun intakeButtonCommand(): Command {
+        val parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    parent.intake();
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopIntaking()
+                }
+            },this);
+    }
+
+    fun startShooting() {
+        shooterSparkMax.set(Constants.Shooter.speed);
+    }
+    
+    fun stopShooting() {
+        shooterSparkMax.set(0.0);
+    }
+
+    fun shootButton(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    parent.startShooting();
+                    SmartDashboard.putBoolean("shooting", true)
+                }
+            },object: Runnable {
+                override fun run() {
+                        parent.stopShooting()
+                        SmartDashboard.putBoolean("shooting", false)
+                }
+            },parent);
     }
 
     override fun simulationPeriodic() {

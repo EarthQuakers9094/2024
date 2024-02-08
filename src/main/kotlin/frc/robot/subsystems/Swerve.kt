@@ -28,7 +28,9 @@ import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import frc.robot.utils.Config
 
-class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
+class Swerve(
+    // private val camera: PhotonCamera
+    ) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
@@ -114,6 +116,10 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
                 flip,
                 this // Reference to this subsystem to set requirements
         )
+        val driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0);
+
+        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor);
+
     }
 
     /** This method will be called once per scheduler run */
@@ -125,6 +131,7 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
         SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
+
     }
 
     fun drive(translation: Translation2d, rotation: Double, fieldRelative: Boolean) {

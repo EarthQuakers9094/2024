@@ -11,6 +11,7 @@ import frc.robot.subsystems.Swerve;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
+import kotlin.math.sqrt
 
 /**
  * An example command that uses an example subsystem.
@@ -34,9 +35,16 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
 
   // Called every time the scheduler runs while the command is scheduled.
   override fun execute() {
-    val xVelocity   = Math.pow(vX.getAsDouble(), 3.0);
-    val yVelocity   = Math.pow(vY.getAsDouble(), 3.0);
+    val xVelocityRaw   = vX.getAsDouble()
+    val yVelocityRaw   = vY.getAsDouble()
+    val magnitude = sqrt(Math.pow(xVelocityRaw, 2.0) + Math.pow(yVelocityRaw, 2.0));
+
+    val xVelocity = Math.pow(magnitude, 2.0) * xVelocityRaw;
+
+    val yVelocity = Math.pow(magnitude, 2.0) * yVelocityRaw;
+
     val angVelocity = Math.pow(omega.getAsDouble(), 3.0);
+
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);
