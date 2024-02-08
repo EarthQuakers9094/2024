@@ -5,10 +5,14 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.PS5Controller
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.SpeakerAlign
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.Commands
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
@@ -54,19 +58,22 @@ class RobotContainer {
             DriverStation.reportWarning("Hello there miles", arrayOf())
         }
         // Configure the trigger bindings
-        configureBindings()
+
 
         val onTest = Config(true,false);
 
         if (!onTest.config) {
             intake = Intake(Constants.Intake.motorid,Constants.Intake.followMotorId);
-            // shooter = Shooter(
-            //         Constants.Shooter.topCanid,
-            //         Constants.Shooter.bottomCanID,
-            //         Constants.Shooter.shooterJointCanID,
-            //         Constants.Shooter.shooterJoint2CanID);
+            shooter = Shooter(
+                    Constants.Shooter.topCanid,
+                    Constants.Shooter.bottomCanID,
+                    Constants.Shooter.shooterJointCanID,
+                    Constants.Shooter.shooterJoint2CanID,
+                    Constants.Shooter.intakeMotorID);
             // elevator = Elevator(Constants.Elevator.motorID);
         }
+
+        configureBindings()
 
         val leftY = {
             MathUtil.applyDeadband(
@@ -115,7 +122,11 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        JoystickButton(driverXbox, 8).whileTrue(SpeakerAlign(swerveDrive, aprilCamera))
+        if (shooter != null) {
+            SmartDashboard.putBoolean("shooter", true);
+            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand());
+            JoystickButton(driverLeftStick, 4).whileTrue(shooter!!.shootButton());
+        }
     }
 
     fun setMotorBrake(enabled: Boolean) {
@@ -130,7 +141,9 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return SpeakerAlign(swerveDrive, aprilCamera)
+            return RunAuto("4 piece Inner")
             // return Autos.exampleAuto(exampleSubsystem)
         }
 }
+
+//"drive": 0.0521545447

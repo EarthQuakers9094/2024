@@ -30,7 +30,9 @@ import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import frc.robot.utils.Config
 
-class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
+class Swerve(
+    // private val camera: PhotonCamera
+    ) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
@@ -125,6 +127,10 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
                 flip,
                 this // Reference to this subsystem to set requirements
         )
+        val driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0);
+
+        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor);
+
     }
 
     /** This method will be called once per scheduler run */
@@ -150,24 +156,9 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
         var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
         // var angleMotorConv = SwerveMath.calculateDegreesPerSteeringRotation(150.0 / 7.0, 1.0)
 
-        var driveConversionFactor =
-                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.0), 6.12, 1.0)
+        SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
+        SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
 
-        SmartDashboard.putNumber("angle conversion MEOW", angleMotorConv)
-        SmartDashboard.putNumber("drive conversion MEOW", driveConversionFactor)
-    }
-
-    /** This method will be called once per scheduler run */
-    override fun periodic() {
-        SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
-
-
-
-        //        SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
-        //        SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))
-        //
-        //        SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
-        //        SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
     }
 
     fun drive(translation: Translation2d, rotation: Double, fieldRelative: Boolean) {

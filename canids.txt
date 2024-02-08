@@ -17,3 +17,4 @@ shooter top canid
 shooter bottom canid
 shooter joint1
 shooter joint2
+intake shooter motorid
