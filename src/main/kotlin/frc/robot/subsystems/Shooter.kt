@@ -4,7 +4,7 @@ import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
-import com.revrobotics.CANSparkMaxLowLevel
+import com.revrobotics.ColorSensorV3
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.RobotBase
@@ -12,20 +12,24 @@ import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.I2C
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.WaitCommand
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
 import kotlin.sequences.sequence
+import java.util.function.BooleanSupplier
 
 class Shooter(
         private val shooterCanID: Int,
         private val secondaryShooterID: Int,
         private val shooterJointCanID: Int,
         private val shooterJoint2CanID: Int,
-        private val intakeMotorID: Int
+        private val intakeMotorID: Int,
 ) : SubsystemBase() {
 
     private var speed = 0.0
@@ -72,6 +76,8 @@ class Shooter(
 
     private var bottomWheels = FlywheelSim(DCMotor.getNEO(1), 1.0, 14.4)
 
+    private var sensor = ColorSensorV3(I2C.Port.kOnboard);
+
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
@@ -115,10 +121,10 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
-        currentAverage.addValue(speed)
         SmartDashboard.putNumber("current motor speed launcher", speed)
-        currentSetPoint = SmartDashboard.getNumber("current set speed launcher", 0.0)
-        desiredAngle = SmartDashboard.getNumber("current set joint location launcher", 0.0)
+        SmartDashboard.putNumber("shooter sensor value", sensor.proximity.toDouble())
+
+        SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
     }
 
     fun setSpeed(speed: Double) {
@@ -129,11 +135,6 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
-    }
-
-    fun atSpeed(): Boolean {
-        val av = currentAverage.getAverage()
-        return Math.abs(currentSetPoint - av) <= Constants.Shooter.tolerance
     }
 
     fun setIntakingSpeed(speed: Double) {
@@ -184,6 +185,63 @@ class Shooter(
             },parent);
     }
 
+    fun shootTime(intake: Intake):Command {
+        val parent = this;
+
+        val supplier = {this.atSpeed()}
+
+        val command = Commands.sequence(
+                InstantCommand(object: Runnable {
+                        override fun run() {
+                            parent.startShooting();   
+                        }
+                }),
+                WaitUntilCommand(supplier),
+                InstantCommand(object: Runnable {
+                        override fun run() {
+                            parent.intake();
+                            intake.startIntaking();
+                        }
+                }),
+                WaitCommand(Constants.Shooter.shootTime),
+                InstantCommand(object: Runnable {
+                        override fun run() {
+                            parent.stopIntaking();
+                            parent.stopShooting();
+                            intake.stopIntaking();
+                        }
+                    }) 
+        );
+
+        command.addRequirements(this)
+
+        return command;
+    }
+
+    fun pickup():Command {
+        val parent = this;
+
+        val supplier:BooleanSupplier = BooleanSupplier {this.noteIn()};
+
+        val command = Commands.sequence(
+                InstantCommand(object: Runnable {
+                        override fun run() {
+                            parent.intake();
+                        }
+                }),
+                WaitUntilCommand(supplier)
+        );
+
+        command.addRequirements(this);
+
+        return command.andThen(
+                InstantCommand(object: Runnable {
+                        override fun run() {
+                            parent.stopIntaking();
+                        }
+                },this));
+    }
+
     override fun simulationPeriodic() {
         topWheels.setInputVoltage(
                 sim_top_pid
@@ -214,5 +272,13 @@ class Shooter(
         jointMotor1.encoder.position = joint.angleRads
 
         speed = topWheels.angularVelocityRPM
+    }
+
+    fun noteIn(): Boolean {
+        return sensor.proximity >= Constants.Shooter.closestDistance;
+    }
+
+    fun atSpeed(): Boolean {
+        return shooterSparkMax.encoder.velocity <= -4500.0;
     }
 }
