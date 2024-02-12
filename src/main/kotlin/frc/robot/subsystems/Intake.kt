@@ -3,6 +3,9 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 
 /** Creates a new ExampleSubsystem. */
@@ -27,7 +30,29 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.follow(intakeSparkMax)
-        intakeSparkMax.set(Constants.Intake.speed)
+    }
+
+    fun startIntaking() {
+        intakeSparkMax.set(Constants.Intake.speed)        
+    }
+
+    fun stopIntaking() {
+        intakeSparkMax.set(0.0);
+    }
+
+    fun intake(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    parent.startIntaking();
+                    SmartDashboard.putBoolean("shooting", true)
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopIntaking()
+                    SmartDashboard.putBoolean("shooting", false)
+                }
+            },parent);
     }
 
     /** This method will be called once per scheduler run */

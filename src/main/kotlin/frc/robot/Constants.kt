@@ -9,6 +9,7 @@ import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
+import frc.robot.utils.Config
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -28,10 +29,11 @@ object Constants {
         const val MAX_ANGULAR_ACCELERATION = 0.5
         const val MAX_TURNING_SPEEDS = 9.0
 
-        val TRANSLATION_PID = PIDConstants(4.0, 0.0, 0.4)
+        val TRANSLATION_PID = Config(PIDConstants(6.0, 0.0, 0.4),PIDConstants(4.0, 0.0, 0.4)) 
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
         val ROTATION_PID = PIDConstants(1.0, 0.0, 0.0)
 
+        val ROTATION_PID_TELEOP = PIDConstants(4.0, 0.0, 0.0)
 
         }
     object OperatorConstants {
@@ -89,8 +91,9 @@ object Constants {
         const val intakeSpeed = 0.9;
         const val speed = -0.75;
         const val intakeMotorID = 30;
-        const val spinuptime = 0.6;
+        const val spinuptime = 5.0;
         const val shootTime = 0.6;
+        const val closestDistance = 200;
     }
 
         val validTargets = arrayOf(4, 3)

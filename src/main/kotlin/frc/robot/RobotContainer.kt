@@ -19,6 +19,9 @@ import org.photonvision.PhotonCamera
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Shooter
 import frc.robot.utils.Config
+import Pickup
+import FollowTrajectory
+import com.pathplanner.lib.path.PathPlannerPath
 
 
 /**
@@ -75,24 +78,37 @@ class RobotContainer {
 
         configureBindings()
 
+        
+        fun applyPov(direction: Int, speed: Double): Double {
+            if (direction == -1) {
+                return speed * 0.75;
+            } else if (direction == 0) {
+                return speed;
+            } else if (direction == 180) {
+                return speed * 0.5;
+            }
+
+            return speed;
+        }
+
         val leftY = {
             MathUtil.applyDeadband(
-                    driverLeftStick.getY(),
-                    Constants.OperatorConstants.LEFT_Y_DEADBAND
+                applyPov(driverLeftStick.getPOV(),driverLeftStick.getY()),
+                Constants.OperatorConstants.LEFT_Y_DEADBAND
             )
         }
 
         val leftX = {
             MathUtil.applyDeadband(
-                    driverLeftStick.getX(),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
+                applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
         val omega = {
             MathUtil.applyDeadband(
-                    driverRightStick.getX(),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
+                driverRightStick.getX(),
+                Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
@@ -126,7 +142,11 @@ class RobotContainer {
             SmartDashboard.putBoolean("shooter", true);
             JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand());
             JoystickButton(driverLeftStick, 4).whileTrue(shooter!!.shootButton());
+            JoystickButton(driverLeftStick,1).onTrue(Pickup(shooter!!, intake!!));
+            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!));
         }
+
+        JoystickButton(driverRightStick, 2).onTrue(FollowTrajectory(swerveDrive,PathPlannerPath.fromPathFile("to amp"),true));
     }
 
     fun setMotorBrake(enabled: Boolean) {
@@ -141,9 +161,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("4 piece Inner")
-            // return Autos.exampleAuto(exampleSubsystem)
+            return RunAuto("to center")
         }
 }
-
-//"drive": 0.0521545447
