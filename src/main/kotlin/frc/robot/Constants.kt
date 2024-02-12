@@ -1,6 +1,9 @@
 package frc.robot
 
 import com.pathplanner.lib.util.PIDConstants
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -35,6 +38,16 @@ object Constants {
     }
     object Camera {
         const val arducamOne = "Arducam1"
+        val camSTDEV = run {
+            val mat = Matrix(Nat.N3(), Nat.N1())
+            mat.set(0,0, 1.0)
+            mat.set(1,0, 1.0)
+            mat.set(2,0, 1.0)
+            mat
+        }
+    }
+    object Auto {
+        val NOTE_ROTATION = PIDConstants(0.03, 0.0, 0.0)
     }
     object Shooter {
         const val mainShooterID = -1

@@ -1,10 +1,13 @@
 package frc.robot
 
-import RunAuto
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PS4Controller
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import edu.wpi.first.wpilibj2.command.button.JoystickButton
+import frc.robot.commands.SpeakerAlign
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
@@ -17,7 +20,10 @@ import org.photonvision.PhotonCamera
  */
 class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private val swerveDrive = Swerve(PhotonCamera(Constants.Camera.arducamOne))
+
+
+    private val aprilCamera = PhotonCamera("acam")
+    private val swerveDrive = Swerve(/*aprilCamera*/)
 
     // private val elevator = Elevator(Constants.Elevator.motorID)
 
@@ -28,31 +34,28 @@ class RobotContainer {
     //                 Constants.Shooter.shooterJointCanID,
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
-    // private val intake =
-    //         Intake(
-    //                 Constants.Intake.motorid,
-    //                 Constants.Intake.followMotorId,
-    //         )
+    //     private val intake =
+    //             Intake(
+    //                     Constants.Intake.motorid,
+    //                     Constants.Intake.followMotorId,
+    //             )
 
     val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
+        if (!aprilCamera.isConnected) {
+            DriverStation.reportWarning("Hello there miles", arrayOf())
+        }
         // Configure the trigger bindings
         configureBindings()
 
         val leftY = {
-            MathUtil.applyDeadband(
-                    driverXbox.getLeftY(),
-                    Constants.OperatorConstants.LEFT_Y_DEADBAND
-            )
+            MathUtil.applyDeadband(driverXbox.leftY, Constants.OperatorConstants.LEFT_Y_DEADBAND)
         }
 
         val leftX = {
-            MathUtil.applyDeadband(
-                    driverXbox.getLeftX(),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
-            )
+            MathUtil.applyDeadband(driverXbox.leftX, Constants.OperatorConstants.LEFT_X_DEADBAND)
         }
 
         val omega = {
@@ -66,7 +69,11 @@ class RobotContainer {
 
         val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode)
 
-        swerveDrive.setDefaultCommand(simClosedFieldRel)
+        swerveDrive.defaultCommand = simClosedFieldRel
+    }
+
+    fun debugPeriodic() {
+        SmartDashboard.putBoolean("Connected or nay", aprilCamera.isConnected)
     }
 
     /**
@@ -84,6 +91,7 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
+        JoystickButton(driverXbox, 8).whileTrue(SpeakerAlign(swerveDrive, aprilCamera))
     }
 
     fun setMotorBrake(enabled: Boolean) {
@@ -98,7 +106,7 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("4 piece Inner")
+            return SpeakerAlign(swerveDrive, aprilCamera)
             // return Autos.exampleAuto(exampleSubsystem)
         }
 }
