@@ -456,9 +456,12 @@ public class SwerveModule {
       SmartDashboard.putNumber("Module[" + configuration.name + "] Raw Absolute Encoder",
           absoluteEncoder.getAbsolutePosition());
     }
+
+    double pos =  getAbsolutePosition();
+
     SmartDashboard.putNumber("Module[" + configuration.name + "] Raw Angle Encoder", angleMotor.getPosition());
     SmartDashboard.putNumber("Module[" + configuration.name + "] Raw Drive Encoder", driveMotor.getPosition());
-    SmartDashboard.putNumber("Module[" + configuration.name + "] Adjusted Absolute Encoder", getAbsolutePosition());
+    SmartDashboard.putNumber("Module[" + configuration.name + "] Adjusted Absolute Encoder", pos > 180 ? pos - 360.0 : pos);
     SmartDashboard.putNumber("Module[" + configuration.name + "] speed", driveMotor.getVelocity());
 
     SmartDashboard.putNumber("Module[" + configuration.name + "] Absolute Encoder Read Issue",

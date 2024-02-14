@@ -76,19 +76,11 @@ class Swerve(
 
         var config =
                 HolonomicPathFollowerConfig(
-                        Constants.Drivebase.TRANSLATION_PID,
-                        Constants.Drivebase.ROTATION_PID,
+                        Constants.Drivebase.TRANSLATION_PID.config,
+                        Constants.Drivebase.ROTATION_PID.config,
                         Constants.Drivebase.MAX_AUTO_SPEEDS,
                         Constants.Drivebase.RADIUS,
                         replanning
-                )
-
-        var pathConstraints =
-                PathConstraints(
-                        Constants.Drivebase.MAX_AUTO_SPEEDS,
-                        Constants.Drivebase.MAX_ACCEL,
-                        Constants.Drivebase.MAX_TURNING_SPEEDS,
-                        Constants.Drivebase.MAX_ANGULAR_ACCELERATION,
                 )
 
         var flip = {
@@ -126,11 +118,11 @@ class Swerve(
     override fun periodic() {
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
-        SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
-        SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))
+        // SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))
+        // SmartDashboard.putNumber("current: frontleft", pdh.getCurrent(10))
 
-        SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
-        SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
+        // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
+        // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
 
     }
 
