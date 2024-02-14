@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.9018362362424472,
-      "y": 5.556419458894899
+      "x": 1.5231757689978491,
+      "y": 7.0
     },
-    "rotation": -90.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B to A"
+            "pathName": "odometry"
           }
         }
       ]

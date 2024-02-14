@@ -6,6 +6,9 @@
       }
     },
     "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
       "PathPlanner": {
         "double[]##v_/PathPlanner/currentPose": {
           "open": true
@@ -19,10 +22,28 @@
         "open": true
       },
       "SmartDashboard": {
+        "Encoders": {
+          "open": true
+        },
+        "IMU": {
+          "open": true
+        },
+        "JSON": {
+          "open": true
+        },
+        "Motors": {
+          "open": true
+        },
         "Swerve Drive": {
           "open": true
         },
-        "open": true
+        "open": true,
+        "swerve": {
+          "open": true
+        },
+        "turning pid": {
+          "open": true
+        }
       }
     },
     "types": {
@@ -30,11 +51,20 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro",
       "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
+      "/SmartDashboard/Pigeon 2 [31]": "Gyro",
       "/SmartDashboard/joint pid": "PIDController",
-      "/SmartDashboard/sim pid": "PIDController"
+      "/SmartDashboard/sim pid": "PIDController",
+      "/SmartDashboard/the options for the autonomous period": "String Chooser",
+      "/SmartDashboard/turning pid": "PIDController"
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }
@@ -42,20 +72,10 @@
     }
   },
   "NetworkTables Info": {
-    "Connections": {
-      "open": true
-    },
-    "Server": {
-      "Publishers": {
-        "open": true
-      },
-      "open": true
-    },
     "visible": true
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT3)",
-    "serverTeam": "9094"
+    "mode": "Client (NT4)"
   },
   "Plots": {
     "Plot <0>": {
@@ -67,7 +87,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 269,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -105,7 +125,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 269,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -134,7 +154,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 269,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -156,7 +176,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -167,7 +190,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 458,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -218,9 +241,12 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 326
+          "height": 812
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
@@ -231,36 +257,70 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 324,
+          "height": 437,
           "series": [
             {
               "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
+                0.5490196347236633,
+                0.5490196347236633,
+                0.5490196347236633,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Calculated omega"
-            }
-          ]
-        },
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 324,
-          "series": [
+              "id": "NT:/SmartDashboard/drivebase rotation speed"
+            },
             {
               "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
+                0.8000000715255737,
+                0.7254902124404907,
+                0.4549019932746887,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/Note yaw"
+              "id": "NT:/SmartDashboard/drivebase rotation setPoint"
+            },
+            {
+              "color": [
+                0.3921568989753723,
+                0.7098039388656616,
+                0.803921639919281,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/drivebase current heading"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] Angle Setpoint"
+            },
+            {
+              "color": [
+                0.5058823823928833,
+                0.44705885648727417,
+                0.7019608020782471,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] Raw Angle Encoder"
+            },
+            {
+              "color": [
+                0.5764706134796143,
+                0.4705882668495178,
+                0.3764706254005432,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontleft] Raw Angle Encoder"
+            },
+            {
+              "color": [
+                0.8549020290374756,
+                0.545098066329956,
+                0.7647059559822083,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontleft] Angle Setpoint"
             }
           ]
         }

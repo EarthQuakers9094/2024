@@ -1,16 +1,23 @@
 package frc.robot
 
+import FollowTrajectory
+import Pickup
+import RunAuto
+import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
-import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import frc.robot.commands.SpeakerAlign
+import frc.robot.commands.Brake
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
+import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
-import org.photonvision.PhotonCamera
+import frc.robot.utils.Config
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,47 +27,79 @@ import org.photonvision.PhotonCamera
  */
 class RobotContainer {
     // The robot's subsystems and commands are defined here...
+    private val swerveDrive = Swerve()
 
+    private var elevator: Elevator? = null
+    // (Constants.Elevator.motorID)
 
-    private val aprilCamera = PhotonCamera("acam")
-    private val swerveDrive = Swerve(/*aprilCamera*/)
-
-    // private val elevator = Elevator(Constants.Elevator.motorID)
-
-    // private val shooter =
+    private var shooter: Shooter? = null
     //         Shooter(
     //                 Constants.Shooter.topCanid,
     //                 Constants.Shooter.bottomCanID,
     //                 Constants.Shooter.shooterJointCanID,
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
-    //     private val intake =
-    //             Intake(
-    //                     Constants.Intake.motorid,
-    //                     Constants.Intake.followMotorId,
-    //             )
+
+    private var intake: Intake? = null
+    // Intake(
+    //         Constants.Intake.motorid,
+    //         Constants.Intake.followMotorId,
+    // )
 
     val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
+    val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
+    val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
-        if (!aprilCamera.isConnected) {
-            DriverStation.reportWarning("Hello there miles", arrayOf())
-        }
         // Configure the trigger bindings
+
+        val onTest = Config(true, false)
+
+        if (!onTest.config) {
+            intake = Intake(Constants.Intake.motorid, Constants.Intake.followMotorId)
+            shooter =
+                    Shooter(
+                            Constants.Shooter.topCanid,
+                            Constants.Shooter.bottomCanID,
+                            Constants.Shooter.shooterJointCanID,
+                            Constants.Shooter.shooterJoint2CanID,
+                            Constants.Shooter.intakeMotorID
+                    )
+            // elevator = Elevator(Constants.Elevator.motorID);
+        }
+
         configureBindings()
 
+        fun applyPov(direction: Int, speed: Double): Double {
+            if (direction == -1) {
+                return speed * 0.75
+            } else if (direction == 0) {
+                return speed
+            } else if (direction == 180) {
+                return speed * 0.5
+            }
+
+            return speed
+        }
+
         val leftY = {
-            MathUtil.applyDeadband(driverXbox.leftY, Constants.OperatorConstants.LEFT_Y_DEADBAND)
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                    Constants.OperatorConstants.LEFT_Y_DEADBAND
+            )
         }
 
         val leftX = {
-            MathUtil.applyDeadband(driverXbox.leftX, Constants.OperatorConstants.LEFT_X_DEADBAND)
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
+            )
         }
 
         val omega = {
             MathUtil.applyDeadband(
-                    driverXbox.getRawAxis(2),
+                    driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
@@ -69,11 +108,7 @@ class RobotContainer {
 
         val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode)
 
-        swerveDrive.defaultCommand = simClosedFieldRel
-    }
-
-    fun debugPeriodic() {
-        SmartDashboard.putBoolean("Connected or nay", aprilCamera.isConnected)
+        swerveDrive.setDefaultCommand(simClosedFieldRel)
     }
 
     /**
@@ -91,7 +126,16 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        JoystickButton(driverXbox, 8).whileTrue(SpeakerAlign(swerveDrive, aprilCamera))
+        if (shooter != null) {
+            SmartDashboard.putBoolean("shooter", true)
+            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
+            JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
+            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, intake!!))
+            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!))
+        }
+        JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
+        JoystickButton(driverRightStick, 2)
+                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
     }
 
     fun setMotorBrake(enabled: Boolean) {
@@ -106,7 +150,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return SpeakerAlign(swerveDrive, aprilCamera)
-            // return Autos.exampleAuto(exampleSubsystem)
+            return RunAuto("odometry")
         }
 }
