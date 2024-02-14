@@ -161,6 +161,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("to center")
+            return RunAuto("odometry")
         }
 }

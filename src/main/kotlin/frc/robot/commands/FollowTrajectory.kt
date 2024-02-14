@@ -47,8 +47,8 @@ class FollowTrajectory(
 
                 var config =
                                 HolonomicPathFollowerConfig(
-                                                Constants.Drivebase.TRANSLATION_PID,
-                                                Constants.Drivebase.ROTATION_PID,
+                                                Constants.Drivebase.TRANSLATION_PID.config,
+                                                Constants.Drivebase.ROTATION_PID.config,
                                                 Constants.Drivebase.MAX_AUTO_SPEEDS,
                                                 Constants.Drivebase.RADIUS,
                                                 replanning
