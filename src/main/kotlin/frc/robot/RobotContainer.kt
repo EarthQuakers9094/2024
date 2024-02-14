@@ -4,8 +4,13 @@ import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import FollowTrajectory
+import Pickup
+import RunAuto
+import com.pathplanner.lib.path.PathPlannerPath
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.PS5Controller
+import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -16,13 +21,13 @@ import edu.wpi.first.wpilibj2.command.Commands
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
+import frc.robot.commands.Brake
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
+import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
-import Pickup
-import FollowTrajectory
-import com.pathplanner.lib.path.PathPlannerPath
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,10 +42,10 @@ class RobotContainer {
     private val aprilCamera = PhotonCamera("acam")
     private val swerveDrive = Swerve(/*aprilCamera*/)
 
-    private var elevator: Elevator? = null;
+    private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
 
-    private var shooter: Shooter? = null;
+    private var shooter: Shooter? = null
     //         Shooter(
     //                 Constants.Shooter.topCanid,
     //                 Constants.Shooter.bottomCanID,
@@ -62,53 +67,53 @@ class RobotContainer {
         }
         // Configure the trigger bindings
 
-
-        val onTest = Config(true,false);
+        val onTest = Config(true, false)
 
         if (!onTest.config) {
-            intake = Intake(Constants.Intake.motorid,Constants.Intake.followMotorId);
-            shooter = Shooter(
-                    Constants.Shooter.topCanid,
-                    Constants.Shooter.bottomCanID,
-                    Constants.Shooter.shooterJointCanID,
-                    Constants.Shooter.shooterJoint2CanID,
-                    Constants.Shooter.intakeMotorID);
+            intake = Intake(Constants.Intake.motorid, Constants.Intake.followMotorId)
+            shooter =
+                    Shooter(
+                            Constants.Shooter.topCanid,
+                            Constants.Shooter.bottomCanID,
+                            Constants.Shooter.shooterJointCanID,
+                            Constants.Shooter.shooterJoint2CanID,
+                            Constants.Shooter.intakeMotorID
+                    )
             // elevator = Elevator(Constants.Elevator.motorID);
         }
 
         configureBindings()
 
-        
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
-                return speed * 0.75;
+                return speed * 0.75
             } else if (direction == 0) {
-                return speed;
+                return speed
             } else if (direction == 180) {
-                return speed * 0.5;
+                return speed * 0.5
             }
 
-            return speed;
+            return speed
         }
 
         val leftY = {
             MathUtil.applyDeadband(
-                applyPov(driverLeftStick.getPOV(),driverLeftStick.getY()),
-                Constants.OperatorConstants.LEFT_Y_DEADBAND
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                    Constants.OperatorConstants.LEFT_Y_DEADBAND
             )
         }
 
         val leftX = {
             MathUtil.applyDeadband(
-                applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
-                Constants.OperatorConstants.LEFT_X_DEADBAND
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
         val omega = {
             MathUtil.applyDeadband(
-                driverRightStick.getX(),
-                Constants.OperatorConstants.LEFT_X_DEADBAND
+                    driverRightStick.getX(),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
@@ -139,14 +144,15 @@ class RobotContainer {
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
         if (shooter != null) {
-            SmartDashboard.putBoolean("shooter", true);
-            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand());
-            JoystickButton(driverLeftStick, 4).whileTrue(shooter!!.shootButton());
-            JoystickButton(driverLeftStick,1).onTrue(Pickup(shooter!!, intake!!));
-            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!));
+            SmartDashboard.putBoolean("shooter", true)
+            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
+            JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
+            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, intake!!))
+            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!))
         }
-
-        JoystickButton(driverRightStick, 2).onTrue(FollowTrajectory(swerveDrive,PathPlannerPath.fromPathFile("to amp"),true));
+        JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
+        JoystickButton(driverRightStick, 2)
+                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
     }
 
     fun setMotorBrake(enabled: Boolean) {
