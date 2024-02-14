@@ -1,36 +1,18 @@
 package frc.robot.commands
 
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Constants
-import frc.robot.subsystems.Swerve
-import frc.robot.utils.MovingAverage
+import frc.robot.subsystems.Shooter
 import org.photonvision.PhotonCamera
+import kotlin.math.atan2
 
-class SpeakerAlign(
-        /*private val intake: Intake,*/ private val swerve: Swerve,
-        private val camera: PhotonCamera
-) : Command() {
+class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter) : Command() {
 
-    private var updatesSinceLastTarget = 0
-    private var updates = 0
 
-    private val omegaPID =
-            PIDController(
-                    Constants.Auto.TARGET_ROTATION.kP,
-                    Constants.Auto.TARGET_ROTATION.kI,
-                    Constants.Auto.TARGET_ROTATION.kD
-            )
-
-    private var tagPos = MovingAverage(10)
-    private var lastTagPos = 0.0
 
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
-        addRequirements(swerve)
+        addRequirements()
     }
 
     /** The initial subroutine of a command. Called once when the command is initially scheduled. */
@@ -41,34 +23,20 @@ class SpeakerAlign(
      * called repeatedly until [isFinished] returns true.)
      */
     override fun execute() {
-        updates++
-
         val res = camera.latestResult
-
         if (res.hasTargets()) {
-            // if (true) {
+            //big boy one-liner
+            val preferredTarget = res.targets.filter {Constants.Shooter.validTargets.contains(it.fiducialId)}.sortedBy {it.fiducialId}[0]
+            val camToTarget = preferredTarget.bestCameraToTarget
+            val distance = camToTarget.x + Constants.Shooter.distanceOffset
+            val height = camToTarget.z + Constants.Shooter.heightOffset
 
-            val target = res.bestTarget
-            if (target.fiducialId == 5) {
-                updatesSinceLastTarget = 0
-                DriverStation.reportWarning(
-                        "We are currently using the fiducialId 5 for testing",
-                        arrayOf()
-                )
-                //right yaw is negative
-                val yaw = tagPos.addValue(target.yaw)
-                //positive is right
-                val calc = omegaPID.calculate(yaw)
-                // DriverStation.reportError("hello there this is me", arrayOf())
-                SmartDashboard.putNumber("Tag yaw", yaw)
-                SmartDashboard.putNumber("Calculated omega", calc)
+            // let's get triggy with it (the title of the worksheet I had to do in math today)
+            val angle = atan2(height, distance) + Constants.Shooter.angleOffset
 
-                swerve.drive(Translation2d(0.0, 0.0), calc, false)
-            } else {
-                updatesSinceLastTarget++
-            }
-        } else {
-            updatesSinceLastTarget++
+            // both are in radians? https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.math/atan2.html#:~:text=Returns%20the%20angle%20theta%20of,from%20%2DPI%20to%20PI%20radians.
+            shooter.setAngle(angle)
+
         }
     }
 
@@ -86,7 +54,7 @@ class SpeakerAlign(
      */
     override fun isFinished(): Boolean {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return updatesSinceLastTarget >= 500 / 20// || (updates >= 15 && abs(lastTagPos) <= 0.4)
+        return false
     }
 
     /**

@@ -47,9 +47,15 @@ object Constants {
         }
     }
     object Auto {
-        val NOTE_ROTATION = PIDConstants(0.03, 0.0, 0.0)
+        val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
+
     }
+
     object Shooter {
+
+        const val angleOffset = 0.0
+        const val distanceOffset = 0.0
+        const val heightOffset = 0.0
         const val mainShooterID = -1
         const val followerShooterID = -1
         const val p = 0.0
@@ -66,8 +72,9 @@ object Constants {
         const val bottomCanID = 17
         const val shooterJointCanID = 18
         const val shooterJoint2CanID = 19
-    }
 
+        val validTargets = arrayOf(4, 3)
+    }
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641

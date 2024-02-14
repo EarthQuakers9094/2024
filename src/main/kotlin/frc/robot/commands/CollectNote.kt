@@ -6,13 +6,14 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Constants
+import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.MovingAverage
 import org.photonvision.PhotonCamera
 
-class SpeakerAlign(
-        /*private val intake: Intake,*/ private val swerve: Swerve,
-        private val camera: PhotonCamera
+class CollectNote(
+    private val intake: Intake, private val swerve: Swerve,
+    private val camera: PhotonCamera
 ) : Command() {
 
     private var updatesSinceLastTarget = 0
@@ -25,8 +26,7 @@ class SpeakerAlign(
                     Constants.Auto.TARGET_ROTATION.kD
             )
 
-    private var tagPos = MovingAverage(10)
-    private var lastTagPos = 0.0
+    private var notePos = MovingAverage(10)
 
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
@@ -44,6 +44,9 @@ class SpeakerAlign(
         updates++
 
         val res = camera.latestResult
+        if(updatesSinceLastTarget < 50) {
+
+        }
 
         if (res.hasTargets()) {
             // if (true) {
@@ -56,11 +59,11 @@ class SpeakerAlign(
                         arrayOf()
                 )
                 //right yaw is negative
-                val yaw = tagPos.addValue(target.yaw)
+                val yaw = notePos.addValue(target.yaw)
                 //positive is right
                 val calc = omegaPID.calculate(yaw)
                 // DriverStation.reportError("hello there this is me", arrayOf())
-                SmartDashboard.putNumber("Tag yaw", yaw)
+                SmartDashboard.putNumber("Note yaw", yaw)
                 SmartDashboard.putNumber("Calculated omega", calc)
 
                 swerve.drive(Translation2d(0.0, 0.0), calc, false)
