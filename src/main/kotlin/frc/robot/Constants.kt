@@ -26,12 +26,12 @@ object Constants {
         const val MAX_ANGULAR_ACCELERATION = 0.5
         const val MAX_TURNING_SPEEDS = 9.0
 
-        val TRANSLATION_PID = Config(PIDConstants(0.8, 0.0, 0.4),PIDConstants(4.0, 0.0, 0.4)) 
+        val TRANSLATION_PID = Config(PIDConstants(0.8, 0.0, 0.4), PIDConstants(4.0, 0.0, 0.4))
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
-        val ROTATION_PID = Config(PIDConstants(3.2,0.0,0.0),PIDConstants(1.0, 0.0, 0.5));
+        val ROTATION_PID = Config(PIDConstants(3.2, 0.0, 0.0), PIDConstants(1.0, 0.0, 0.5))
 
         val ROTATION_PID_TELEOP = PIDConstants(0.0, 0.0, 0.0)
-        }
+    }
     object OperatorConstants {
         const val kDriverControllerPort = 2
         const val driverLeftStickPort = 0
@@ -66,12 +66,12 @@ object Constants {
         const val bottomCanID = 27
         const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 0.9;
-        const val speed = -0.75;
-        const val intakeMotorID = 30;
-        const val spinuptime = 5.0;
-        const val shootTime = 0.6;
-        const val closestDistance = 200;
+        const val intakeSpeed = 0.9
+        const val speed = -0.75
+        const val intakeMotorID = 30
+        const val spinuptime = 5.0
+        const val shootTime = 0.6
+        const val closestDistance = 200
     }
 
     object Elevator {
@@ -82,4 +82,5 @@ object Constants {
         const val gearing = 30.0
         const val motorID = 15
     }
+}
 }
