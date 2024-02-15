@@ -93,6 +93,8 @@ object Constants {
         const val shootTime = 0.6
         const val closestDistance = 200
         val validTargets = arrayOf(4, 3);
+        const val ampSpeed = 0.2;
+        const val ampShootingRotationSpeed = 0.0;
     }
 
         val validTargets = arrayOf(4, 3)
@@ -103,5 +105,13 @@ object Constants {
         const val positionConversionFactor = 1.0
         const val gearing = 30.0
         const val motorID = 15
+        const val maxHeight = 1.0;
+    }
+
+    object Poses {
+        object Amp {
+            const val angle = -Math.PI/4.0;
+            const val height = 0.2;
+        }
     }
 }

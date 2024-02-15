@@ -12,7 +12,7 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter)
 
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
-        addRequirements()
+        addRequirements(shooter)
     }
 
     /** The initial subroutine of a command. Called once when the command is initially scheduled. */

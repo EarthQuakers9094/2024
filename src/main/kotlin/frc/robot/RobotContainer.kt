@@ -143,7 +143,7 @@ class RobotContainer {
             JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
             JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
             JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, intake!!))
-            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!))
+            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!,true))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)

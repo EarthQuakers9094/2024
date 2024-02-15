@@ -13,12 +13,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import edu.wpi.first.wpilibj.DigitalInput
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import edu.wpi.first.wpilibj.DriverStation
+
 
 /** Creates a new ExampleSubsystem. */
-class Elevator(private val liftMotorId: Int) : SubsystemBase() {
+class Elevator(private val liftMotorId: Int, botlimitSwitchId: Int, topLimitSwitchId: Int) : SubsystemBase() {
+
+    private val bottomLimitSwitch = DigitalInput(botlimitSwitchId);
+    private val topLimitSwitch = DigitalInput(topLimitSwitchId);
 
     private val liftSparkMax = CANSparkMax(liftMotorId, CANSparkLowLevel.MotorType.kBrushless)
 
@@ -69,14 +75,28 @@ class Elevator(private val liftMotorId: Int) : SubsystemBase() {
         SmartDashboard.putNumber("elevator position", liftSparkMax.encoder.position)
         desiredPosition = SmartDashboard.getNumber("desired elevator location", 0.1)
         averagePostion.addValue(liftSparkMax.encoder.position)
+
+        if (bottomLimitSwitch.get()) {
+            liftSparkMax.encoder.position = 0.0;
+        }
+
+        if (topLimitSwitch.get()) {
+            liftSparkMax.encoder.position = Constants.Elevator.maxHeight;
+        }
     }
 
-    fun setPosition(position: Double) {
-        desiredPosition = position
-        liftSparkMax.pidController.setReference(position, CANSparkBase.ControlType.kPosition)
+    fun setPosition(position: Double):Boolean {
+        if (position <= Constants.Elevator.maxHeight && position >= 0) {
+            desiredPosition = position
+            liftSparkMax.pidController.setReference(position, CANSparkBase.ControlType.kPosition)
+            return true;
+        }
+
+        DriverStation.reportError("elevator position set out of bounds",false)
+        return false
     }
 
-    fun atLocation(): Boolean {
+    fun atPosition(): Boolean {
         return abs(averagePostion.getAverage() - desiredPosition) <= 0.05
     }
 

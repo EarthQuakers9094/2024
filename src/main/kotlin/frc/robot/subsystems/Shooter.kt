@@ -36,6 +36,8 @@ class Shooter(
 
     private var desiredAngle = 0.0
 
+    private var angleRollingAverage = MovingAverage(20);
+
     private val shooterSparkMax = CANSparkFlex(shooterCanID, CANSparkLowLevel.MotorType.kBrushless)
     private val followerSparkMax =
             CANSparkFlex(secondaryShooterID, CANSparkLowLevel.MotorType.kBrushless)
@@ -121,6 +123,8 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
+        angleRollingAverage.addValue(jointMotor1.encoder.position);
+
         SmartDashboard.putNumber("current motor speed launcher", speed)
         SmartDashboard.putNumber("shooter sensor value", sensor.proximity.toDouble())
 
@@ -135,6 +139,10 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
+    }
+
+    fun atAngle():Boolean {
+        return (angleRollingAverage.getAverage() - desiredAngle) <= 0.005;
     }
 
     fun setIntakingSpeed(speed: Double) {
@@ -162,8 +170,8 @@ class Shooter(
             },this);
     }
 
-    fun startShooting() {
-        shooterSparkMax.set(Constants.Shooter.speed);
+    fun startShooting(amp:Boolean) {
+        shooterSparkMax.set(if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed} );
     }
     
     fun stopShooting() {
@@ -174,7 +182,7 @@ class Shooter(
         var parent = this;
         return Commands.startEnd(object: Runnable {
                 override fun run() {
-                    parent.startShooting();
+                    parent.startShooting(true);
                     SmartDashboard.putBoolean("shooting", true)
                 }
             },object: Runnable {
@@ -185,15 +193,15 @@ class Shooter(
             },parent);
     }
 
-    fun shootTime(intake: Intake):Command {
+    fun shootTime(intake: Intake,amp: Boolean):Command {
         val parent = this;
 
-        val supplier = {this.atSpeed()}
+        val supplier = {this.atSpeed(amp)}
 
         val command = Commands.sequence(
                 InstantCommand(object: Runnable {
                         override fun run() {
-                            parent.startShooting();   
+                            parent.startShooting(amp);
                         }
                 }),
                 WaitUntilCommand(supplier),
@@ -278,7 +286,8 @@ class Shooter(
         return sensor.proximity >= Constants.Shooter.closestDistance;
     }
 
-    fun atSpeed(): Boolean {
-        return shooterSparkMax.encoder.velocity <= -4500.0;
+    fun atSpeed(amp:Boolean): Boolean {
+        return if (amp) {shooterSparkMax.encoder.velocity <= Constants.Shooter.ampShootingRotationSpeed} 
+               else {shooterSparkMax.encoder.velocity <= -4500.0};
     }
 }
