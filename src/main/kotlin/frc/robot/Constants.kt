@@ -62,7 +62,6 @@ object Constants {
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
-
     }
 
 
@@ -93,10 +92,10 @@ object Constants {
         const val spinuptime = 5.0
         const val shootTime = 0.6
         const val closestDistance = 200
+        val validTargets = arrayOf(4, 3);
     }
 
         val validTargets = arrayOf(4, 3)
-    }
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
@@ -105,5 +104,4 @@ object Constants {
         const val gearing = 30.0
         const val motorID = 15
     }
-}
 }

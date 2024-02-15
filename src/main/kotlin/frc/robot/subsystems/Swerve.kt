@@ -48,7 +48,6 @@ class Swerve(
     //                    camera,
     //                    robotToCam
     //            )
-    val lastEstimate: EstimatedRobotPose? = null
 
 
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
@@ -127,23 +126,17 @@ class Swerve(
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
-        val newEstimate = poseEstimator.update()
+        // val newEstimate = poseEstimator.update()
 
-        lastEstimate =
-                newEstimate
-                        .let { if (it.isPresent) it.get() else null }
-                        ?.let { if (it.targetsUsed.size > 0) it else null }
-                        ?.estimatedPose
-        lastEstimate?.let {
-            swerveDrive.resetOdometry(it.toPose2d())
-            println("New pose")
-        }
-
-        SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back left", backleftCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("back right", backrightCanCoder.getAbsolutePosition().value)
-        SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
+        // lastEstimate =
+        //         newEstimate
+        //                 .let { if (it.isPresent) it.get() else null }
+        //                 ?.let { if (it.targetsUsed.size > 0) it else null }
+        //                 ?.estimatedPose
+        // lastEstimate?.let {
+        //     swerveDrive.resetOdometry(it.toPose2d())
+        //     println("New pose")
+        // }
 
         // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))

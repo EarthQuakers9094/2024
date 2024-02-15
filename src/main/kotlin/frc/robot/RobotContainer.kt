@@ -8,10 +8,7 @@ import FollowTrajectory
 import Pickup
 import RunAuto
 import com.pathplanner.lib.path.PathPlannerPath
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.PS4Controller
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
@@ -22,11 +19,9 @@ import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
 import frc.robot.commands.Brake
-import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
-import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 
 /**
