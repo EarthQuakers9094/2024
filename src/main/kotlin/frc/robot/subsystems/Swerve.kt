@@ -2,20 +2,21 @@ package frc.robot.subsystems
 
 import com.ctre.phoenix6.hardware.CANcoder
 import com.pathplanner.lib.auto.AutoBuilder
-import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
+import frc.robot.utils.Config
+import frc.robot.utils.toNullable
+import frc.robot.utils.toPose3d
 import java.io.File
 import java.util.function.Consumer
 import org.photonvision.PhotonCamera
@@ -26,14 +27,12 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
-import frc.robot.utils.Config
 
-class Swerve(
-    // private val camera: PhotonCamera
-    ) : SubsystemBase() {
+class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
-    var swerveJsonDirectory = File(Filesystem.getDeployDirectory(), Config("testswerve","swerve").config)
+    var swerveJsonDirectory =
+            File(Filesystem.getDeployDirectory(), Config("testswerve", "swerve").config)
     var swerveDrive: SwerveDrive
 
     var frontleftCanCoder = CANcoder(11)
@@ -43,11 +42,21 @@ class Swerve(
 
     var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
+    val poseEstimator =
+            PhotonPoseEstimator(
+                    Constants.Camera.aprilTagFieldLayout,
+                    PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+                    camera,
+                    Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, 0.0))
+            )
+
     init {
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
+
+        poseEstimator.referencePose = swerveDrive.pose.toPose3d()
 
         var getPose = {
             var pose = this.getPos()
@@ -108,14 +117,24 @@ class Swerve(
                 flip,
                 this // Reference to this subsystem to set requirements
         )
-        val driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0);
+        val driveConversionFactor =
+                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
 
-        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor);
-
+        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor)
     }
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
+        poseEstimator.referencePose = swerveDrive.pose.toPose3d()
+
+        val estimate = poseEstimator.update().toNullable()
+        if (estimate != null) {
+            swerveDrive.addVisionMeasurement(
+                    estimate.estimatedPose.toPose2d(),
+                    Timer.getFPGATimestamp(),
+                    Constants.Camera.visionSTDEV
+            )
+        }
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
         // SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))

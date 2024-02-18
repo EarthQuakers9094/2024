@@ -3,10 +3,13 @@ package frc.robot
 import com.pathplanner.lib.util.PIDConstants
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import frc.robot.utils.Config
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -40,6 +43,7 @@ object Constants {
         const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
+        const val bonusMotorSpeed = 1.0
         const val speed = -0.60
         // const val speed = 0.0
         const val motorid = 24
@@ -48,6 +52,13 @@ object Constants {
     object Camera {
         val cameraTransform = Transform3d(Translation3d(0.0, 0.0, 0.0), Rotation3d(0.0, 0.0, 0.0))
         val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
+        val visionSTDEV = run {
+            val matrix = Matrix(Nat.N3(), Nat.N1())
+            matrix.set(0, 0, 5000.0)
+            matrix.set(1, 0, 5000.0)
+            matrix.set(2, 0, 5000.0)
+            matrix
+        }
     }
     object Shooter {
         const val mainShooterID = -1
@@ -82,5 +93,4 @@ object Constants {
         const val gearing = 30.0
         const val motorID = 15
     }
-}
 }

@@ -7,22 +7,22 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.ColorSensorV3
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.wpilibj.I2C
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.I2C
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
-import kotlin.sequences.sequence
 import java.util.function.BooleanSupplier
+import kotlin.sequences.sequence
 
 class Shooter(
         private val shooterCanID: Int,
@@ -76,7 +76,7 @@ class Shooter(
 
     private var bottomWheels = FlywheelSim(DCMotor.getNEO(1), 1.0, 14.4)
 
-    private var sensor = ColorSensorV3(I2C.Port.kOnboard);
+    private var sensor = ColorSensorV3(I2C.Port.kOnboard)
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
@@ -112,8 +112,8 @@ class Shooter(
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
         followerSparkMax.follow(shooterSparkMax)
-        //shooterSparkMax.set(Constants.Shooter.speed)
-        //intakingMotor.set(0.75)
+        // shooterSparkMax.set(Constants.Shooter.speed)
+        // intakingMotor.set(0.75)
     }
 
     override fun periodic() {
@@ -124,7 +124,7 @@ class Shooter(
         SmartDashboard.putNumber("current motor speed launcher", speed)
         SmartDashboard.putNumber("shooter sensor value", sensor.proximity.toDouble())
 
-        SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
+        SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
     }
 
     fun setSpeed(speed: Double) {
@@ -138,11 +138,11 @@ class Shooter(
     }
 
     fun setIntakingSpeed(speed: Double) {
-        intakingMotor.set(speed);
+        intakingMotor.set(speed)
     }
 
     fun intake() {
-        setIntakingSpeed(Constants.Shooter.intakeSpeed);
+        setIntakingSpeed(Constants.Shooter.intakeSpeed)
     }
 
     fun stopIntaking() {
@@ -150,96 +150,118 @@ class Shooter(
     }
 
     fun intakeButtonCommand(): Command {
-        val parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.intake();
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopIntaking()
-                }
-            },this);
+        val parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        parent.intake()
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopIntaking()
+                    }
+                },
+                this
+        )
     }
 
     fun startShooting() {
-        shooterSparkMax.set(Constants.Shooter.speed);
+        shooterSparkMax.set(Constants.Shooter.speed)
     }
-    
+
     fun stopShooting() {
-        shooterSparkMax.set(0.0);
+        shooterSparkMax.set(0.0)
     }
 
     fun shootButton(): Command {
-        var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.startShooting();
-                    SmartDashboard.putBoolean("shooting", true)
-                }
-            },object: Runnable {
-                override fun run() {
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        parent.startShooting()
+                        SmartDashboard.putBoolean("shooting", true)
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
                         parent.stopShooting()
                         SmartDashboard.putBoolean("shooting", false)
-                }
-            },parent);
+                    }
+                },
+                parent
+        )
     }
 
-    fun shootTime(intake: Intake):Command {
-        val parent = this;
+    fun shootTime(intake: Intake): Command {
+        val parent = this
 
-        val supplier = {this.atSpeed()}
+        val supplier = { this.atSpeed() }
 
-        val command = Commands.sequence(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.startShooting();   
-                        }
-                }),
-                WaitUntilCommand(supplier),
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.intake();
-                            intake.startIntaking();
-                        }
-                }),
-                WaitCommand(Constants.Shooter.shootTime),
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.stopIntaking();
-                            parent.stopShooting();
-                            intake.stopIntaking();
-                        }
-                    }) 
-        );
+        val command =
+                Commands.sequence(
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.startShooting()
+                                    }
+                                }
+                        ),
+                        WaitUntilCommand(supplier),
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.intake()
+                                        intake.startIntaking()
+                                    }
+                                }
+                        ),
+                        WaitCommand(Constants.Shooter.shootTime),
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.stopIntaking()
+                                        parent.stopShooting()
+                                        intake.stopIntaking()
+                                    }
+                                }
+                        )
+                )
 
         command.addRequirements(this)
 
-        return command;
+        return command
     }
 
-    fun pickup():Command {
-        val parent = this;
+    fun pickup(): Command {
+        val parent = this
 
-        val supplier:BooleanSupplier = BooleanSupplier {this.noteIn()};
+        val supplier: BooleanSupplier = BooleanSupplier { this.noteIn() }
 
-        val command = Commands.sequence(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.intake();
-                        }
-                }),
-                WaitUntilCommand(supplier)
-        );
+        val command =
+                Commands.sequence(
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.intake()
+                                    }
+                                }
+                        ),
+                        WaitUntilCommand(supplier)
+                )
 
-        command.addRequirements(this);
+        command.addRequirements(this)
 
         return command.andThen(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.stopIntaking();
-                        }
-                },this));
+                InstantCommand(
+                        object : Runnable {
+                            override fun run() {
+                                parent.stopIntaking()
+                            }
+                        },
+                        this
+                )
+        )
     }
 
     override fun simulationPeriodic() {
@@ -275,10 +297,10 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return sensor.proximity >= Constants.Shooter.closestDistance;
+        return sensor.proximity >= Constants.Shooter.closestDistance
     }
 
     fun atSpeed(): Boolean {
-        return shooterSparkMax.encoder.velocity <= -4500.0;
+        return shooterSparkMax.encoder.velocity <= -4500.0
     }
 }

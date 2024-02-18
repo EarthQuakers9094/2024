@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 
 /** Creates a new ExampleSubsystem. */
-class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
+class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, private val bonusMotorCanId: Int
 // private val limitSwitchId: Int
 ) : SubsystemBase() {
 
@@ -22,6 +22,7 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
     private val intakeSparkMax = CANSparkMax(intakeCANId, CANSparkLowLevel.MotorType.kBrushless)
     private val intakeFollowSparkMax =
             CANSparkMax(intakeFollowCanId, CANSparkLowLevel.MotorType.kBrushless)
+    private val bonusMotorSparkMax = CANSparkMax(bonusMotorCanId, CANSparkLowLevel.MotorType.kBrushless)
 
     // private val limitSwitch = DigitalInput(limitSwitchId)
     private var state = State.Looking
@@ -30,29 +31,29 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.follow(intakeSparkMax)
+
+        bonusMotorSparkMax.restoreFactoryDefaults()
     }
 
     fun startIntaking() {
-        intakeSparkMax.set(Constants.Intake.speed)        
+        intakeSparkMax.set(Constants.Intake.speed)
+        bonusMotorSparkMax.set(Constants.Intake.bonusMotorSpeed)
     }
 
     fun stopIntaking() {
         intakeSparkMax.set(0.0);
+        bonusMotorSparkMax.set(0.0)
     }
 
     fun intake(): Command {
         var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.startIntaking();
-                    SmartDashboard.putBoolean("shooting", true)
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopIntaking()
-                    SmartDashboard.putBoolean("shooting", false)
-                }
-            },parent);
+        return Commands.startEnd({
+            parent.startIntaking();
+            SmartDashboard.putBoolean("shooting", true)
+        }, {
+            parent.stopIntaking()
+            SmartDashboard.putBoolean("shooting", false)
+        },parent);
     }
 
     /** This method will be called once per scheduler run */
