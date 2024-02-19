@@ -71,6 +71,7 @@ class FollowTrajectory(
                 var alliance = DriverStation.getAlliance()
                 var flip = false
                 if (alliance.isPresent()) {
+                        //flip = true
                         flip = alliance.get() == DriverStation.Alliance.Red
                 }
 

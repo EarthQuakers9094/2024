@@ -29,11 +29,13 @@ object Constants {
         const val MAX_ANGULAR_ACCELERATION = 0.5
         const val MAX_TURNING_SPEEDS = 9.0
 
+        const val compensation = 0.0;
+
         val TRANSLATION_PID = Config(PIDConstants(0.8, 0.0, 0.4), PIDConstants(4.0, 0.0, 0.4))
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
         val ROTATION_PID = Config(PIDConstants(3.2, 0.0, 0.0), PIDConstants(1.0, 0.0, 0.5))
 
-        val ROTATION_PID_TELEOP = PIDConstants(0.0, 0.0, 0.0)
+        val ROTATION_PID_TELEOP = PIDConstants(0.0, 0.1, 0.0)
     }
     object OperatorConstants {
         const val kDriverControllerPort = 2

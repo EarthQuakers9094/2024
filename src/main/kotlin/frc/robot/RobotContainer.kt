@@ -74,7 +74,6 @@ class RobotContainer {
                             Constants.Shooter.shooterJoint2CanID,
                             Constants.Shooter.intakeMotorID
                     )
-            // elevator = Elevator(Constants.Elevator.motorID);
         }
 
         configureBindings()
@@ -162,6 +161,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("odometry")
+            return RunAuto("4 piece Inner")
         }
 }

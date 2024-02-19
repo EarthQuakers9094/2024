@@ -65,9 +65,7 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
       resetHeading = false;
     }
 
-    desiredHeading = Rotation2d.fromRadians(desiredHeading.radians + angVelocity * 0.02 * Constants.Drivebase.MAX_TURNING_SPEEDS);
-
-    // val rotationSpeed = rotationPid.calculate(swerve.getPos().rotation.radians, desiredHeading.radians);
+    val difference = angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS - swerve.getSpeeds().omegaRadiansPerSecond;
 
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
@@ -78,7 +76,7 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
 
     // Drive using raw values.
     swerve.drive(Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
-                 angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
+                 (angVelocity + difference * Constants.Drivebase.compensation) * Constants.Drivebase.MAX_TURNING_SPEEDS,
                  driveMode.getAsBoolean());
   }
 
