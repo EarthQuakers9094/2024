@@ -45,12 +45,23 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
         return Commands.startEnd(object: Runnable {
                 override fun run() {
                     parent.startIntaking();
-                    SmartDashboard.putBoolean("shooting", true)
                 }
             },object: Runnable {
                 override fun run() {
                     parent.stopIntaking()
-                    SmartDashboard.putBoolean("shooting", false)
+                }
+            },parent);
+    }
+
+    fun backButton(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    intakeSparkMax.set(-Constants.Intake.speed)
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopIntaking()
                 }
             },parent);
     }

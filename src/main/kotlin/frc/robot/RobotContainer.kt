@@ -8,6 +8,7 @@ import FollowTrajectory
 import Pickup
 import RunAuto
 import com.pathplanner.lib.path.PathPlannerPath
+import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -23,6 +24,7 @@ import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 import frc.robot.utils.Config
+import ShootTime
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,7 +53,7 @@ class RobotContainer {
     private var intake:Intake? = null;
 
 
-    val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
+    val operatorExtra = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
@@ -77,6 +79,8 @@ class RobotContainer {
         }
 
         configureBindings()
+
+        NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, aprilCamera));
 
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
@@ -137,12 +141,22 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        if (shooter != null) {
+        if (shooter != null && intake != null && shooter != null) {
             SmartDashboard.putBoolean("shooter", true)
-            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
-            JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
+
             JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, elevator!!, intake!!))
-            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!,true))
+            JoystickButton(driverLeftStick, 2).onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera!!))
+
+            JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton());
+            JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton());
+
+            JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake());
+            JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton());
+
+            JoystickButton(operatorExtra, 5).whileTrue(elevator!!.up());
+            JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down());
+
+            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!));
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)

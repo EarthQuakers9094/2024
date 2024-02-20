@@ -98,6 +98,8 @@ object Constants {
         val validTargets = arrayOf(4, 3);
         const val ampSpeed = 0.2;
         const val ampShootingRotationSpeed = 0.0;
+
+        const val inSensorID = 0;
     }
 
         val validTargets = arrayOf(4, 3)
@@ -110,6 +112,7 @@ object Constants {
         const val motorID = 15
         const val maxHeight = 1.0;
         const val minHeight = 0.0;
+        const val feedforward = 0.0;
     }
 
     object Poses {

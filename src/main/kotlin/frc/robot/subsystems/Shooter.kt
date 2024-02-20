@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.I2C
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Command
@@ -78,7 +79,7 @@ class Shooter(
 
     private var bottomWheels = FlywheelSim(DCMotor.getNEO(1), 1.0, 14.4)
 
-    private var sensor = ColorSensorV3(I2C.Port.kOnboard);
+    private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
@@ -125,9 +126,7 @@ class Shooter(
 
         angleRollingAverage.addValue(jointMotor1.encoder.position);
 
-        SmartDashboard.putNumber("current motor speed launcher", speed)
-        SmartDashboard.putNumber("shooter sensor value", sensor.proximity.toDouble())
-
+        SmartDashboard.putNumber("current motor speed launcher", speed);
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
     }
 
@@ -183,12 +182,27 @@ class Shooter(
         return Commands.startEnd(object: Runnable {
                 override fun run() {
                     parent.startShooting(true);
-                    SmartDashboard.putBoolean("shooting", true)
+                    parent.intake();
                 }
             },object: Runnable {
                 override fun run() {
-                        parent.stopShooting()
-                        SmartDashboard.putBoolean("shooting", false)
+                        parent.stopShooting();
+                        parent.stopIntaking();
+                }
+            },parent);
+    }
+
+    fun backButton(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    shooterSparkMax.set(0.1);
+                    intakingMotor.set(-0.1);
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopShooting();
+                    parent.stopIntaking();
                 }
             },parent);
     }
@@ -283,7 +297,7 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return sensor.proximity >= Constants.Shooter.closestDistance;
+        return inSensor.get();
     }
 
     fun atSpeed(amp:Boolean): Boolean {

@@ -18,7 +18,9 @@ class ScoreAmp(private val shooter: Shooter,private val elevator: Elevator, priv
         addCommands(
             GotoPose(shooter,elevator,Constants.Poses.amp,true),
             FollowTrajectory(swerve, PathPlannerPath.fromPathFile("to amp"), true),
-            shooter.shootTime(intake, true)
+            shooter.shootTime(intake, true),
+            FollowTrajectory(swerve, PathPlannerPath.fromPathFile("away from amp"), false),
+            GotoPose(shooter,elevator,Constants.Poses.resting,false)
         )
     }
 }
