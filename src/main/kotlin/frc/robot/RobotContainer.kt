@@ -141,7 +141,7 @@ class RobotContainer {
             SmartDashboard.putBoolean("shooter", true)
             JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
             JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
-            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, intake!!))
+            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, elevator!!, intake!!))
             JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!,true))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
