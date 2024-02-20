@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import frc.robot.utils.Config
+import Pose
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -108,12 +109,12 @@ object Constants {
         const val gearing = 30.0
         const val motorID = 15
         const val maxHeight = 1.0;
+        const val minHeight = 0.0;
     }
 
     object Poses {
-        object Amp {
-            const val angle = -Math.PI/4.0;
-            const val height = 0.2;
-        }
+        val amp = Pose(-Math.PI/4.0,0.2);
+        val pickup = Pose(Math.PI/4.0,Elevator.minHeight);
+        val resting = Pose(0.0,Elevator.minHeight);
     }
 }

@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj.Timer
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Intake
 import frc.robot.Constants
+import frc.robot.commands.SetValue
+import frc.robot.commands.GotoPose
 import java.util.function.BooleanSupplier
+import frc.robot.subsystems.Elevator
 
-class Pickup(private val shooter: Shooter,private val intake: Intake) : SequentialCommandGroup() {
+class Pickup(private val shooter: Shooter, elevator: Elevator,private val intake: Intake) : SequentialCommandGroup() {
 
     init {
         addRequirements(shooter);   
@@ -19,6 +22,7 @@ class Pickup(private val shooter: Shooter,private val intake: Intake) : Sequenti
         val supplier:BooleanSupplier = BooleanSupplier {shooter.noteIn()};
         
         addCommands(
+            GotoPose(shooter,elevator,Constants.Poses.pickup,false),          
             InstantCommand(object: Runnable {
                     override fun run() {
                         shooter.intake();
