@@ -23,12 +23,14 @@ import edu.wpi.first.wpilibj.DriverStation
 
 
 /** Creates a new ExampleSubsystem. */
-class Elevator(private val liftMotorId: Int, botlimitSwitchId: Int, topLimitSwitchId: Int) : SubsystemBase() {
+class Elevator(private val liftMotorId: Int, private val followMotorID: Int, botlimitSwitchId: Int, topLimitSwitchId: Int) : SubsystemBase() {
 
     private val bottomLimitSwitch = DigitalInput(botlimitSwitchId);
     private val topLimitSwitch = DigitalInput(topLimitSwitchId);
 
-    private val liftSparkMax = CANSparkMax(liftMotorId, CANSparkLowLevel.MotorType.kBrushless)
+    private val liftSparkMax = CANSparkMax(liftMotorId, CANSparkLowLevel.MotorType.kBrushless);
+    private val followMotor = CANSparkMax(followMotorID, CANSparkLowLevel.MotorType.kBrushless);
+
 
     private var elevator =
             ElevatorSim(
@@ -59,6 +61,9 @@ class Elevator(private val liftMotorId: Int, botlimitSwitchId: Int, topLimitSwit
 
     init {
         liftSparkMax.restoreFactoryDefaults()
+        followMotor.restoreFactoryDefaults()
+
+        followMotor.follow(liftSparkMax);
 
         liftSparkMax.encoder.positionConversionFactor = 1.0
 
@@ -83,7 +88,12 @@ class Elevator(private val liftMotorId: Int, botlimitSwitchId: Int, topLimitSwit
         averagePostion.addValue(liftSparkMax.encoder.position)
 
         if (pidMode) {
-            liftSparkMax.set(pid.calculate(liftSparkMax.encoder.position, desiredPosition) + Constants.Elevator.feedforward);
+
+            val output = pid.calculate(liftSparkMax.encoder.position, desiredPosition) + Constants.Elevator.feedforward
+
+            SmartDashboard.putNumber("elevator output", output);
+
+            liftSparkMax.set(output);
         }
 
         if (bottomLimitSwitch.get()) {

@@ -25,6 +25,8 @@ import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 import frc.robot.utils.Config
 import ShootTime
+import frc.robot.commands.AimShooter
+import frc.robot.commands.SetValue
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,20 +69,20 @@ class RobotContainer {
         val onTest = Config(true, false)
 
         if (!onTest.config) {
-            intake = Intake(Constants.Intake.motorid, Constants.Intake.followMotorId)
+            intake = Intake(Constants.Intake.motorid, Constants.Intake.followMotorId, Constants.Intake.frontIntakeId);
             shooter =
                     Shooter(
                             Constants.Shooter.topCanid,
                             Constants.Shooter.bottomCanID,
                             Constants.Shooter.shooterJointCanID,
-                            Constants.Shooter.shooterJoint2CanID,
                             Constants.Shooter.intakeMotorID
                     )
         }
 
         configureBindings()
 
-        NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, aprilCamera));
+
+
 
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
@@ -144,7 +146,6 @@ class RobotContainer {
         if (shooter != null && intake != null && shooter != null) {
             SmartDashboard.putBoolean("shooter", true)
 
-            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, elevator!!, intake!!))
             JoystickButton(driverLeftStick, 2).onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera!!))
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton());
@@ -157,6 +158,9 @@ class RobotContainer {
             JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down());
 
             JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!));
+
+            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0));
+            JoystickButton(driverLeftStick, 5).whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI/3));
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)

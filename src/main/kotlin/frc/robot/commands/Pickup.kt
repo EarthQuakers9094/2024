@@ -37,5 +37,15 @@ class Pickup(private val shooter: Shooter, elevator: Elevator,private val intake
                 }
             })
         );
+
+        finallyDo(
+            object: Runnable {
+                override fun run() {
+                    intake.stopIntaking();
+                    shooter.stopIntaking();
+                    GotoPose(shooter, elevator, Constants.Poses.resting, true).schedule();
+                }
+            }
+        );
     }
 }

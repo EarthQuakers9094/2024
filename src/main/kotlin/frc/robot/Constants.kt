@@ -47,9 +47,10 @@ object Constants {
     }
     object Intake {
         const val speed = -0.60
-        // const val speed = 0.0
+
         const val motorid = 24
         const val followMotorId = 25
+        const val frontIntakeId = 26
     }
     object Camera {
         const val arducamOne = "Arducam1"
@@ -62,6 +63,7 @@ object Constants {
         }
         val cameraTransform = Transform3d(Translation3d(0.0, 0.0, 0.0), Rotation3d(0.0, 0.0, 0.0))
         val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
+        val validTargets = arrayOf(4, 3)
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
@@ -83,15 +85,13 @@ object Constants {
 
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
         const val velocityConversionFactor = 1.0
-        const val positionConversionFactor = 2.0 / 30.0 * Math.PI
+
+        const val positionConversionFactor = 1.0 / 24.0 * Math.PI;
         const val tolerance = 30.0
-        const val topCanid = 26
-        const val bottomCanID = 27
-        const val shooterJointCanID = 28
-        const val shooterJoint2CanID = 29
         const val intakeSpeed = 0.9
         const val speed = -0.75
-        const val intakeMotorID = 30
+
+
         const val spinuptime = 5.0
         const val shootTime = 0.6
         const val closestDistance = 200
@@ -99,20 +99,26 @@ object Constants {
         const val ampSpeed = 0.2;
         const val ampShootingRotationSpeed = 0.0;
 
+        const val intakeMotorID = 30
         const val inSensorID = 0;
+        const val topCanid = 31
+        const val bottomCanID = 32
+        const val shooterJointCanID = 29
     }
 
-        val validTargets = arrayOf(4, 3)
+        
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
         val pid = PIDConstants(0.0, 0.0, 0.0)
-        const val positionConversionFactor = 1.0
+
         const val gearing = 30.0
-        const val motorID = 15
+        const val followMotorID = 28;
         const val maxHeight = 1.0;
         const val minHeight = 0.0;
         const val feedforward = 0.0;
+
+        const val motorID = 27;
     }
 
     object Poses {

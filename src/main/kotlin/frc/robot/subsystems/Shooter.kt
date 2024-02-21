@@ -29,7 +29,6 @@ class Shooter(
         private val shooterCanID: Int,
         private val secondaryShooterID: Int,
         private val shooterJointCanID: Int,
-        private val shooterJoint2CanID: Int,
         private val intakeMotorID: Int,
 ) : SubsystemBase() {
 
@@ -44,7 +43,6 @@ class Shooter(
             CANSparkFlex(secondaryShooterID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
-    private val jointMotor2 = CANSparkMax(shooterJoint2CanID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val intakingMotor = CANSparkFlex(15, CANSparkLowLevel.MotorType.kBrushless)
 
@@ -85,14 +83,11 @@ class Shooter(
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
-        jointMotor2.restoreFactoryDefaults()
         intakingMotor.restoreFactoryDefaults()
 
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
         jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
         jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
-
-        jointMotor2.follow(jointMotor1)
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
 
@@ -125,6 +120,8 @@ class Shooter(
         }
 
         angleRollingAverage.addValue(jointMotor1.encoder.position);
+
+        SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position);
 
         SmartDashboard.putNumber("current motor speed launcher", speed);
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
