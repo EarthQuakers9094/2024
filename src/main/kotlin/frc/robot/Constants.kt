@@ -1,11 +1,10 @@
 package frc.robot
 
 import com.pathplanner.lib.util.PIDConstants
-import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Nat
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.Matrix
+import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
@@ -32,7 +31,7 @@ object Constants {
         const val MAX_ANGULAR_ACCELERATION = 0.5
         const val MAX_TURNING_SPEEDS = 9.0
 
-        const val compensation = 0.0;
+        const val compensation = 0.0
 
         val TRANSLATION_PID = Config(PIDConstants(0.8, 0.0, 0.4), PIDConstants(4.0, 0.0, 0.4))
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
@@ -58,9 +57,9 @@ object Constants {
         const val arducamOne = "Arducam1"
         val camSTDEV = run {
             val mat = Matrix(Nat.N3(), Nat.N1())
-            mat.set(0,0, 1.0)
-            mat.set(1,0, 1.0)
-            mat.set(2,0, 1.0)
+            mat.set(0, 0, 1.0)
+            mat.set(1, 0, 1.0)
+            mat.set(2, 0, 1.0)
             mat
         }
         val cameraTransform = Transform3d(Translation3d(0.0, 0.0, 0.0), Rotation3d(0.0, 0.0, 0.0))
@@ -79,7 +78,6 @@ object Constants {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
     }
 
-
     object Shooter {
         const val angleOffset = 0.0
         const val distanceOffset = 0.0
@@ -95,7 +93,7 @@ object Constants {
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
         const val velocityConversionFactor = 1.0
 
-        const val positionConversionFactor = 1.0 / 24.0 * Math.PI;
+        const val positionConversionFactor = 1.0 / 24.0 * Math.PI
         const val tolerance = 30.0
         const val intakeSpeed = 0.9
         const val speed = -0.75
@@ -110,30 +108,29 @@ object Constants {
         const val startAngle = Math.PI * 73.0/180.0;
 
         const val intakeMotorID = 30
-        const val inSensorID = 0;
+        const val inSensorID = 0
         const val topCanid = 31
         const val bottomCanID = 32
         const val shooterJointCanID = 29
     }
 
-        
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
         val pid = PIDConstants(0.0, 0.0, 0.0)
 
         const val gearing = 30.0
-        const val followMotorID = 28;
-        const val maxHeight = 1.0;
-        const val minHeight = 0.0;
-        const val feedforward = 0.0;
+        const val followMotorID = 28
+        const val maxHeight = 1.0
+        const val minHeight = 0.0
+        const val feedforward = 0.0
 
-        const val motorID = 27;
+        const val motorID = 27
     }
 
     object Poses {
-        val amp = Pose(-Math.PI/4.0,0.2);
-        val pickup = Pose(Math.PI/4.0,Elevator.minHeight);
-        val resting = Pose(0.0,Elevator.minHeight);
+        val amp = Pose(-Math.PI / 4.0, 0.2)
+        val pickup = Pose(Math.PI / 4.0, Elevator.minHeight)
+        val resting = Pose(0.0, Elevator.minHeight)
     }
 }
