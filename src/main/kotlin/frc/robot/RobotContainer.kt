@@ -81,7 +81,6 @@ class RobotContainer {
             elevator = Elevator(Constants.Elevator.motorID,Constants.Elevator.followMotorID);
 
             NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!));
-            NamedCommands.registerCommand("shoot", command)
         }
 
 
