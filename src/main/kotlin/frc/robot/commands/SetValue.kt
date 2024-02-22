@@ -7,6 +7,10 @@ import frc.robot.subsystems.Elevator
 import org.photonvision.PhotonCamera
 import kotlin.math.atan2
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.math.geometry.Rotation2d
+import swervelib.SwerveDrive
+import edu.wpi.first.wpilibj.DriverStation
+
 
 class SetValue(private val subsystem: SubsystemBase, 
                private val require: Boolean,
@@ -19,6 +23,7 @@ class SetValue(private val subsystem: SubsystemBase,
     }
 
     override fun initialize() {
+        DriverStation.reportError("hello :3 from set value", true);
         initial()
     }
 

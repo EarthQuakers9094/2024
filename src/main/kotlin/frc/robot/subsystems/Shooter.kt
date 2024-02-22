@@ -3,6 +3,7 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
+import edu.wpi.first.wpilibj.DriverStation
 import com.revrobotics.CANSparkMax
 import com.revrobotics.ColorSensorV3
 import edu.wpi.first.math.controller.PIDController
@@ -44,7 +45,7 @@ class Shooter(
 
     private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
 
-    private val intakingMotor = CANSparkFlex(15, CANSparkLowLevel.MotorType.kBrushless)
+    private val intakingMotor = CANSparkFlex(intakeMotorID, CANSparkLowLevel.MotorType.kBrushless)
 
     private var currentSetPoint = 0.0
     private var currentAverage = MovingAverage(10)
@@ -79,6 +80,7 @@ class Shooter(
 
     private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
 
+
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
@@ -90,6 +92,8 @@ class Shooter(
         jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
+
+        jointMotor1.encoder.position = Constants.Shooter.startAngle;
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -135,6 +139,8 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
+        SmartDashboard.putNumber("shooter desired angle", desiredAngle);
+        DriverStation.reportError("hello :3 from shooter", true);
     }
 
     fun atAngle():Boolean {
@@ -178,7 +184,7 @@ class Shooter(
         var parent = this;
         return Commands.startEnd(object: Runnable {
                 override fun run() {
-                    parent.startShooting(true);
+                    parent.startShooting(false);
                     parent.intake();
                 }
             },object: Runnable {

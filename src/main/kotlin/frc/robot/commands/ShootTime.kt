@@ -13,10 +13,11 @@ import java.util.function.BooleanSupplier
 import frc.robot.subsystems.Swerve
 import frc.robot.subsystems.Elevator
 import frc.robot.commands.AimShooter
+import frc.robot.commands.FaceDirection
 import org.photonvision.PhotonCamera
 
 
-class ShootTime(private val shooter: Shooter,private val intake: Intake,private val elevator: Elevator, private val camera: PhotonCamera) : SequentialCommandGroup() {
+class ShootTime(private val shooter: Shooter,private val intake: Intake,private val elevator: Elevator, private val swerveDrive: Swerve, private val camera: PhotonCamera) : SequentialCommandGroup() {
     private enum class State {
         SpinningUp,
         Shooting,
@@ -29,6 +30,7 @@ class ShootTime(private val shooter: Shooter,private val intake: Intake,private 
     init {
         addRequirements(shooter);
         addRequirements(intake);
+        addRequirements(swerveDrive);
 
         val supplier = {shooter.atSpeed(false)}
 
@@ -38,7 +40,8 @@ class ShootTime(private val shooter: Shooter,private val intake: Intake,private 
                     intake.startIntaking();
                 }
             }),
-            AimShooter(camera,shooter),
+            FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false),
+            AimShooter(camera,shooter,swerveDrive),
             InstantCommand(object: Runnable {
                 override fun run() {
                     shooter.startShooting(false);

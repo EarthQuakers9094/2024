@@ -27,6 +27,7 @@ import frc.robot.utils.Config
 import ShootTime
 import frc.robot.commands.AimShooter
 import frc.robot.commands.SetValue
+import frc.robot.commands.FaceDirection
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -77,12 +78,14 @@ class RobotContainer {
                             Constants.Shooter.shooterJointCanID,
                             Constants.Shooter.intakeMotorID
                     )
+            elevator = Elevator(Constants.Elevator.motorID,Constants.Elevator.followMotorID);
+
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!));
+            NamedCommands.registerCommand("shoot", command)
         }
 
+
         configureBindings()
-
-
-
 
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
@@ -119,7 +122,9 @@ class RobotContainer {
 
         val driveMode = { true }
 
-        val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode)
+        val faceSpeaker = {driverRightStick.getRawButton(7)};
+
+        val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker);
 
         swerveDrive.defaultCommand = simClosedFieldRel
     }
@@ -143,10 +148,10 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        if (shooter != null && intake != null && shooter != null) {
+        if (shooter != null && intake != null && elevator != null) {
             SmartDashboard.putBoolean("shooter", true)
 
-            JoystickButton(driverLeftStick, 2).onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera!!))
+            JoystickButton(driverLeftStick, 2).onTrue(ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!))
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton());
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton());
@@ -158,6 +163,8 @@ class RobotContainer {
             JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down());
 
             JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!));
+
+            JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
 
             JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0));
             JoystickButton(driverLeftStick, 5).whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI/3));

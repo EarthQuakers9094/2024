@@ -18,7 +18,13 @@ import kotlin.math.sqrt
 /**
  * An example command that uses an example subsystem.
  */
-public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: DoubleSupplier, val omega: DoubleSupplier, val driveMode: BooleanSupplier): Command()
+public class TeleopDrive(
+  val swerve: Swerve, 
+  val vX: DoubleSupplier, 
+  val vY: DoubleSupplier, 
+  val omega: DoubleSupplier, 
+  val driveMode: BooleanSupplier,
+  val faceSpeaker: BooleanSupplier): Command()
 {
   private val controller = swerve.getSwerveController();
 
@@ -29,6 +35,7 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
   var rotationPIDvalues = Constants.Drivebase.ROTATION_PID_TELEOP;
 
   var rotationPid = PIDController(rotationPIDvalues.kP, rotationPIDvalues.kI, rotationPIDvalues.kD);
+  var lastFrameFacing = false;
 
   /**
    * Creates a new ExampleCommand.
@@ -43,8 +50,7 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
   }
 
   // Called when the command is initially scheduled.
-  override fun initialize()
-  {}
+  override fun initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   override fun execute() {
@@ -56,7 +62,23 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
 
     val yVelocity = Math.pow(magnitude, 2.0) * yVelocityRaw;
 
-    val angVelocity = Math.pow(omega.getAsDouble(), 3.0);
+    val angVelocity: Double;
+
+    val facing = faceSpeaker.getAsBoolean();
+    
+    if (facing) {
+      if (!lastFrameFacing) {
+        rotationPid = PIDController(rotationPIDvalues.kP, rotationPIDvalues.kI, rotationPIDvalues.kD);
+      }
+      angVelocity = 
+        rotationPid.calculate(
+          swerve.getPos().rotation.radians, 
+          swerve.speakerAngle().radians);
+    } else {
+      angVelocity = Math.pow(omega.getAsDouble(), 3.0);
+    }
+
+    lastFrameFacing = facing;
 
     if (resetHeading) {
 
@@ -65,7 +87,7 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
       resetHeading = false;
     }
 
-    val difference = angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS - swerve.getSpeeds().omegaRadiansPerSecond;
+    // val difference = angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS - swerve.getSpeeds().omegaRadiansPerSecond;
 
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
@@ -74,9 +96,11 @@ public class TeleopDrive(val swerve: Swerve, val vX: DoubleSupplier, val vY: Dou
     SmartDashboard.putNumber("drivebase rotation setPoint", desiredHeading.radians);
     SmartDashboard.putNumber("drivebase current heading", swerve.getPos().rotation.radians);  
 
+
+
     // Drive using raw values.
     swerve.drive(Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
-                 (angVelocity + difference * Constants.Drivebase.compensation) * Constants.Drivebase.MAX_TURNING_SPEEDS,
+                 angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
                  driveMode.getAsBoolean());
   }
 

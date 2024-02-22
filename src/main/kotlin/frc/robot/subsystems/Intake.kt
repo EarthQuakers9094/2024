@@ -31,7 +31,7 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, p
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
         frontIntakeMotor.restoreFactoryDefaults()
-        frontIntakeMotor.follow(intakeSparkMax);
+        frontIntakeMotor.follow(intakeSparkMax,true);
         intakeFollowSparkMax.follow(intakeSparkMax)
     }
 

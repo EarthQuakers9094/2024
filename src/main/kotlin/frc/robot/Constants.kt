@@ -9,8 +9,10 @@ import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.Config
 import Pose
+import java.util.Optional
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -62,8 +64,16 @@ object Constants {
             mat
         }
         val cameraTransform = Transform3d(Translation3d(0.0, 0.0, 0.0), Rotation3d(0.0, 0.0, 0.0))
-        val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
+        // val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
         val validTargets = arrayOf(4, 3)
+
+        val shootElevation = 1.9812;
+        val xPositionOfSpeaker = 
+            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
+                {0.0} else 
+                {16.5};
+        val yPositionOfSpeaker = 5.5;
+
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
@@ -71,7 +81,6 @@ object Constants {
 
 
     object Shooter {
-
         const val angleOffset = 0.0
         const val distanceOffset = 0.0
         const val heightOffset = 0.0
@@ -80,7 +89,7 @@ object Constants {
         const val p = 0.0
         const val i = 0.0
         const val d = 0.0
-        val join_pid = PIDConstants(0.0, 0.0, 0.0)
+        val join_pid = PIDConstants(0.1, 0.0, 0.0)
         val sim_join_pid = PIDConstants(10.0, 0.0, 0.0)
 
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
@@ -91,13 +100,14 @@ object Constants {
         const val intakeSpeed = 0.9
         const val speed = -0.75
 
-
         const val spinuptime = 5.0
         const val shootTime = 0.6
         const val closestDistance = 200
         val validTargets = arrayOf(4, 3);
-        const val ampSpeed = 0.2;
+        const val ampSpeed = -0.2;
         const val ampShootingRotationSpeed = 0.0;
+
+        const val startAngle = Math.PI * 73.0/180.0;
 
         const val intakeMotorID = 30
         const val inSensorID = 0;
