@@ -10,10 +10,13 @@ import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
 import kotlin.math.atan2
 import swervelib.SwerveDrive
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+
 
 class FaceDirection(private val swerveDrive: Swerve, private val rotation: () -> Rotation2d, private val follow:Boolean) : Command() {
 
     var angle = rotation();
+
     var pid = PIDController(
         Constants.Drivebase.ROTATION_PID_TELEOP.kP,
         Constants.Drivebase.ROTATION_PID_TELEOP.kI,
@@ -23,26 +26,41 @@ class FaceDirection(private val swerveDrive: Swerve, private val rotation: () ->
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
         addRequirements(swerveDrive);
+
+        pid.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     override fun initialize() {
         angle = rotation();
+        SmartDashboard.putBoolean("face direction running", true);
     }
 
 
     override fun execute() {
         val desired = if (follow) {rotation()} else {angle};
 
+        SmartDashboard.putNumber("desired rotation", desired.radians);
+        
+        SmartDashboard.putNumber("my angle", swerveDrive.getPos().rotation.radians);
+
+        val pidoutput = pid.calculate(swerveDrive.getPos().rotation.radians, desired.radians);
+
+        SmartDashboard.putNumber("pidoutput", pidoutput);
+
         swerveDrive.drive(
             Translation2d(0.0,0.0), 
-            pid.calculate(swerveDrive.getPos().rotation.radians, desired.radians) * Constants.Drivebase.MAX_TURNING_SPEEDS,
+            pidoutput * Constants.Drivebase.MAX_TURNING_SPEEDS,
             true);
     }
 
     override fun isFinished(): Boolean {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return (swerveDrive.getPos().rotation.radians - angle.radians) <= 0.01 && !follow;
+        return Math.abs(swerveDrive.getPos().rotation.radians - angle.radians) <= 0.01 && !follow;
     }
 
-    override fun end(interrupted: Boolean) {}
+    override fun end(interrupted: Boolean) {
+        swerveDrive.drive(Translation2d(0.0,0.0), 0.0, true);
+        SmartDashboard.putBoolean("face direction running", false);
+        SmartDashboard.putBoolean("face direction interupted", interrupted);
+    }
 }

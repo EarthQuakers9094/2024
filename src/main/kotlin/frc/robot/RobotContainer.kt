@@ -81,6 +81,9 @@ class RobotContainer {
             elevator = Elevator(Constants.Elevator.motorID,Constants.Elevator.followMotorID);
 
             NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!));
+            NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
+            NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera));
+
         }
 
 

@@ -35,9 +35,9 @@ object Constants {
 
         val TRANSLATION_PID = Config(PIDConstants(0.8, 0.0, 0.4), PIDConstants(4.0, 0.0, 0.4))
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
-        val ROTATION_PID = Config(PIDConstants(3.2, 0.0, 0.0), PIDConstants(1.0, 0.0, 0.5))
+        val ROTATION_PID = Config(PIDConstants(3.2, 0.0, 0.0), PIDConstants(2.0, 0.0, 0.0))
 
-        val ROTATION_PID_TELEOP = PIDConstants(0.0, 0.1, 0.0)
+        val ROTATION_PID_TELEOP = PIDConstants(1.0, 0.0, 0.0)
     }
     object OperatorConstants {
         const val kDriverControllerPort = 2
@@ -87,8 +87,8 @@ object Constants {
         const val p = 0.0
         const val i = 0.0
         const val d = 0.0
-        val join_pid = PIDConstants(0.1, 0.0, 0.0)
-        val sim_join_pid = PIDConstants(10.0, 0.0, 0.0)
+        val join_pid = PIDConstants(0.8, 0.0, 0.0)
+        val sim_join_pid = PIDConstants(5.0, 0.0, 0.0)
 
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
         const val velocityConversionFactor = 1.0

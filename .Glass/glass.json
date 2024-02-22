@@ -1,73 +1,26 @@
 {
   "NetworkTables": {
-    "retained": {
-      "SmartDashboard": {
-        "open": true
-      }
-    },
     "transitory": {
-      "LiveWindow": {
+      "PathPlanner": {
+        "HotReload": {
+          "open": true
+        },
         "open": true
       },
-      "PathPlanner": {
-        "double[]##v_/PathPlanner/currentPose": {
-          "open": true
-        },
-        "double[]##v_/PathPlanner/targetPose": {
-          "open": true
-        }
-      },
       "SmartDashboard": {
-        "Field": {
-          "double[]##v_/SmartDashboard/Field/Robot": {
-            "open": true
-          },
-          "open": true
-        },
-        "open": true,
-        "swerve": {
-          "open": true
-        }
+        "open": true
       }
     },
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro",
       "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
-      "/SmartDashboard/Pigeon 2 [31]": "Gyro",
       "/SmartDashboard/joint pid": "PIDController",
       "/SmartDashboard/sim pid": "PIDController",
-      "/SmartDashboard/the options for the autonomous period": "String Chooser",
       "/SmartDashboard/turning pid": "PIDController"
-    },
-    "windows": {
-      "/SmartDashboard/Field": {
-        "bottom": 544,
-        "builtin": "2024 Crescendo",
-        "height": 8.013679504394531,
-        "left": 46,
-        "right": 1088,
-        "top": 36,
-        "width": 16.541748046875,
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Pigeon 2 (v6) [10]": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables Info": {
-<<<<<<< HEAD
-    "Clients": {
-      "open": true
-    },
-=======
->>>>>>> 394dfa5b090c17be2f4c2bb680d47a058006b84b
     "visible": true
   },
   "NetworkTables Settings": {
@@ -83,7 +36,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 245,
+          "height": 801,
           "series": [
             {
               "color": [
@@ -92,349 +45,13 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/PathPlanner/currentPose[2]"
+              "id": "NT:/SmartDashboard/shooter desired angle"
             },
             {
               "color": [
                 0.8666667342185974,
                 0.5176470875740051,
                 0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/PathPlanner/targetPose[2]"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Angle Setpoint"
-            }
-          ]
-        },
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 245,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Angle Setpoint"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Raw Angle Encoder"
-            }
-          ]
-        },
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 245,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Speed Setpoint"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] speed"
-            }
-          ]
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <1>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 458,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/PathPlanner/currentPose[1]"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/PathPlanner/targetPose[1]"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/PathPlanner/currentPose[0]"
-            },
-            {
-              "color": [
-                0.7686275243759155,
-                0.30588236451148987,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/PathPlanner/targetPose[0]"
-            }
-          ]
-        }
-      ]
-    },
-    "Plot <2>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 812
-        }
-      ],
-      "window": {
-        "visible": false
-      }
-    },
-    "Plot <3>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 682,
-          "series": [
-            {
-              "color": [
-                0.5490196347236633,
-                0.5490196347236633,
-                0.5490196347236633,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/drivebase rotation speed"
-            },
-            {
-              "color": [
-                0.8000000715255737,
-                0.7254902124404907,
-                0.4549019932746887,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/drivebase rotation setPoint"
-            },
-            {
-              "color": [
-                0.3921568989753723,
-                0.7098039388656616,
-                0.803921639919281,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/drivebase current heading"
-            },
-            {
-              "color": [
-                0.7686275243759155,
-                0.30588236451148987,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Angle Setpoint"
-            },
-            {
-              "color": [
-                0.5058823823928833,
-                0.44705885648727417,
-                0.7019608020782471,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Raw Angle Encoder"
-            },
-            {
-              "color": [
-                0.5764706134796143,
-                0.4705882668495178,
-                0.3764706254005432,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[frontleft] Raw Angle Encoder"
-            },
-            {
-              "color": [
-                0.8549020290374756,
-                0.545098066329956,
-                0.7647059559822083,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[frontleft] Angle Setpoint"
-            },
-            {
-              "color": [
-                0.5490196347236633,
-                0.5490196347236633,
-                0.5490196347236633,
-                1.0
-              ],
-<<<<<<< HEAD
-              "id": "NT:/SmartDashboard/Module[backright] Angle Setpoint"
-            },
-            {
-              "color": [
-                0.8000000715255737,
-                0.7254902124404907,
-                0.4549019932746887,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backright] Raw Angle Encoder"
-            }
-          ]
-        }
-      ]
-    },
-    "Plot <4>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 550,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Angle difference"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Angle difference + offset"
-            }
-          ]
-        }
-      ]
-    },
-    "Plot <5>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 326,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/swerve/robotRotation"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Field/Robot[0]"
-            },
-            {
-              "color": [
-                0.3333333432674408,
-                0.658823549747467,
-                0.4078431725502014,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Field/Robot[1]"
-=======
-              "id": "NT:/SmartDashboard/Module[frontleft] Adjusted Absolute Encoder"
->>>>>>> 394dfa5b090c17be2f4c2bb680d47a058006b84b
-            }
-          ]
-        }
-      ]
-    },
-    "Plot <4>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 402,
-          "series": [
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
                 1.0
               ],
               "id": "NT:/SmartDashboard/shooter angle"

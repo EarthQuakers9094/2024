@@ -7,6 +7,8 @@ import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
 import kotlin.math.atan2
 import swervelib.SwerveDrive
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+
 
 class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter, private val swerveDrive: Swerve) : Command() {
     init {
@@ -14,7 +16,9 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter,
         addRequirements(shooter)
     }
 
-    override fun initialize() {}
+    override fun initialize() {
+        SmartDashboard.putBoolean("aim shooter running", true);
+    }
 
 
     override fun execute() {
@@ -37,5 +41,7 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter,
         return shooter.atAngle();
     }
 
-    override fun end(interrupted: Boolean) {}
+    override fun end(interrupted: Boolean) {
+        SmartDashboard.putBoolean("aim shooter running", false);
+    }
 }

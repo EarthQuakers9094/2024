@@ -53,7 +53,7 @@ class Shooter(
     private var topWheels = FlywheelSim(DCMotor.getNeoVortex(1), 1.0, 0.00176)
 
     private var joint =
-            SingleJointedArmSim(DCMotor.getNEO(2), 30.0, 0.616, 0.43, 0.0, Math.PI / 2.0, true, 0.0)
+            SingleJointedArmSim(DCMotor.getNEO(2), 30.0, 0.2, 0.43, 0.0, Math.PI / 2.0, true, 0.0)
 
     private var sim_top_pid =
             PIDController(
@@ -80,12 +80,18 @@ class Shooter(
 
     private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
 
+    private var currentSetSpeed = 0.0;
+
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
         intakingMotor.restoreFactoryDefaults()
+
+        while (!jointMotor1.inverted) {
+            jointMotor1.inverted = true;
+        }
 
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
         jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
@@ -102,6 +108,8 @@ class Shooter(
 
         shooterSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
         followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
+        intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)
+
 
         shooterSparkMax.pidController.setP(Constants.Shooter.p)
         shooterSparkMax.pidController.setI(Constants.Shooter.i)
@@ -173,7 +181,10 @@ class Shooter(
     }
 
     fun startShooting(amp:Boolean) {
-        shooterSparkMax.set(if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed} );
+        val speed = if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed};
+        currentSetSpeed = speed;
+
+        shooterSparkMax.set( speed);
     }
     
     fun stopShooting() {
@@ -269,15 +280,11 @@ class Shooter(
 
     override fun simulationPeriodic() {
         topWheels.setInputVoltage(
-                sim_top_pid
-                        .calculate(topWheels.angularVelocityRPM, currentSetPoint)
-                        .coerceIn(-1.0..1.0) * RobotController.getInputVoltage()
+            currentSetSpeed * RobotController.getInputVoltage()
         )
 
         bottomWheels.setInputVoltage(
-                sim_bottom_pid
-                        .calculate(topWheels.angularVelocityRPM, currentSetPoint)
-                        .coerceIn(-1.0..1.0) * RobotController.getInputVoltage()
+            -currentSetSpeed * RobotController.getInputVoltage()
         )
 
         val voltage =
