@@ -20,7 +20,7 @@ class CollectNote private constructor(
     ): Command() {
 
 
-    private val targetYaw = MovingAverage(10)
+    private val targetYaw = MovingAverage(dataInconsistency)
     private var updatesSinceLastTarget = 0
 
     private val rotationPID = PIDController(rotationPidConstants.kP, rotationPidConstants.kI, rotationPidConstants.kD)

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
+import frc.robot.camera.AprilTagPoseEstimator
 import frc.robot.utils.Config
 import frc.robot.utils.toNullable
 import frc.robot.utils.toPose3d
@@ -28,12 +29,12 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 
-class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
+class Swerve() : SubsystemBase() {
 
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory =
             File(Filesystem.getDeployDirectory(), Config("testswerve", "swerve").config)
-    var swerveDrive: SwerveDrive
+    var swerveDrive: SwerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
 
     var frontleftCanCoder = CANcoder(11)
     var backleftCanCoder = CANcoder(12)
@@ -42,21 +43,13 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     var pdh = PowerDistribution(9, PowerDistribution.ModuleType.kRev)
 
-    val poseEstimator =
-            PhotonPoseEstimator(
-                    Constants.Camera.aprilTagFieldLayout,
-                    PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-                    camera,
-                    Transform3d(0.0, 0.0, 0.0, Rotation3d(0.0, 0.0, 0.0))
-            )
+    private val poseEstimators = arrayOf(AprilTagPoseEstimator(swerveDrive, PhotonCamera("BW"), Constants.Camera.cameraTransform))
 
     init {
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
-        swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
 
-        poseEstimator.referencePose = swerveDrive.pose.toPose3d()
 
         var getPose = {
             var pose = this.getPos()
@@ -125,16 +118,8 @@ class Swerve(private val camera: PhotonCamera) : SubsystemBase() {
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
-        poseEstimator.referencePose = swerveDrive.pose.toPose3d()
 
-        val estimate = poseEstimator.update().toNullable()
-        if (estimate != null) {
-            swerveDrive.addVisionMeasurement(
-                    estimate.estimatedPose.toPose2d(),
-                    Timer.getFPGATimestamp(),
-                    Constants.Camera.visionSTDEV
-            )
-        }
+        poseEstimators.forEach(AprilTagPoseEstimator::update)
         SmartDashboard.putNumber("pigeon", swerveDrive.yaw.degrees)
 
         // SmartDashboard.putNumber("current: frontRight", pdh.getCurrent(8))

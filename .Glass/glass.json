@@ -6,42 +6,23 @@
       }
     },
     "transitory": {
-      "LiveWindow": {
-        "open": true
-      },
       "PathPlanner": {
         "double[]##v_/PathPlanner/currentPose": {
           "open": true
         },
         "double[]##v_/PathPlanner/targetPose": {
           "open": true
-        },
-        "open": true
-      },
-      "Shuffleboard": {
-        "open": true
+        }
       },
       "SmartDashboard": {
-        "Encoders": {
-          "open": true
-        },
-        "IMU": {
-          "open": true
-        },
-        "JSON": {
-          "open": true
-        },
-        "Motors": {
-          "open": true
-        },
-        "Swerve Drive": {
+        "Field": {
+          "double[]##v_/SmartDashboard/Field/Robot": {
+            "open": true
+          },
           "open": true
         },
         "open": true,
         "swerve": {
-          "open": true
-        },
-        "turning pid": {
           "open": true
         }
       }
@@ -59,12 +40,18 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "bottom": 1476,
-        "height": 8.210550308227539,
-        "left": 150,
-        "right": 2961,
-        "top": 79,
+        "bottom": 544,
+        "builtin": "2024 Crescendo",
+        "height": 8.013679504394531,
+        "left": 46,
+        "right": 1088,
+        "top": 36,
         "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Pigeon 2 (v6) [10]": {
         "window": {
           "visible": true
         }
@@ -72,10 +59,14 @@
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
     "visible": true
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT4)"
+    "mode": "Client (NT3)",
+    "serverTeam": "9094"
   },
   "Plots": {
     "Plot <0>": {
@@ -190,7 +181,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 0,
+          "height": 458,
           "series": [
             {
               "color": [
@@ -257,7 +248,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 437,
+          "height": 682,
           "series": [
             {
               "color": [
@@ -321,6 +312,99 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Module[frontleft] Angle Setpoint"
+            },
+            {
+              "color": [
+                0.5490196347236633,
+                0.5490196347236633,
+                0.5490196347236633,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backright] Angle Setpoint"
+            },
+            {
+              "color": [
+                0.8000000715255737,
+                0.7254902124404907,
+                0.4549019932746887,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backright] Raw Angle Encoder"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <4>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 550,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Angle difference"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Angle difference + offset"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <5>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 326,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/swerve/robotRotation"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Field/Robot[0]"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Field/Robot[1]"
             }
           ]
         }
