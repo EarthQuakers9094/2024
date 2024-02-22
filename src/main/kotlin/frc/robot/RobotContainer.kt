@@ -1,33 +1,27 @@
 package frc.robot
 
-import edu.wpi.first.math.MathUtil
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.PS4Controller
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import FollowTrajectory
 import Pickup
 import RunAuto
+import ShootTime
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import frc.robot.commands.SpeakerAlign
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.Commands
-import frc.robot.commands.swervedrive.drivebase.TeleopDrive
-import frc.robot.subsystems.Swerve
-import org.photonvision.PhotonCamera
 import frc.robot.commands.Brake
+import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
+import org.photonvision.PhotonCamera
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,9 +32,8 @@ import frc.robot.utils.Config
 class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
-
     private val aprilCamera = PhotonCamera("acam")
-    private val swerveDrive = Swerve(/*aprilCamera*/)
+    private val swerveDrive = Swerve(/*aprilCamera*/ )
 
     private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
@@ -53,10 +46,9 @@ class RobotContainer {
     //                 Constants.Shooter.shooterJoint2CanID
     //         )
 
-    private var intake:Intake? = null;
+    private var intake: Intake? = null
 
-
-    val driverXbox = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
+    val operatorExtra = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
@@ -70,16 +62,19 @@ class RobotContainer {
         val onTest = Config(true, false)
 
         if (!onTest.config) {
-            intake = Intake(Constants.Intake.motorid, Constants.Intake.followMotorId)
+            intake =
+                    Intake(
+                            Constants.Intake.motorid,
+                            Constants.Intake.followMotorId,
+                            Constants.Intake.frontIntakeId
+                    )
             shooter =
                     Shooter(
                             Constants.Shooter.topCanid,
                             Constants.Shooter.bottomCanID,
                             Constants.Shooter.shooterJointCanID,
-                            Constants.Shooter.shooterJoint2CanID,
                             Constants.Shooter.intakeMotorID
                     )
-            // elevator = Elevator(Constants.Elevator.motorID);
         }
 
         configureBindings()
@@ -143,12 +138,27 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        if (shooter != null) {
+        if (shooter != null && intake != null && shooter != null) {
             SmartDashboard.putBoolean("shooter", true)
-            JoystickButton(driverLeftStick, 3).whileTrue(shooter!!.intakeButtonCommand())
-            JoystickButton(driverRightStick, 6).whileTrue(shooter!!.shootButton())
-            JoystickButton(driverRightStick, 1).onTrue(Pickup(shooter!!, intake!!))
-            JoystickButton(driverLeftStick, 2).onTrue(shooter!!.shootTime(intake!!))
+
+            JoystickButton(driverLeftStick, 2)
+                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera!!))
+
+            JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
+            JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
+
+            JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake())
+            JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton())
+
+            JoystickButton(operatorExtra, 5).whileTrue(elevator!!.up())
+            JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down())
+
+            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!))
+
+            JoystickButton(driverLeftStick, 4)
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
+            JoystickButton(driverLeftStick, 5)
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)
@@ -167,6 +177,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("odometry")
+            return RunAuto("4 piece Inner")
         }
 }

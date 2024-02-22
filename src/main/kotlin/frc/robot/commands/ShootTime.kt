@@ -10,9 +10,13 @@ import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Intake
 import frc.robot.Constants
 import java.util.function.BooleanSupplier
+import frc.robot.subsystems.Swerve
+import frc.robot.subsystems.Elevator
+import frc.robot.commands.AimShooter
+import org.photonvision.PhotonCamera
 
-class ShootTime(private val shooter: Shooter,private val intake: Intake) : Command() {
 
+class ShootTime(private val shooter: Shooter,private val intake: Intake,private val elevator: Elevator, private val camera: PhotonCamera) : SequentialCommandGroup() {
     private enum class State {
         SpinningUp,
         Shooting,
@@ -25,20 +29,33 @@ class ShootTime(private val shooter: Shooter,private val intake: Intake) : Comma
     init {
         addRequirements(shooter);
         addRequirements(intake);
-    }
 
-    override fun end(terminate: Boolean) {
-        shooter.stopIntaking();
-        intake.stopIntaking();
-    }
+        val supplier = {shooter.atSpeed(false)}
 
-    override fun initialize() {
-        shooter.intake();
-        intake.startIntaking();
-        state = State.SpinningUp;
-    }
+        addCommands(
+            InstantCommand(object: Runnable {
+                override fun run() {
+                    intake.startIntaking();
+                }
+            }),
+            AimShooter(camera,shooter),
+            InstantCommand(object: Runnable {
+                override fun run() {
+                    shooter.startShooting(false);
+                }
+            }),
+            WaitUntilCommand(supplier),
+            InstantCommand(object: Runnable {
+                override fun run() {
+                    shooter.intake();
+                }
+            }),
+            WaitCommand(Constants.Shooter.shootTime));
 
-    override fun isFinished():Boolean {
-        return shooter.noteIn();
+            finallyDo(Runnable {
+                shooter.stopIntaking();
+                intake.stopIntaking();
+                shooter.stopShooting();
+            });
     }
 }

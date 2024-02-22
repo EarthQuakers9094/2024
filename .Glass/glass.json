@@ -6,6 +6,9 @@
       }
     },
     "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
       "PathPlanner": {
         "double[]##v_/PathPlanner/currentPose": {
           "open": true
@@ -59,14 +62,16 @@
     }
   },
   "NetworkTables Info": {
+<<<<<<< HEAD
     "Clients": {
       "open": true
     },
+=======
+>>>>>>> 394dfa5b090c17be2f4c2bb680d47a058006b84b
     "visible": true
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT3)",
-    "serverTeam": "9094"
+    "mode": "Client (NT4)"
   },
   "Plots": {
     "Plot <0>": {
@@ -320,6 +325,7 @@
                 0.5490196347236633,
                 1.0
               ],
+<<<<<<< HEAD
               "id": "NT:/SmartDashboard/Module[backright] Angle Setpoint"
             },
             {
@@ -405,6 +411,9 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Field/Robot[1]"
+=======
+              "id": "NT:/SmartDashboard/Module[frontleft] Adjusted Absolute Encoder"
+>>>>>>> 394dfa5b090c17be2f4c2bb680d47a058006b84b
             }
           ]
         }

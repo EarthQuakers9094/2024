@@ -1,0 +1,9 @@
+
+ - [ x ] left axis move
+ - [ x ] right axis rotate
+ - [ x ] left trigger brake
+ - [ x ] left pov boost
+ - [ ] right trigger intake (hold)
+ - [ ] right side button line up with amp and shoot (these will probably be operator)
+ - [ ] left side button line up with speaker and shoot (these will probably be operator)
+ - [ ] right top left face button climb

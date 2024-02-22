@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.I2C
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Command
@@ -28,7 +29,6 @@ class Shooter(
         private val shooterCanID: Int,
         private val secondaryShooterID: Int,
         private val shooterJointCanID: Int,
-        private val shooterJoint2CanID: Int,
         private val intakeMotorID: Int,
 ) : SubsystemBase() {
 
@@ -36,12 +36,13 @@ class Shooter(
 
     private var desiredAngle = 0.0
 
+    private var angleRollingAverage = MovingAverage(20);
+
     private val shooterSparkMax = CANSparkFlex(shooterCanID, CANSparkLowLevel.MotorType.kBrushless)
     private val followerSparkMax =
             CANSparkFlex(secondaryShooterID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
-    private val jointMotor2 = CANSparkMax(shooterJoint2CanID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val intakingMotor = CANSparkFlex(15, CANSparkLowLevel.MotorType.kBrushless)
 
@@ -76,20 +77,17 @@ class Shooter(
 
     private var bottomWheels = FlywheelSim(DCMotor.getNEO(1), 1.0, 14.4)
 
-    private var sensor = ColorSensorV3(I2C.Port.kOnboard);
+    private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
-        jointMotor2.restoreFactoryDefaults()
         intakingMotor.restoreFactoryDefaults()
 
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
         jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
         jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
-
-        jointMotor2.follow(jointMotor1)
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
 
@@ -121,9 +119,11 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
-        SmartDashboard.putNumber("current motor speed launcher", speed)
-        SmartDashboard.putNumber("shooter sensor value", sensor.proximity.toDouble())
+        angleRollingAverage.addValue(jointMotor1.encoder.position);
 
+        SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position);
+
+        SmartDashboard.putNumber("current motor speed launcher", speed);
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
     }
 
@@ -135,6 +135,10 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
+    }
+
+    fun atAngle():Boolean {
+        return (angleRollingAverage.getAverage() - desiredAngle) <= 0.005;
     }
 
     fun setIntakingSpeed(speed: Double) {
@@ -162,8 +166,8 @@ class Shooter(
             },this);
     }
 
-    fun startShooting() {
-        shooterSparkMax.set(Constants.Shooter.speed);
+    fun startShooting(amp:Boolean) {
+        shooterSparkMax.set(if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed} );
     }
     
     fun stopShooting() {
@@ -174,26 +178,41 @@ class Shooter(
         var parent = this;
         return Commands.startEnd(object: Runnable {
                 override fun run() {
-                    parent.startShooting();
-                    SmartDashboard.putBoolean("shooting", true)
+                    parent.startShooting(true);
+                    parent.intake();
                 }
             },object: Runnable {
                 override fun run() {
-                        parent.stopShooting()
-                        SmartDashboard.putBoolean("shooting", false)
+                        parent.stopShooting();
+                        parent.stopIntaking();
                 }
             },parent);
     }
 
-    fun shootTime(intake: Intake):Command {
+    fun backButton(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    shooterSparkMax.set(0.1);
+                    intakingMotor.set(-0.1);
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopShooting();
+                    parent.stopIntaking();
+                }
+            },parent);
+    }
+
+    fun shootTime(intake: Intake,amp: Boolean):Command {
         val parent = this;
 
-        val supplier = {this.atSpeed()}
+        val supplier = {this.atSpeed(amp)}
 
         val command = Commands.sequence(
                 InstantCommand(object: Runnable {
                         override fun run() {
-                            parent.startShooting();   
+                            parent.startShooting(amp);
                         }
                 }),
                 WaitUntilCommand(supplier),
@@ -275,10 +294,11 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return sensor.proximity >= Constants.Shooter.closestDistance;
+        return inSensor.get();
     }
 
-    fun atSpeed(): Boolean {
-        return shooterSparkMax.encoder.velocity <= -4500.0;
+    fun atSpeed(amp:Boolean): Boolean {
+        return if (amp) {shooterSparkMax.encoder.velocity <= Constants.Shooter.ampShootingRotationSpeed} 
+               else {shooterSparkMax.encoder.velocity <= -4500.0};
     }
 }

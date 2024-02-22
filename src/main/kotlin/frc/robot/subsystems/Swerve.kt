@@ -18,7 +18,6 @@ import frc.robot.Constants
 import frc.robot.utils.Config
 import java.io.File
 import java.util.function.Consumer
-import org.photonvision.EstimatedRobotPose
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
@@ -45,7 +44,6 @@ class Swerve(
     //                    camera,
     //                    robotToCam
     //            )
-    val lastEstimate: EstimatedRobotPose? = null
 
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 
 /** Creates a new ExampleSubsystem. */
-class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
+class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, private val frontIntakeId:Int
 // private val limitSwitchId: Int
 ) : SubsystemBase() {
 
@@ -22,6 +22,7 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
     private val intakeSparkMax = CANSparkMax(intakeCANId, CANSparkLowLevel.MotorType.kBrushless)
     private val intakeFollowSparkMax =
             CANSparkMax(intakeFollowCanId, CANSparkLowLevel.MotorType.kBrushless)
+    private val frontIntakeMotor = CANSparkMax(frontIntakeId, CANSparkLowLevel.MotorType.kBrushless)
 
     // private val limitSwitch = DigitalInput(limitSwitchId)
     private var state = State.Looking
@@ -29,6 +30,8 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
     init {
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
+        frontIntakeMotor.restoreFactoryDefaults()
+        frontIntakeMotor.follow(intakeSparkMax);
         intakeFollowSparkMax.follow(intakeSparkMax)
     }
 
@@ -45,12 +48,23 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int
         return Commands.startEnd(object: Runnable {
                 override fun run() {
                     parent.startIntaking();
-                    SmartDashboard.putBoolean("shooting", true)
                 }
             },object: Runnable {
                 override fun run() {
                     parent.stopIntaking()
-                    SmartDashboard.putBoolean("shooting", false)
+                }
+            },parent);
+    }
+
+    fun backButton(): Command {
+        var parent = this;
+        return Commands.startEnd(object: Runnable {
+                override fun run() {
+                    intakeSparkMax.set(-Constants.Intake.speed)
+                }
+            },object: Runnable {
+                override fun run() {
+                    parent.stopIntaking()
                 }
             },parent);
     }
