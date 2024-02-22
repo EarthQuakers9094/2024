@@ -9,6 +9,7 @@ import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
+import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -138,11 +139,12 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        if (shooter != null && intake != null && shooter != null) {
+        if (shooter != null && intake != null) {
             SmartDashboard.putBoolean("shooter", true)
 
             JoystickButton(driverLeftStick, 2)
-                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera!!))
+                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera))
+
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
