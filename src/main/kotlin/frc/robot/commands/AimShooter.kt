@@ -25,7 +25,7 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter,
         val location = swerveDrive.getPos();
         
         val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
-        val xdif = Constants.Camera.xPositionOfSpeaker-location.getX();
+        val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
 
         val distance = Math.sqrt( ydif*ydif + 
                                   xdif*xdif );

@@ -12,9 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "start to C"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "start to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              }
+            ]
           }
         },
         {

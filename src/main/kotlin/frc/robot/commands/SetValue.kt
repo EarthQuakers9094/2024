@@ -13,13 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation
 
 
 class SetValue(private val subsystem: SubsystemBase, 
-               private val require: Boolean,
                private val initial: () -> Unit, 
                private val finished: () -> Boolean) : Command() {
     init {
-        if (require) {
-            addRequirements(subsystem)
-        }
+        addRequirements(subsystem)
     }
 
     override fun initialize() {
@@ -37,12 +34,12 @@ class SetValue(private val subsystem: SubsystemBase,
     override fun end(interrupted: Boolean) {}
 
     companion object {
-        fun setShootingAngle(shooter: Shooter, require:Boolean,angle: Double): SetValue {
-            return SetValue(shooter, require, {shooter.setAngle(angle)}) 
+        fun setShootingAngle(shooter: Shooter, angle: Double): SetValue {
+            return SetValue(shooter, {shooter.setAngle(angle)}) 
                 { shooter.atAngle() };
         }
-        fun setHeight(elevator: Elevator, require:Boolean, height: Double): SetValue {
-            return SetValue(elevator, require, {elevator.setPosition(height)})
+        fun setHeight(elevator: Elevator, height: Double): SetValue {
+            return SetValue(elevator, {elevator.setPosition(height)})
                 { elevator.atPosition() };
         }
     }

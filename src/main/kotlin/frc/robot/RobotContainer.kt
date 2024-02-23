@@ -80,9 +80,9 @@ class RobotContainer {
                     )
             elevator = Elevator(Constants.Elevator.motorID,Constants.Elevator.followMotorID);
 
-            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!));
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
             NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
-            NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera));
+            NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
 
         }
 
@@ -154,7 +154,7 @@ class RobotContainer {
             SmartDashboard.putBoolean("shooter", true)
 
             JoystickButton(driverLeftStick, 2)
-                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!))
+                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!).build())
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
@@ -165,14 +165,14 @@ class RobotContainer {
             JoystickButton(operatorExtra, 5).whileTrue(elevator!!.up())
             JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down())
 
-            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!));
+            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
             JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
 
             JoystickButton(driverLeftStick, 4)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)

@@ -183,7 +183,7 @@ class Swerve(
         val location = getPos();
         
         val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
-        val xdif = Constants.Camera.xPositionOfSpeaker-location.getX();
+        val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
 
         return Rotation2d.fromRadians(atan2(ydif,xdif));
     }
