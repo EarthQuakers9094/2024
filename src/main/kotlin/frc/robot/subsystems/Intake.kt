@@ -33,6 +33,10 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, p
         frontIntakeMotor.restoreFactoryDefaults()
         frontIntakeMotor.follow(intakeSparkMax,true);
         intakeFollowSparkMax.follow(intakeSparkMax)
+
+        frontIntakeMotor.setSmartCurrentLimit(40, 40);
+        intakeFollowSparkMax.setSmartCurrentLimit(40, 40);
+        intakeSparkMax.setSmartCurrentLimit(40, 40);
     }
 
     fun startIntaking() {
