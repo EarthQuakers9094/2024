@@ -37,7 +37,7 @@ object Constants {
         // val ROTATION_PID = PIDConstants(3.2, 0.0, 0.0)
         val ROTATION_PID = Config(PIDConstants(3.2, 0.0, 0.0), PIDConstants(2.0, 0.0, 0.0))
 
-        val ROTATION_PID_TELEOP = PIDConstants(1.0, 0.0, 0.0)
+        val ROTATION_PID_TELEOP = PIDConstants(0.4, 0.0, 0.0)
     }
     object OperatorConstants {
         const val kDriverControllerPort = 2
@@ -66,11 +66,11 @@ object Constants {
         // val aprilTagFieldLayout = AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
         val validTargets = arrayOf(4, 3)
 
-        val shootElevation = 1.9812;
+        val shootElevation = 1.4478;
         val xPositionOfSpeaker = {           
             if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
-                {0.0} else 
-                {16.5};
+                {0.0 + 0.254} else 
+                {16.5 - 0.254};
         }
 
         val yPositionOfSpeaker = 5.5;
@@ -89,7 +89,7 @@ object Constants {
         const val p = 0.0
         const val i = 0.0
         const val d = 0.0
-        val join_pid = PIDConstants(0.8, 0.0, 0.0)
+        val join_pid = PIDConstants(1.6, 0.0, 0.5)
         val sim_join_pid = PIDConstants(5.0, 0.0, 0.0)
 
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
@@ -119,19 +119,19 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.0, 0.0, 0.0)
+        val pid = PIDConstants(0.12, 0.0, 0.002000)
 
         const val gearing = 30.0
         const val followMotorID = 28
-        const val maxHeight = 1.0
+        const val maxHeight = 47; //45.690002;
         const val minHeight = 0.0
-        const val feedforward = 0.0
+        const val feedforward = 0.052404
 
         const val motorID = 27
     }
 
     object Poses {
-        val amp = Pose(-Math.PI / 4.0, 0.2)
+        val amp = Pose(-Math.PI / 4.0, 34.0)
         val pickup = Pose(Math.PI / 4.0, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
     }

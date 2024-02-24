@@ -25,6 +25,7 @@ import frc.robot.commands.AimShooter
 import frc.robot.commands.SetValue
 import frc.robot.commands.FaceDirection
 import com.pathplanner.lib.auto.NamedCommands
+import edu.wpi.first.math.geometry.Rotation2d
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -83,6 +84,7 @@ class RobotContainer {
             NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
             NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
             NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
+            NamedCommands.registerCommand("facedown", FaceDirection(swerveDrive, {Rotation2d.fromRadians(-Math.PI/2.0)}, false));
 
         }
 
@@ -165,6 +167,9 @@ class RobotContainer {
             JoystickButton(operatorExtra, 7).whileTrue(elevator!!.up())
             JoystickButton(operatorExtra, 8).whileTrue(elevator!!.down())
 
+            JoystickButton(operatorExtra, 9).onTrue(SetValue.setHeight(elevator!!, 47.0));
+            JoystickButton(operatorExtra, 10).onTrue(SetValue.setHeight(elevator!!, 0.0));
+
             JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
         // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
@@ -174,6 +179,7 @@ class RobotContainer {
             JoystickButton(driverLeftStick, 5)
                     .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
         }
+
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)
                 .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
@@ -191,6 +197,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("4 piece Inner")
+            return RunAuto("do nothing")
         }
 }
