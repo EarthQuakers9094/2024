@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.WaitCommand
+import frc.robot.Constants
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Shooter
 
@@ -40,14 +42,18 @@ class SetValue(
                 elevator.atPosition()
             }
         }
-        fun climb(elevator: Elevator, require: Boolean, height: Double): Command {
+        fun climb(elevator: Elevator, require: Boolean): Command {
             return SequentialCommandGroup(
+                    SetValue(elevator, require, { elevator.setPosition(Constants.Elevator.maxHeight) }) {
+                        elevator.atPosition()
+                    },
                     InstantCommand({ elevator.climbing = true }, elevator),
-                    SetValue(elevator, require, { elevator.setPosition(height) }) {
+                    SetValue(elevator, require, { elevator.setPosition(Constants.Elevator.minHeight) }) {
                         elevator.atPosition()
                     },
                     InstantCommand({ elevator.climbing = false }, elevator)
             )
         }
+
     }
 }

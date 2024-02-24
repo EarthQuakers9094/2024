@@ -70,6 +70,7 @@ object Constants {
 
     object Shooter {
 
+        const val trapAngle = 0.0
         const val angleOffset = 0.0
         const val distanceOffset = 0.0
         const val heightOffset = 0.0
