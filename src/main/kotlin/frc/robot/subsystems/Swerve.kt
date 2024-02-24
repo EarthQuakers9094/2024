@@ -3,7 +3,6 @@ package frc.robot.subsystems
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
-import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -18,13 +17,12 @@ import frc.robot.Constants
 import frc.robot.utils.Config
 import java.io.File
 import java.util.function.Consumer
+import kotlin.math.atan2
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
-import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
-import kotlin.math.atan2
 
 class Swerve(
 // private val camera: PhotonCamera
@@ -52,12 +50,11 @@ class Swerve(
         // poseEstimator.referencePose = Pose3d()
 
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
-        swerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
         swerveDrive.setHeadingCorrection(false)
 
         var getPose = {
             var pose = this.getPos()
-            SmartDashboard.putNumber("get pose pathplanner x moewjrek", pose.getX())
+            SmartDashboard.putNumber("get pose pathplanner x", pose.getX())
             SmartDashboard.putNumber("get pose pathplanner y", pose.getY())
             SmartDashboard.putNumber("get pose pathplanner rotation", pose.rotation.degrees)
 
@@ -82,6 +79,8 @@ class Swerve(
 
         var config =
                 HolonomicPathFollowerConfig(
+                        Constants.Drivebase.TRANSLATION_PID.config,
+                        Constants.Drivebase.ROTATION_PID.config,
                         Constants.Drivebase.TRANSLATION_PID.config,
                         Constants.Drivebase.ROTATION_PID.config,
                         Constants.Drivebase.MAX_AUTO_SPEEDS,
@@ -118,6 +117,10 @@ class Swerve(
                 SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
 
         SmartDashboard.putNumber("drive conversion factor", driveConversionFactor)
+        val driveConversionFactor =
+                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
+
+        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor)
     }
 
     /** This method will be called once per scheduler run */
@@ -144,7 +147,7 @@ class Swerve(
     }
 
     fun drive(velocity: ChassisSpeeds, isOpenLoop: Boolean, centerOfRotationMeters: Translation2d) {
-        swerveDrive.drive(velocity,isOpenLoop,centerOfRotationMeters);
+        swerveDrive.drive(velocity, isOpenLoop, centerOfRotationMeters)
     }
 
     fun driveRobotRel(speeds: ChassisSpeeds) {
@@ -180,12 +183,12 @@ class Swerve(
     }
 
     fun speakerAngle(): Rotation2d {
-        val location = getPos();
-        
-        val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
-        val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
+        val location = getPos()
 
-        return Rotation2d.fromRadians(atan2(ydif,xdif));
+        val ydif = Constants.Camera.yPositionOfSpeaker - location.getY()
+        val xdif = Constants.Camera.xPositionOfSpeaker() - location.getX()
+
+        return Rotation2d.fromRadians(atan2(ydif, xdif))
     }
 
     /** This method will be called once per scheduler run during simulation */

@@ -5,18 +5,15 @@ import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig
 import com.pathplanner.lib.util.ReplanningConfig
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.Constants
 import frc.robot.subsystems.Swerve
 import java.util.function.Consumer
 
-class FollowTrajectory(
-                swerve: Swerve,
-                trajectory: PathPlannerPath,
-                pathFind: Boolean
-) : SequentialCommandGroup() {
+class FollowTrajectory(swerve: Swerve, trajectory: PathPlannerPath, pathFind: Boolean) :
+                SequentialCommandGroup() {
         init {
                 var getPose = {
                         var pose = swerve.getPos()
@@ -49,6 +46,8 @@ class FollowTrajectory(
                                 HolonomicPathFollowerConfig(
                                                 Constants.Drivebase.TRANSLATION_PID.config,
                                                 Constants.Drivebase.ROTATION_PID.config,
+                                                Constants.Drivebase.TRANSLATION_PID.config,
+                                                Constants.Drivebase.ROTATION_PID.config,
                                                 Constants.Drivebase.MAX_AUTO_SPEEDS,
                                                 Constants.Drivebase.RADIUS,
                                                 replanning
@@ -62,20 +61,19 @@ class FollowTrajectory(
                                                 Constants.Drivebase.MAX_ANGULAR_ACCELERATION,
                                 )
 
-                
-                                        // Boolean supplier that controls when the path will be mirrored for the
-                                        // red alliance
-                                        // This will flip the path being followed to the red side of the field.
-                                        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-                            
+                // Boolean supplier that controls when the path will be mirrored for the
+                // red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
                 var alliance = DriverStation.getAlliance()
                 var flip = false
                 if (alliance.isPresent()) {
-                        //flip = true
+                        // flip = true
                         flip = alliance.get() == DriverStation.Alliance.Red
                 }
 
-                DriverStation.reportWarning("hello I am in follow trajectory", false);
+                DriverStation.reportWarning("hello I am in follow trajectory", false)
 
                 if (pathFind) {
                         addCommands(
@@ -86,7 +84,8 @@ class FollowTrajectory(
                                                         getSpeeds,
                                                         drive,
                                                         config,
-                                                        {flip},
+                                                        { flip },
+                                                        { flip },
                                                         swerve
                                         )
                         )
@@ -98,7 +97,8 @@ class FollowTrajectory(
                                                         getSpeeds,
                                                         drive,
                                                         config,
-                                                        {flip},
+                                                        { flip },
+                                                        { flip },
                                                         swerve
                                         )
                         )

@@ -7,7 +7,6 @@ import ShootTime
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -39,7 +38,10 @@ class RobotContainer {
 
     private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
+    private var elevator: Elevator? = null
+    // (Constants.Elevator.motorID)
 
+    private var shooter: Shooter? = null
     private var shooter: Shooter? = null
     //         Shooter(
     //                 Constants.Shooter.topCanid,
@@ -56,9 +58,6 @@ class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
-        if (!aprilCamera.isConnected) {
-            DriverStation.reportWarning("Hello there miles", arrayOf())
-        }
         // Configure the trigger bindings
 
         val onTest = Config(true, false)
@@ -104,7 +103,23 @@ class RobotContainer {
             return speed
         }
 
+        fun applyPov(direction: Int, speed: Double): Double {
+            if (direction == -1) {
+                return speed * 0.75
+            } else if (direction == 0) {
+                return speed
+            } else if (direction == 180) {
+                return speed * 0.5
+            }
+
+            return speed
+        }
+
         val leftY = {
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                    Constants.OperatorConstants.LEFT_Y_DEADBAND
+            )
             MathUtil.applyDeadband(
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
                     Constants.OperatorConstants.LEFT_Y_DEADBAND
@@ -116,10 +131,15 @@ class RobotContainer {
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
+            )
         }
 
         val omega = {
             MathUtil.applyDeadband(
+                    driverRightStick.getX(),
                     driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )

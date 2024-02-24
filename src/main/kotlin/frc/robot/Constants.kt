@@ -2,6 +2,8 @@ package frc.robot
 
 import Pose
 import com.pathplanner.lib.util.PIDConstants
+import edu.wpi.first.apriltag.AprilTagFieldLayout
+import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Rotation3d
@@ -9,7 +11,11 @@ import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.Config
-import java.util.Optional
+import java.util.Optionalimport edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Translation3d
+import frc.robot.utils.Config
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -43,10 +49,16 @@ object Constants {
         const val driverRightStickPort = 1
         const val LEFT_X_DEADBAND = 0.1
         const val LEFT_Y_DEADBAND = 0.1
+        const val kDriverControllerPort = 2
+        const val driverLeftStickPort = 0
+        const val driverRightStickPort = 1
+        const val LEFT_X_DEADBAND = 0.1
+        const val LEFT_Y_DEADBAND = 0.1
     }
     object Intake {
+        const val bonusMotorSpeed = 1.0
         const val speed = -0.60
-
+        // const val speed = 0.0
         const val motorid = 24
         const val followMotorId = 25
         const val frontIntakeId = 26
@@ -116,7 +128,18 @@ object Constants {
         const val topCanid = 31
         const val bottomCanID = 32
         const val shooterJointCanID = 29
+        const val topCanid = 26
+        const val bottomCanID = 27
+        const val shooterJointCanID = 28
+        const val shooterJoint2CanID = 29
+        const val intakeSpeed = 0.9
+        const val speed = -0.75
+        const val intakeMotorID = 30
+        const val spinuptime = 5.0
+        const val shootTime = 0.6
+        const val closestDistance = 200
     }
+
 
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)

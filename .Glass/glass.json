@@ -15,6 +15,7 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
+      "/SmartDashboard/Pigeon 2 [31]": "Gyro",
       "/SmartDashboard/joint pid": "PIDController",
       "/SmartDashboard/sim pid": "PIDController",
       "/SmartDashboard/turning pid": "PIDController"
