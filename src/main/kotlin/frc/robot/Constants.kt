@@ -67,10 +67,12 @@ object Constants {
         val validTargets = arrayOf(4, 3)
 
         val shootElevation = 1.9812;
-        val xPositionOfSpeaker = 
+        val xPositionOfSpeaker = {           
             if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
                 {0.0} else 
                 {16.5};
+        }
+
         val yPositionOfSpeaker = 5.5;
 
     }

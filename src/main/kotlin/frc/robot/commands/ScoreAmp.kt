@@ -12,15 +12,15 @@ import kotlin.math.atan2
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import FollowTrajectory
 import com.pathplanner.lib.path.PathPlannerPath
+import CommandSequence
 
-class ScoreAmp(private val shooter: Shooter,private val elevator: Elevator, private val swerve: Swerve, private val intake: Intake) : SequentialCommandGroup() {
-    init {
-        addCommands(
-            GotoPose(shooter,elevator,Constants.Poses.amp,true),
-            FollowTrajectory(swerve, PathPlannerPath.fromPathFile("to amp"), true),
-            shooter.shootTime(intake, true),
-            FollowTrajectory(swerve, PathPlannerPath.fromPathFile("away from amp"), false),
-            GotoPose(shooter,elevator,Constants.Poses.resting,false)
-        )
+class ScoreAmp(private val shooter: Shooter,private val elevator: Elevator, private val swerve: Swerve, private val intake: Intake) : CommandSequence() {
+    override val commands: List<Command> = listOf(
+        GotoPose(shooter,elevator,Constants.Poses.amp,true),
+        FollowTrajectory(swerve, PathPlannerPath.fromPathFile("to amp"), true),
+        shooter.shootTime(intake, true));
+
+    override fun finally(interrupted: Boolean) { 
+        GotoPose(shooter,elevator,Constants.Poses.resting,false).schedule()
     }
 }

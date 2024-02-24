@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import frc.robot.RobotContainer
 import kotlin.sequences.sequence
 import java.util.function.BooleanSupplier
 
@@ -189,6 +190,7 @@ class Shooter(
     
     fun stopShooting() {
         shooterSparkMax.set(0.0);
+        currentSetSpeed = 0.0;
     }
 
     fun shootButton(): Command {
@@ -211,6 +213,7 @@ class Shooter(
         return Commands.startEnd(object: Runnable {
                 override fun run() {
                     shooterSparkMax.set(0.1);
+                    currentSetSpeed = 0.1;
                     intakingMotor.set(-0.1);
                 }
             },object: Runnable {
@@ -279,6 +282,7 @@ class Shooter(
     }
 
     override fun simulationPeriodic() {
+        SmartDashboard.putNumber("currentSetSpeed", currentSetSpeed);
         topWheels.setInputVoltage(
             currentSetSpeed * RobotController.getInputVoltage()
         )
@@ -311,7 +315,11 @@ class Shooter(
     }
 
     fun atSpeed(amp:Boolean): Boolean {
-        return if (amp) {shooterSparkMax.encoder.velocity <= Constants.Shooter.ampShootingRotationSpeed} 
-               else {shooterSparkMax.encoder.velocity <= -4500.0};
+        if (RobotBase.isReal()) {
+            speed = shooterSparkMax.encoder.velocity;
+        }
+
+        return if (amp) {speed <= Constants.Shooter.ampShootingRotationSpeed} 
+               else {speed <= -4500.0};
     }
 }

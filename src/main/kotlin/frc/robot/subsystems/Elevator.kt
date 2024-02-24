@@ -63,6 +63,8 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
         liftSparkMax.encoder.positionConversionFactor = 1.0
         liftSparkMax.encoder.position = 0.0;
+        liftSparkMax.setSmartCurrentLimit(40, 40);
+        followMotor.setSmartCurrentLimit(40, 40);
 
         liftSparkMax.pidController.p = Constants.Elevator.pid.kP
         liftSparkMax.pidController.i = Constants.Elevator.pid.kI
