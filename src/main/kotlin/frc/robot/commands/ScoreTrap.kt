@@ -10,7 +10,7 @@ import frc.robot.subsystems.Shooter
 //       e.g. SequentialCommandGroup(OpenClawCommand(), MoveArmCommand())
 class ScoreTrap(elevator: Elevator, shooter: Shooter) : SequentialCommandGroup(
 
-    SetValue.setHeight(elevator, true, Constants.Elevator.maxHeight),
-    SetValue.setShootingAngle(shooter, true, Constants.Shooter.trapAngle)
+    SetValue.setHeight(elevator, Constants.Elevator.maxHeight),
+    SetValue.setShootingAngle(shooter, Constants.Shooter.trapAngle)
 
 )

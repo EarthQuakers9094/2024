@@ -48,10 +48,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                     Constants.Elevator.sim_pid.kD
             )
 
-    private val climbingPid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
-    private val normalPid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
-    
-    private var pid = { -> if (climbing) {climbingPid} else {normalPid}}
+    private var pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
 
     private var desiredPosition = 0.0
 
@@ -62,8 +59,6 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(10.0,10.0));
 
     private var currentState = TrapezoidProfile.State(0.0,0.0);
-
-    var climbing = false
 
     init {
         liftSparkMax.restoreFactoryDefaults()
@@ -93,6 +88,14 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         }
 
         averagePostion.setAverage(liftSparkMax.encoder.position)
+    }
+
+    fun setClimbing(climbing: Boolean) {
+        if (climbing) {
+            pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD);
+        } else {
+            pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
+        }
     }
 
     /** This method will be called once per scheduler run */

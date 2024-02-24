@@ -11,7 +11,6 @@ import frc.robot.subsystems.Shooter
 
 class SetValue(
         private val subsystem: SubsystemBase,
-        private val require: Boolean,
         private val initial: () -> Unit,
         private val finished: () -> Boolean
 ) : Command() {
@@ -33,28 +32,26 @@ class SetValue(
     override fun end(interrupted: Boolean) {}
 
     companion object {
-        fun setShootingAngle(shooter: Shooter, require: Boolean, angle: Double): Command {
-            return SetValue(shooter, require, { shooter.setAngle(angle) }) { shooter.atAngle() }
+        fun setShootingAngle(shooter: Shooter, angle: Double): Command {
+            return SetValue(shooter, { shooter.setAngle(angle) }) { shooter.atAngle() }
         }
-        fun setHeight(elevator: Elevator, require: Boolean, height: Double): Command {
-            return SetValue(elevator, require, { elevator.setPosition(height) }) {
+        fun setHeight(elevator: Elevator, height: Double): Command {
+            return SetValue(elevator, { elevator.setPosition(height) }) {
                 elevator.atPosition()
             }
         }
-        fun climb(elevator: Elevator, require: Boolean): Command {
+        fun climb(elevator: Elevator): Command {
             return SequentialCommandGroup(
                     SetValue(
                             elevator,
-                            require,
                             { elevator.setPosition(Constants.Elevator.maxHeight) }
                     ) { elevator.atPosition() },
-                    InstantCommand({ elevator.climbing = true }, elevator),
+                    InstantCommand({ elevator.setClimbing(true) }, elevator),
                     SetValue(
                             elevator,
-                            require,
                             { elevator.setPosition(Constants.Elevator.minHeight) }
                     ) { elevator.atPosition() },
-                    InstantCommand({ elevator.climbing = false }, elevator)
+                    InstantCommand({ elevator.setClimbing(false) }, elevator)
             )
         }
     }

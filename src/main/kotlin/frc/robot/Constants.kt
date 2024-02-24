@@ -8,6 +8,8 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.Config
@@ -77,6 +79,13 @@ object Constants {
         }
 
         val yPositionOfSpeaker = 5.5
+
+        val resetPosition = {
+            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
+                {Pose2d(0.5,4.13,Rotation2d.fromRadians(0.0))} else 
+                {Pose2d(16.04,4.13,Rotation2d.fromRadians(Math.PI))};
+
+            }
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
@@ -139,7 +148,7 @@ object Constants {
 
         const val gearing = 30.0
         const val followMotorID = 28
-        const val maxHeight = 47; //45.690002;
+        const val maxHeight = 47.0; //45.690002;
         const val minHeight = 0.0
         const val feedforward = 0.052404
 

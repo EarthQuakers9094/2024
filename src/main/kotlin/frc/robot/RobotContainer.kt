@@ -3,11 +3,10 @@ package frc.robot
 import FollowTrajectory
 import Pickup
 import RunAuto
-import ShootTime
-import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.XboxController
@@ -16,8 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.Brake
-import frc.robot.commands.FaceDirection
-import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
@@ -90,7 +87,6 @@ class RobotContainer {
             NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
             NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
             NamedCommands.registerCommand("facedown", FaceDirection(swerveDrive, {Rotation2d.fromRadians(-Math.PI/2.0)}, false));
-
         }
 
         configureBindings()
@@ -191,10 +187,19 @@ class RobotContainer {
             JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
         // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
-
-            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
+ 
+            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
+            
+            JoystickButton(driverLeftStick, 10).onTrue(InstantCommand(
+                object : Runnable {
+                    override fun run() {
+                        swerveDrive.resetOdomentry(Constants.Camera.resetPosition());
+                    }
+                },
+                swerveDrive
+        ),)
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
