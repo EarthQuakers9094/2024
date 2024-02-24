@@ -4,6 +4,9 @@
 
 package frc.robot.commands.swervedrive.drivebase
 
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.Constants
@@ -98,8 +101,7 @@ public class TeleopDrive(
     swerve.drive(
         Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
         angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
-        angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
-        driveMode.getAsBoolean()
+        driveMode.asBoolean
     )
   }
 

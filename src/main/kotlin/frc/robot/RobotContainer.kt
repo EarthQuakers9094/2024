@@ -7,8 +7,10 @@ import ShootTime
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
+import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -33,16 +35,16 @@ import org.photonvision.PhotonCamera
 class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
-    private val aprilCamera = PhotonCamera("acam")
+    private val aprilCamera = PhotonCamera("BW")
+    private val noteCamera = PhotonCamera("NC")
     private val swerveDrive = Swerve(/*aprilCamera*/ )
 
     private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
-    private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
 
     private var shooter: Shooter? = null
-    private var shooter: Shooter? = null
+
     //         Shooter(
     //                 Constants.Shooter.topCanid,
     //                 Constants.Shooter.bottomCanID,
@@ -52,7 +54,7 @@ class RobotContainer {
 
     private var intake: Intake? = null
 
-    val operatorExtra = PS4Controller(Constants.OperatorConstants.kDriverControllerPort)
+    val operatorExtra = XboxController(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
@@ -103,17 +105,6 @@ class RobotContainer {
             return speed
         }
 
-        fun applyPov(direction: Int, speed: Double): Double {
-            if (direction == -1) {
-                return speed * 0.75
-            } else if (direction == 0) {
-                return speed
-            } else if (direction == 180) {
-                return speed * 0.5
-            }
-
-            return speed
-        }
 
         val leftY = {
             MathUtil.applyDeadband(
@@ -179,7 +170,7 @@ class RobotContainer {
 
             JoystickButton(driverLeftStick, 2)
                     .onTrue(
-                            ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!)
+                            ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
                                     .build()
                     )
 
@@ -198,9 +189,9 @@ class RobotContainer {
             JoystickButton(operatorExtra, 7)
                     .whileTrue(FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, true))
 
-            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
+            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
             JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)
@@ -209,6 +200,10 @@ class RobotContainer {
 
     fun setMotorBrake(enabled: Boolean) {
         swerveDrive.setMotorBrake(enabled)
+    }
+
+    fun periodic() {
+        operatorExtra.setRumble(GenericHID.RumbleType.kBothRumble, (if (noteCamera.latestResult.hasTargets()) {1.0} else {0.0}))
     }
 
     /**

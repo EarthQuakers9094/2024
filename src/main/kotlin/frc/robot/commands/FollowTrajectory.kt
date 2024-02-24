@@ -46,8 +46,6 @@ class FollowTrajectory(swerve: Swerve, trajectory: PathPlannerPath, pathFind: Bo
                                 HolonomicPathFollowerConfig(
                                                 Constants.Drivebase.TRANSLATION_PID.config,
                                                 Constants.Drivebase.ROTATION_PID.config,
-                                                Constants.Drivebase.TRANSLATION_PID.config,
-                                                Constants.Drivebase.ROTATION_PID.config,
                                                 Constants.Drivebase.MAX_AUTO_SPEEDS,
                                                 Constants.Drivebase.RADIUS,
                                                 replanning
@@ -85,7 +83,6 @@ class FollowTrajectory(swerve: Swerve, trajectory: PathPlannerPath, pathFind: Bo
                                                         drive,
                                                         config,
                                                         { flip },
-                                                        { flip },
                                                         swerve
                                         )
                         )
@@ -98,7 +95,7 @@ class FollowTrajectory(swerve: Swerve, trajectory: PathPlannerPath, pathFind: Bo
                                                         drive,
                                                         config,
                                                         { flip },
-                                                        { flip },
+
                                                         swerve
                                         )
                         )

@@ -21,6 +21,7 @@ import kotlin.math.atan2
 import swervelib.SwerveController
 import swervelib.SwerveDrive
 import swervelib.math.SwerveMath
+import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 
@@ -31,7 +32,7 @@ class Swerve(
     var maximumSpeed = Units.feetToMeters(14.5)
     var swerveJsonDirectory =
             File(Filesystem.getDeployDirectory(), Config("testswerve", "swerve").config)
-    var swerveDrive: SwerveDrive
+    var swerveDrive: SwerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
 
@@ -79,8 +80,7 @@ class Swerve(
 
         var config =
                 HolonomicPathFollowerConfig(
-                        Constants.Drivebase.TRANSLATION_PID.config,
-                        Constants.Drivebase.ROTATION_PID.config,
+
                         Constants.Drivebase.TRANSLATION_PID.config,
                         Constants.Drivebase.ROTATION_PID.config,
                         Constants.Drivebase.MAX_AUTO_SPEEDS,
@@ -113,10 +113,6 @@ class Swerve(
                 flip,
                 this // Reference to this subsystem to set requirements
         )
-        val driveConversionFactor =
-                SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
-
-        SmartDashboard.putNumber("drive conversion factor", driveConversionFactor)
         val driveConversionFactor =
                 SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
 

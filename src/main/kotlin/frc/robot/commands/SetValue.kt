@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Shooter
 
 class SetValue(
         private val subsystem: SubsystemBase,

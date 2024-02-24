@@ -2,8 +2,11 @@ package frc.robot
 
 import Pose
 import com.pathplanner.lib.util.PIDConstants
+import edu.wpi.first.apriltag.AprilTagFieldLayout
+import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
+import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
@@ -52,8 +55,9 @@ object Constants {
         const val frontIntakeId = 26
     }
     object Camera {
+        val aprilTagFieldLayout: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
         const val arducamOne = "Arducam1"
-        val camSTDEV = run {
+        val visionSTDEV = run {
             val mat = Matrix(Nat.N3(), Nat.N1())
             mat.set(0, 0, 1.0)
             mat.set(1, 0, 1.0)
@@ -82,6 +86,9 @@ object Constants {
 
     object Shooter {
 
+        val shooterJointCanID = 0
+        const val bottomCanID = 0
+        const val topCanid = 0
         const val trapAngle = 0.0
         const val angleOffset = 0.0
         const val distanceOffset = 0.0
