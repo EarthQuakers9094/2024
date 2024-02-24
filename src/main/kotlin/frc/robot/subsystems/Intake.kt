@@ -2,14 +2,17 @@ package frc.robot.subsystems
 
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 
 /** Creates a new ExampleSubsystem. */
-class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, private val frontIntakeId:Int
+class Intake(
+        private val intakeCANId: Int,
+        private val intakeFollowCanId: Int,
+        private val frontIntakeId: Int,
+
 // private val limitSwitchId: Int
 ) : SubsystemBase() {
 
@@ -31,46 +34,54 @@ class Intake(private val intakeCANId: Int, private val intakeFollowCanId: Int, p
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
         frontIntakeMotor.restoreFactoryDefaults()
-        frontIntakeMotor.follow(intakeSparkMax,true);
+        frontIntakeMotor.follow(intakeSparkMax, true)
         intakeFollowSparkMax.follow(intakeSparkMax)
 
-        frontIntakeMotor.setSmartCurrentLimit(40, 40);
-        intakeFollowSparkMax.setSmartCurrentLimit(40, 40);
-        intakeSparkMax.setSmartCurrentLimit(40, 40);
+        frontIntakeMotor.setSmartCurrentLimit(40, 40)
+        intakeFollowSparkMax.setSmartCurrentLimit(40, 40)
+        intakeSparkMax.setSmartCurrentLimit(40, 40)
     }
 
     fun startIntaking() {
-        intakeSparkMax.set(Constants.Intake.speed)        
+        intakeSparkMax.set(Constants.Intake.speed)
     }
 
     fun stopIntaking() {
-        intakeSparkMax.set(0.0);
+        intakeSparkMax.set(0.0)
     }
 
     fun intake(): Command {
-        var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.startIntaking();
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopIntaking()
-                }
-            },parent);
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        parent.startIntaking()
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopIntaking()
+                    }
+                },
+                parent
+        )
     }
 
     fun backButton(): Command {
-        var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    intakeSparkMax.set(-Constants.Intake.speed)
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopIntaking()
-                }
-            },parent);
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        intakeSparkMax.set(-Constants.Intake.speed)
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopIntaking()
+                    }
+                },
+                parent
+        )
     }
 
     /** This method will be called once per scheduler run */

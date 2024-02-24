@@ -3,7 +3,7 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkLowLevel
 import com.revrobotics.CANSparkMax
-
+import com.revrobotics.ControlType
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.RobotBase
@@ -47,8 +47,11 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                     Constants.Elevator.sim_pid.kI,
                     Constants.Elevator.sim_pid.kD
             )
+
+    private val climbingPid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
+    private val normalPid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD)
     
-    private var pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD);
+    private var pid = { -> if (climbing) {climbingPid} else {normalPid}}
 
     private var desiredPosition = 0.0
 
@@ -59,6 +62,8 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(10.0,10.0));
 
     private var currentState = TrapezoidProfile.State(0.0,0.0);
+
+    var climbing = false
 
     init {
         liftSparkMax.restoreFactoryDefaults()
@@ -112,6 +117,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
             liftSparkMax.set(output);
         }
     }
+
 
     fun setPosition(position: Double):Boolean {
         if (position <= Constants.Elevator.maxHeight && position >= 0) {

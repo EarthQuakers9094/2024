@@ -3,9 +3,10 @@ package frc.robot
 import FollowTrajectory
 import Pickup
 import RunAuto
+import ShootTime
+import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -13,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.Brake
+import frc.robot.commands.FaceDirection
+import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
@@ -41,7 +44,10 @@ class RobotContainer {
 
     private var elevator: Elevator? = null
     // (Constants.Elevator.motorID)
+    private var elevator: Elevator? = null
+    // (Constants.Elevator.motorID)
 
+    private var shooter: Shooter? = null
     private var shooter: Shooter? = null
     //         Shooter(
     //                 Constants.Shooter.topCanid,
@@ -58,9 +64,6 @@ class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     init {
-        if (!aprilCamera.isConnected) {
-            DriverStation.reportWarning("Hello there miles", arrayOf())
-        }
         // Configure the trigger bindings
 
         val onTest = Config(true, false)
@@ -79,7 +82,7 @@ class RobotContainer {
                             Constants.Shooter.shooterJointCanID,
                             Constants.Shooter.intakeMotorID
                     )
-            elevator = Elevator(Constants.Elevator.motorID,Constants.Elevator.followMotorID);
+            elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
 
             NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
             NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
@@ -88,8 +91,19 @@ class RobotContainer {
 
         }
 
-
         configureBindings()
+
+        fun applyPov(direction: Int, speed: Double): Double {
+            if (direction == -1) {
+                return speed * 0.75
+            } else if (direction == 0) {
+                return speed
+            } else if (direction == 180) {
+                return speed * 0.5
+            }
+
+            return speed
+        }
 
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
@@ -108,9 +122,17 @@ class RobotContainer {
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
                     Constants.OperatorConstants.LEFT_Y_DEADBAND
             )
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                    Constants.OperatorConstants.LEFT_Y_DEADBAND
+            )
         }
 
         val leftX = {
+            MathUtil.applyDeadband(
+                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                    Constants.OperatorConstants.LEFT_X_DEADBAND
+            )
             MathUtil.applyDeadband(
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
@@ -120,15 +142,17 @@ class RobotContainer {
         val omega = {
             MathUtil.applyDeadband(
                     driverRightStick.getX(),
+                    driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
         val driveMode = { true }
 
-        val faceSpeaker = {driverRightStick.getRawButton(7)};
+        val faceSpeaker = { driverRightStick.getRawButton(7) }
 
-        val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker);
+        val simClosedFieldRel =
+                TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker)
 
         swerveDrive.defaultCommand = simClosedFieldRel
     }
@@ -156,7 +180,10 @@ class RobotContainer {
             SmartDashboard.putBoolean("shooter", true)
 
             JoystickButton(driverLeftStick, 2)
-                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!).build())
+                    .onTrue(
+                            ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!)
+                                    .build()
+                    )
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
@@ -174,8 +201,7 @@ class RobotContainer {
 
         // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
 
-            JoystickButton(driverLeftStick, 4)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
+            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
                     .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
         }

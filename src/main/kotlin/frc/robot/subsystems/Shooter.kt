@@ -3,28 +3,24 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
-import edu.wpi.first.wpilibj.DriverStation
 import com.revrobotics.CANSparkMax
-import com.revrobotics.ColorSensorV3
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.I2C
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
-import frc.robot.RobotContainer
-import kotlin.sequences.sequence
 import java.util.function.BooleanSupplier
 import com.revrobotics.SparkPIDController
 
@@ -39,7 +35,7 @@ class Shooter(
 
     private var desiredAngle = 0.0
 
-    private var angleRollingAverage = MovingAverage(20);
+    private var angleRollingAverage = MovingAverage(20)
 
     private val shooterSparkMax = CANSparkFlex(shooterCanID, CANSparkLowLevel.MotorType.kBrushless)
     private val followerSparkMax =
@@ -80,7 +76,7 @@ class Shooter(
 
     private var bottomWheels = FlywheelSim(DCMotor.getNEO(1), 1.0, 14.4)
 
-    private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
+    private var inSensor = DigitalInput(Constants.Shooter.inSensorID)
 
     private var currentSetSpeed = 0.0;
 
@@ -91,7 +87,7 @@ class Shooter(
         intakingMotor.restoreFactoryDefaults()
 
         while (!jointMotor1.inverted) {
-            jointMotor1.inverted = true;
+            jointMotor1.inverted = true
         }
 
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
@@ -115,7 +111,6 @@ class Shooter(
         followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
         intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)
 
-
         shooterSparkMax.pidController.setP(Constants.Shooter.p)
         shooterSparkMax.pidController.setI(Constants.Shooter.i)
         shooterSparkMax.pidController.setD(Constants.Shooter.d)
@@ -127,8 +122,8 @@ class Shooter(
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
         followerSparkMax.follow(shooterSparkMax)
-        //shooterSparkMax.set(Constants.Shooter.speed)
-        //intakingMotor.set(0.75)
+        // shooterSparkMax.set(Constants.Shooter.speed)
+        // intakingMotor.set(0.75)
     }
 
     override fun periodic() {
@@ -136,12 +131,12 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
-        angleRollingAverage.addValue(jointMotor1.encoder.position);
+        angleRollingAverage.addValue(jointMotor1.encoder.position)
 
-        SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position);
+        SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
 
-        SmartDashboard.putNumber("current motor speed launcher", speed);
-        SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity);
+        SmartDashboard.putNumber("current motor speed launcher", speed)
+        SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
     }
 
     fun setSpeed(speed: Double) {
@@ -152,8 +147,8 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
-        SmartDashboard.putNumber("shooter desired angle", desiredAngle);
-        DriverStation.reportError("hello :3 from shooter", true);
+        SmartDashboard.putNumber("shooter desired angle", desiredAngle)
+        DriverStation.reportError("hello :3 from shooter", true)
     }
 
     fun atAngle():Boolean {
@@ -161,11 +156,11 @@ class Shooter(
     }
 
     fun setIntakingSpeed(speed: Double) {
-        intakingMotor.set(speed);
+        intakingMotor.set(speed)
     }
 
     fun intake() {
-        setIntakingSpeed(Constants.Shooter.intakeSpeed);
+        setIntakingSpeed(Constants.Shooter.intakeSpeed)
     }
 
     fun stopIntaking() {
@@ -173,127 +168,154 @@ class Shooter(
     }
 
     fun intakeButtonCommand(): Command {
-        val parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.intake();
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopIntaking()
-                }
-            },this);
+        val parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        parent.intake()
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopIntaking()
+                    }
+                },
+                this
+        )
     }
 
-    fun startShooting(amp:Boolean) {
-        val speed = if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed};
-        currentSetSpeed = speed;
+    fun startShooting(amp: Boolean) {
+        val speed =
+                if (amp) {
+                    Constants.Shooter.ampSpeed
+                } else {
+                    Constants.Shooter.speed
+                }
+        currentSetSpeed = speed
 
-        shooterSparkMax.set( speed);
+        shooterSparkMax.set(speed)
     }
-    
+
     fun stopShooting() {
-        shooterSparkMax.set(0.0);
-        currentSetSpeed = 0.0;
+        shooterSparkMax.set(0.0)
+        currentSetSpeed = 0.0
     }
 
     fun shootButton(): Command {
-        var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    parent.startShooting(false);
-                    parent.intake();
-                }
-            },object: Runnable {
-                override fun run() {
-                        parent.stopShooting();
-                        parent.stopIntaking();
-                }
-            },parent);
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        parent.startShooting(false)
+                        parent.intake()
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopShooting()
+                        parent.stopIntaking()
+                    }
+                },
+                parent
+        )
     }
 
     fun backButton(): Command {
-        var parent = this;
-        return Commands.startEnd(object: Runnable {
-                override fun run() {
-                    shooterSparkMax.set(0.1);
-                    currentSetSpeed = 0.1;
-                    intakingMotor.set(-0.1);
-                }
-            },object: Runnable {
-                override fun run() {
-                    parent.stopShooting();
-                    parent.stopIntaking();
-                }
-            },parent);
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        shooterSparkMax.set(0.1)
+                        currentSetSpeed = 0.1
+                        intakingMotor.set(-0.1)
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopShooting()
+                        parent.stopIntaking()
+                    }
+                },
+                parent
+        )
     }
 
-    fun shootTime(intake: Intake,amp: Boolean):Command {
-        val parent = this;
+    fun shootTime(intake: Intake, amp: Boolean): Command {
+        val parent = this
 
-        val supplier = {this.atSpeed(amp)}
+        val supplier = { this.atSpeed(amp) }
 
-        val command = Commands.sequence(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.startShooting(amp);
-                        }
-                }),
-                WaitUntilCommand(supplier),
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.intake();
-                            intake.startIntaking();
-                        }
-                }),
-                WaitCommand(Constants.Shooter.shootTime),
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.stopIntaking();
-                            parent.stopShooting();
-                            intake.stopIntaking();
-                        }
-                    }) 
-        );
+        val command =
+                Commands.sequence(
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.startShooting(amp)
+                                    }
+                                }
+                        ),
+                        WaitUntilCommand(supplier),
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.intake()
+                                        intake.startIntaking()
+                                    }
+                                }
+                        ),
+                        WaitCommand(Constants.Shooter.shootTime),
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.stopIntaking()
+                                        parent.stopShooting()
+                                        intake.stopIntaking()
+                                    }
+                                }
+                        )
+                )
 
         command.addRequirements(this)
 
-        return command;
+        return command
     }
 
-    fun pickup():Command {
-        val parent = this;
+    fun pickup(): Command {
+        val parent = this
 
-        val supplier:BooleanSupplier = BooleanSupplier {this.noteIn()};
+        val supplier: BooleanSupplier = BooleanSupplier { this.noteIn() }
 
-        val command = Commands.sequence(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.intake();
-                        }
-                }),
-                WaitUntilCommand(supplier)
-        );
+        val command =
+                Commands.sequence(
+                        InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        parent.intake()
+                                    }
+                                }
+                        ),
+                        WaitUntilCommand(supplier)
+                )
 
-        command.addRequirements(this);
+        command.addRequirements(this)
 
         return command.andThen(
-                InstantCommand(object: Runnable {
-                        override fun run() {
-                            parent.stopIntaking();
-                        }
-                },this));
+                InstantCommand(
+                        object : Runnable {
+                            override fun run() {
+                                parent.stopIntaking()
+                            }
+                        },
+                        this
+                )
+        )
     }
 
     override fun simulationPeriodic() {
-        SmartDashboard.putNumber("currentSetSpeed", currentSetSpeed);
-        topWheels.setInputVoltage(
-            currentSetSpeed * RobotController.getInputVoltage()
-        )
+        SmartDashboard.putNumber("currentSetSpeed", currentSetSpeed)
+        topWheels.setInputVoltage(currentSetSpeed * RobotController.getInputVoltage())
 
-        bottomWheels.setInputVoltage(
-            -currentSetSpeed * RobotController.getInputVoltage()
-        )
+        bottomWheels.setInputVoltage(-currentSetSpeed * RobotController.getInputVoltage())
 
         val voltage =
                 sim_joint_pid.calculate(joint.angleRads, desiredAngle).coerceIn(-1.0, 1.0) *
@@ -315,15 +337,18 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return inSensor.get();
+        return inSensor.get()
     }
 
-    fun atSpeed(amp:Boolean): Boolean {
+    fun atSpeed(amp: Boolean): Boolean {
         if (RobotBase.isReal()) {
-            speed = shooterSparkMax.encoder.velocity;
+            speed = shooterSparkMax.encoder.velocity
         }
 
-        return if (amp) {speed <= Constants.Shooter.ampShootingRotationSpeed} 
-               else {speed <= -4500.0};
+        return if (amp) {
+            speed <= Constants.Shooter.ampShootingRotationSpeed
+        } else {
+            speed <= -4500.0
+        }
     }
 }
