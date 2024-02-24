@@ -230,6 +230,12 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return CollectNote(PIDConstants(0.045, 0.0, 0.001), noteCamera, intake, swerveDrive, 10)
+            return CollectNote(
+                    PIDConstants(0.045, 0.0, 0.001000),
+                    noteCamera,
+                    intake,
+                    swerveDrive,
+                    10
+            )
         }
 }
