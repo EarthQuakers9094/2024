@@ -2,20 +2,13 @@ package frc.robot
 
 import Pose
 import com.pathplanner.lib.util.PIDConstants
-import edu.wpi.first.apriltag.AprilTagFieldLayout
-import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.Config
-import java.util.Optionalimport edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform3d
-import edu.wpi.first.math.geometry.Translation3d
-import frc.robot.utils.Config
-
+import java.util.Optional
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -44,11 +37,6 @@ object Constants {
         val ROTATION_PID_TELEOP = PIDConstants(1.0, 0.0, 0.0)
     }
     object OperatorConstants {
-        const val kDriverControllerPort = 2
-        const val driverLeftStickPort = 0
-        const val driverRightStickPort = 1
-        const val LEFT_X_DEADBAND = 0.1
-        const val LEFT_Y_DEADBAND = 0.1
         const val kDriverControllerPort = 2
         const val driverLeftStickPort = 0
         const val driverRightStickPort = 1
@@ -111,26 +99,25 @@ object Constants {
 
         const val positionConversionFactor = 1.0 / 24.0 * Math.PI
         const val tolerance = 30.0
-        const val intakeSpeed = 0.9
-        const val speed = -0.75
+        // const val intakeSpeed = 0.9
+        // const val speed = -0.75
 
-        const val spinuptime = 5.0
-        const val shootTime = 0.6
-        const val closestDistance = 200
+        // const val spinuptime = 5.0
+        // const val shootTime = 0.6
+        // const val closestDistance = 200
         val validTargets = arrayOf(4, 3)
         const val ampSpeed = -0.2
         const val ampShootingRotationSpeed = 0.0
 
         const val startAngle = Math.PI * 73.0 / 180.0
 
-        const val intakeMotorID = 30
         const val inSensorID = 0
-        const val topCanid = 31
-        const val bottomCanID = 32
-        const val shooterJointCanID = 29
-        const val topCanid = 26
-        const val bottomCanID = 27
-        const val shooterJointCanID = 28
+        // const val topCanid = 31
+        // const val bottomCanID = 32
+        // const val shooterJointCanID = 29
+        // const val topCanid = 26
+        // const val bottomCanID = 27
+        // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
         const val intakeSpeed = 0.9
         const val speed = -0.75
@@ -139,7 +126,6 @@ object Constants {
         const val shootTime = 0.6
         const val closestDistance = 200
     }
-
 
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
