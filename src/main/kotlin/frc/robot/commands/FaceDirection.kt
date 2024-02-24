@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController
 import frc.robot.Constants
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
+import frc.robot.utils.MovingAverage
 import org.photonvision.PhotonCamera
 import kotlin.math.atan2
 import swervelib.SwerveDrive
@@ -23,11 +24,14 @@ class FaceDirection(private val swerveDrive: Swerve, private val rotation: () ->
         Constants.Drivebase.ROTATION_PID_TELEOP.kD
     );
 
+    var angleRollingAverage = MovingAverage(40);
+
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
         addRequirements(swerveDrive);
 
         pid.enableContinuousInput(-Math.PI, Math.PI);
+        SmartDashboard.putData("face direction pid", pid);
     }
 
     override fun initialize() {
@@ -41,11 +45,15 @@ class FaceDirection(private val swerveDrive: Swerve, private val rotation: () ->
 
         SmartDashboard.putNumber("desired rotation", desired.radians);
         
-        SmartDashboard.putNumber("my angle", swerveDrive.getPos().rotation.radians);
+        val angle = swerveDrive.getPos().rotation.radians
+        
+        SmartDashboard.putNumber("my angle", angle);
 
-        val pidoutput = pid.calculate(swerveDrive.getPos().rotation.radians, desired.radians);
+        val pidoutput = pid.calculate(angle, desired.radians);
 
         SmartDashboard.putNumber("pidoutput", pidoutput);
+
+        angleRollingAverage.addValue(angle)
 
         swerveDrive.drive(
             Translation2d(0.0,0.0), 
@@ -55,7 +63,7 @@ class FaceDirection(private val swerveDrive: Swerve, private val rotation: () ->
 
     override fun isFinished(): Boolean {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return Math.abs(swerveDrive.getPos().rotation.radians - angle.radians) <= 0.01 && !follow;
+        return Math.abs(angleRollingAverage.getAverage() - angle.radians) <= 0.06 && !follow;
     }
 
     override fun end(interrupted: Boolean) {

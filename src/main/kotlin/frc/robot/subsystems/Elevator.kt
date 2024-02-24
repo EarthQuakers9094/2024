@@ -20,6 +20,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.math.trajectory.TrapezoidProfile
 
 
 /** Creates a new ExampleSubsystem. */
@@ -34,7 +35,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                     Constants.Elevator.gearing,
                     10.0,
                     0.2,
-                    0.1,
+                    0.0,
                     0.762,
                     true,
                     0.762
@@ -52,11 +53,15 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     
     private var pid = { -> if (climbing) {climbingPid} else {normalPid}}
 
-    private var desiredPosition = 0.2
+    private var desiredPosition = 0.0
 
     private var averagePostion = MovingAverage(10)
 
     private var pidMode = true
+
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(10.0,10.0));
+
+    private var currentState = TrapezoidProfile.State(0.0,0.0);
 
     var climbing = false
 
@@ -64,7 +69,11 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         liftSparkMax.restoreFactoryDefaults()
         followMotor.restoreFactoryDefaults()
 
-        followMotor.follow(liftSparkMax);
+        while (!liftSparkMax.inverted) {
+            liftSparkMax.inverted = true; // 0.052404
+        }
+
+        followMotor.follow(liftSparkMax,true);
 
         liftSparkMax.encoder.positionConversionFactor = 1.0
         liftSparkMax.encoder.position = 0.0;
@@ -76,6 +85,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         liftSparkMax.pidController.d = Constants.Elevator.pid.kD
 
         SmartDashboard.putData("sim pid", sim_pid)
+        SmartDashboard.putData("elevator pid", pid);
         SmartDashboard.putNumber("desired elevator location", 0.1)
 
         if (!RobotBase.isReal()) {
@@ -88,14 +98,21 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     /** This method will be called once per scheduler run */
     override fun periodic() {
         SmartDashboard.putNumber("elevator position", liftSparkMax.encoder.position)
-        desiredPosition = SmartDashboard.getNumber("desired elevator location", 0.1)
         averagePostion.addValue(liftSparkMax.encoder.position)
+        SmartDashboard.putNumber("desired elevator position", desiredPosition)
 
         if (pidMode) {
 
-            val output = pid().calculate(liftSparkMax.encoder.position, desiredPosition) + Constants.Elevator.feedforward
+            val nextPosition = profile.calculate(
+                0.02, 
+                currentState, 
+                TrapezoidProfile.State(desiredPosition,0.0));
 
-            SmartDashboard.putNumber("elevator output", output);
+            val output = pid.calculate(liftSparkMax.encoder.position, nextPosition.position) + Constants.Elevator.feedforward
+
+            currentState = nextPosition;
+
+            SmartDashboard.putNumber("elevator output", output); // 
 
             liftSparkMax.set(output);
         }

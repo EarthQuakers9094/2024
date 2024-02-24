@@ -8,6 +8,12 @@
         "open": true
       },
       "SmartDashboard": {
+        "elevator pid": {
+          "open": true
+        },
+        "face direction pid": {
+          "open": true
+        },
         "open": true
       }
     },
@@ -15,10 +21,24 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
-      "/SmartDashboard/Pigeon 2 [31]": "Gyro",
+      "/SmartDashboard/elevator pid": "PIDController",
+      "/SmartDashboard/face direction pid": "PIDController",
       "/SmartDashboard/joint pid": "PIDController",
       "/SmartDashboard/sim pid": "PIDController",
       "/SmartDashboard/turning pid": "PIDController"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables Info": {
@@ -56,6 +76,51 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/shooter angle"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/elevator position"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/desired elevator location"
+            },
+            {
+              "color": [
+                0.5058823823928833,
+                0.44705885648727417,
+                0.7019608020782471,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/desired elevator position"
+            },
+            {
+              "color": [
+                0.5764706134796143,
+                0.4705882668495178,
+                0.3764706254005432,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/face direction pid/setpoint"
+            },
+            {
+              "color": [
+                0.8549020290374756,
+                0.545098066329956,
+                0.7647059559822083,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/my angle"
             }
           ]
         }

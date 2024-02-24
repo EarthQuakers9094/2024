@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
 import java.util.function.BooleanSupplier
-import kotlin.sequences.sequence
+import com.revrobotics.SparkPIDController
 
 class Shooter(
         private val shooterCanID: Int,
@@ -78,7 +78,7 @@ class Shooter(
 
     private var inSensor = DigitalInput(Constants.Shooter.inSensorID)
 
-    private var currentSetSpeed = 0.0
+    private var currentSetSpeed = 0.0;
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
@@ -96,7 +96,11 @@ class Shooter(
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
 
-        jointMotor1.encoder.position = Constants.Shooter.startAngle
+        jointMotor1.encoder.position = Constants.Shooter.startAngle;
+
+        jointMotor1.pidController.setSmartMotionMaxVelocity(1.5,0);
+        jointMotor1.pidController.setSmartMotionMaxAccel(1.0,0);
+        jointMotor1.pidController.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -147,8 +151,8 @@ class Shooter(
         DriverStation.reportError("hello :3 from shooter", true)
     }
 
-    fun atAngle(): Boolean {
-        return (angleRollingAverage.getAverage() - desiredAngle) <= 0.005
+    fun atAngle():Boolean {
+        return (angleRollingAverage.getAverage() - desiredAngle) <= 0.05;
     }
 
     fun setIntakingSpeed(speed: Double) {
