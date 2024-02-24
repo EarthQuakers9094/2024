@@ -162,12 +162,12 @@ class RobotContainer {
             JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake())
             JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton())
 
-            JoystickButton(operatorExtra, 5).whileTrue(elevator!!.up())
-            JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down())
+            JoystickButton(operatorExtra, 7).whileTrue(elevator!!.up())
+            JoystickButton(operatorExtra, 8).whileTrue(elevator!!.down())
 
             JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!));
 
-            JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
+        // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
 
             JoystickButton(driverLeftStick, 4)
                     .whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))

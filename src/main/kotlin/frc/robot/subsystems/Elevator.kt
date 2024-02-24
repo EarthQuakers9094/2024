@@ -34,7 +34,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                     Constants.Elevator.gearing,
                     10.0,
                     0.2,
-                    0.1,
+                    0.0,
                     0.762,
                     true,
                     0.762
@@ -49,7 +49,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     
     private var pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD);
 
-    private var desiredPosition = 0.2
+    private var desiredPosition = 0.0
 
     private var averagePostion = MovingAverage(10)
 
@@ -81,7 +81,6 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     /** This method will be called once per scheduler run */
     override fun periodic() {
         SmartDashboard.putNumber("elevator position", liftSparkMax.encoder.position)
-        desiredPosition = SmartDashboard.getNumber("desired elevator location", 0.1)
         averagePostion.addValue(liftSparkMax.encoder.position)
 
         if (pidMode) {
