@@ -203,8 +203,15 @@ class RobotContainer {
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
-        JoystickButton(driverRightStick, 2)
+        JoystickButton(driverRightStick, 3)
                 .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
+        JoystickButton(driverRightStick, 4)
+                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to pickup"), true))
+
+        JoystickButton(driverLeftStick, 3)
+                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position1"), true))
+        JoystickButton(driverRightStick, 4)
+                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position2"), true))
     }
 
     fun setMotorBrake(enabled: Boolean) {

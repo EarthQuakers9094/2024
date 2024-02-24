@@ -12,22 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "start to spike 1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pickup"
-                }
-              }
-            ]
+            "pathName": "start to spike 1"
           }
         },
         {
