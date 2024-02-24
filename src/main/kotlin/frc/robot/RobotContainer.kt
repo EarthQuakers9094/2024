@@ -2,20 +2,21 @@ package frc.robot
 
 import FollowTrajectory
 import Pickup
-import RunAuto
 import ShootTime
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
+import com.pathplanner.lib.util.PIDConstants
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.PS4Controller
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.Brake
+import frc.robot.commands.CollectNote
 import frc.robot.commands.FaceDirection
 import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
@@ -25,12 +26,6 @@ import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
-import ShootTime
-import frc.robot.commands.AimShooter
-import frc.robot.commands.SetValue
-import frc.robot.commands.FaceDirection
-import com.pathplanner.lib.auto.NamedCommands
-import edu.wpi.first.math.geometry.Rotation2d
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,7 +37,7 @@ class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
     private val aprilCamera = PhotonCamera("BW")
-    private val noteCamera = PhotonCamera("NC")
+    private val noteCamera = PhotonCamera("CLR")
     private val swerveDrive = Swerve(/*aprilCamera*/ )
 
     private var elevator: Elevator? = null
@@ -86,11 +81,19 @@ class RobotContainer {
                     )
             elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
 
-            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
-            NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
-            NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
-            NamedCommands.registerCommand("facedown", FaceDirection(swerveDrive, {Rotation2d.fromRadians(-Math.PI/2.0)}, false));
-
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build())
+            NamedCommands.registerCommand(
+                    "faceSpeaker",
+                    FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
+            )
+            NamedCommands.registerCommand(
+                    "shoot",
+                    ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build()
+            )
+            NamedCommands.registerCommand(
+                    "facedown",
+                    FaceDirection(swerveDrive, { Rotation2d.fromRadians(-Math.PI / 2.0) }, false)
+            )
         }
 
         configureBindings()
@@ -106,7 +109,6 @@ class RobotContainer {
 
             return speed
         }
-
 
         val leftY = {
             MathUtil.applyDeadband(
@@ -185,14 +187,17 @@ class RobotContainer {
             JoystickButton(operatorExtra, 7).whileTrue(elevator!!.up())
             JoystickButton(operatorExtra, 8).whileTrue(elevator!!.down())
 
-            JoystickButton(operatorExtra, 9).onTrue(SetValue.setHeight(elevator!!, 47.0));
-            JoystickButton(operatorExtra, 10).onTrue(SetValue.setHeight(elevator!!, 0.0));
+            JoystickButton(operatorExtra, 9).onTrue(SetValue.setHeight(elevator!!, true, 47.0))
+            JoystickButton(operatorExtra, 10).onTrue(SetValue.setHeight(elevator!!, true, 0.0))
 
-            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
+            JoystickButton(driverLeftStick, 3)
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!).build())
 
-        // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
+            // JoystickButton(operatorExtra,
+            // 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
 
-            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
+            JoystickButton(driverLeftStick, 4)
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
             JoystickButton(driverLeftStick, 5)
                     .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
         }
@@ -207,7 +212,14 @@ class RobotContainer {
     }
 
     fun periodic() {
-        operatorExtra.setRumble(GenericHID.RumbleType.kBothRumble, (if (noteCamera.latestResult.hasTargets()) {1.0} else {0.0}))
+        operatorExtra.setRumble(
+                GenericHID.RumbleType.kBothRumble,
+                (if (noteCamera.latestResult.hasTargets()) {
+                    1.0
+                } else {
+                    0.0
+                })
+        )
     }
 
     /**
@@ -218,6 +230,6 @@ class RobotContainer {
     val autonomousCommand: Command
         get() {
             // An example command will be run in autonomous
-            return RunAuto("do nothing")
+            return CollectNote(PIDConstants(0.045, 0.0, 0.001), noteCamera, intake, swerveDrive, 10)
         }
 }

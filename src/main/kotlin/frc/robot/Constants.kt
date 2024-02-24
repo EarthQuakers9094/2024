@@ -139,7 +139,7 @@ object Constants {
 
         const val gearing = 30.0
         const val followMotorID = 28
-        const val maxHeight = 47; //45.690002;
+        const val maxHeight = 47.0; //45.690002;
         const val minHeight = 0.0
         const val feedforward = 0.052404
 
