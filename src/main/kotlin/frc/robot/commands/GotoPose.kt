@@ -12,10 +12,8 @@ import Pose
 class GotoPose(private val shooter: Shooter,private val elevator: Elevator, private val pose: Pose, private val elevatorFirst: Boolean) : SequentialCommandGroup() {
     init {
         // each subsystem used by the command must be passed into the addRequiresments() method
-        addRequirements(shooter,elevator);
-
-        val height = SetValue.setHeight(elevator, false, pose.height);
-        val angle = SetValue.setShootingAngle(shooter, false, pose.angle);
+        val height = SetValue.setHeight(elevator, pose.height);
+        val angle = SetValue.setShootingAngle(shooter, pose.angle);
         
         if (elevatorFirst) {
             addCommands(height,angle);

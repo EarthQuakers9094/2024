@@ -4,17 +4,18 @@ import FollowTrajectory
 import Pickup
 import RunAuto
 import ShootTime
+import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.PS4Controller
-import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.Brake
+import frc.robot.commands.FaceDirection
 import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
@@ -76,6 +77,17 @@ class RobotContainer {
                             Constants.Shooter.shooterJointCanID,
                             Constants.Shooter.intakeMotorID
                     )
+            elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
+
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build())
+            NamedCommands.registerCommand(
+                    "faceSpeaker",
+                    FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
+            )
+            NamedCommands.registerCommand(
+                    "shoot",
+                    ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build()
+            )
         }
 
         configureBindings()
@@ -115,7 +127,10 @@ class RobotContainer {
 
         val driveMode = { true }
 
-        val simClosedFieldRel = TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode)
+        val faceSpeaker = { driverRightStick.getRawButton(7) }
+
+        val simClosedFieldRel =
+                TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker)
 
         swerveDrive.defaultCommand = simClosedFieldRel
     }
@@ -139,12 +154,14 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
-        if (shooter != null && intake != null) {
+        if (shooter != null && intake != null && elevator != null) {
             SmartDashboard.putBoolean("shooter", true)
 
             JoystickButton(driverLeftStick, 2)
-                    .onTrue(ShootTime(shooter!!, intake!!, elevator!!, aprilCamera))
-
+                    .onTrue(
+                            ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera!!)
+                                    .build()
+                    )
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
@@ -155,12 +172,15 @@ class RobotContainer {
             JoystickButton(operatorExtra, 5).whileTrue(elevator!!.up())
             JoystickButton(operatorExtra, 6).whileTrue(elevator!!.down())
 
-            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!))
+            JoystickButton(driverLeftStick, 3)
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!).build())
 
-            JoystickButton(driverLeftStick, 4)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, 0.0))
+            JoystickButton(operatorExtra, 7)
+                    .whileTrue(FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, true))
+
+            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, true, Math.PI / 3))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
         }
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
         JoystickButton(driverRightStick, 2)

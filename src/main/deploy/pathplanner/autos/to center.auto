@@ -12,9 +12,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "tocenter"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "tocenter"
+                }
+              }
+            ]
           }
         }
       ]

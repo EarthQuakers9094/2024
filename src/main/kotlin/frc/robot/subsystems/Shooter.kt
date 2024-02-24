@@ -3,6 +3,7 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
+import edu.wpi.first.wpilibj.DriverStation
 import com.revrobotics.CANSparkMax
 import com.revrobotics.ColorSensorV3
 import edu.wpi.first.math.controller.PIDController
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import frc.robot.RobotContainer
 import kotlin.sequences.sequence
 import java.util.function.BooleanSupplier
 
@@ -44,7 +46,7 @@ class Shooter(
 
     private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
 
-    private val intakingMotor = CANSparkFlex(15, CANSparkLowLevel.MotorType.kBrushless)
+    private val intakingMotor = CANSparkFlex(intakeMotorID, CANSparkLowLevel.MotorType.kBrushless)
 
     private var currentSetPoint = 0.0
     private var currentAverage = MovingAverage(10)
@@ -52,7 +54,7 @@ class Shooter(
     private var topWheels = FlywheelSim(DCMotor.getNeoVortex(1), 1.0, 0.00176)
 
     private var joint =
-            SingleJointedArmSim(DCMotor.getNEO(2), 30.0, 0.616, 0.43, 0.0, Math.PI / 2.0, true, 0.0)
+            SingleJointedArmSim(DCMotor.getNEO(2), 30.0, 0.2, 0.43, 0.0, Math.PI / 2.0, true, 0.0)
 
     private var sim_top_pid =
             PIDController(
@@ -79,17 +81,26 @@ class Shooter(
 
     private var inSensor = DigitalInput(Constants.Shooter.inSensorID);
 
+    private var currentSetSpeed = 0.0;
+
+
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
         intakingMotor.restoreFactoryDefaults()
 
+        while (!jointMotor1.inverted) {
+            jointMotor1.inverted = true;
+        }
+
         jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
         jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
         jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
+
+        jointMotor1.encoder.position = Constants.Shooter.startAngle;
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -98,6 +109,8 @@ class Shooter(
 
         shooterSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
         followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
+        intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)
+
 
         shooterSparkMax.pidController.setP(Constants.Shooter.p)
         shooterSparkMax.pidController.setI(Constants.Shooter.i)
@@ -135,6 +148,8 @@ class Shooter(
     fun setAngle(angle: Double) {
         jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
+        SmartDashboard.putNumber("shooter desired angle", desiredAngle);
+        DriverStation.reportError("hello :3 from shooter", true);
     }
 
     fun atAngle():Boolean {
@@ -167,18 +182,22 @@ class Shooter(
     }
 
     fun startShooting(amp:Boolean) {
-        shooterSparkMax.set(if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed} );
+        val speed = if (amp) {Constants.Shooter.ampSpeed} else {Constants.Shooter.speed};
+        currentSetSpeed = speed;
+
+        shooterSparkMax.set( speed);
     }
     
     fun stopShooting() {
         shooterSparkMax.set(0.0);
+        currentSetSpeed = 0.0;
     }
 
     fun shootButton(): Command {
         var parent = this;
         return Commands.startEnd(object: Runnable {
                 override fun run() {
-                    parent.startShooting(true);
+                    parent.startShooting(false);
                     parent.intake();
                 }
             },object: Runnable {
@@ -194,6 +213,7 @@ class Shooter(
         return Commands.startEnd(object: Runnable {
                 override fun run() {
                     shooterSparkMax.set(0.1);
+                    currentSetSpeed = 0.1;
                     intakingMotor.set(-0.1);
                 }
             },object: Runnable {
@@ -262,16 +282,13 @@ class Shooter(
     }
 
     override fun simulationPeriodic() {
+        SmartDashboard.putNumber("currentSetSpeed", currentSetSpeed);
         topWheels.setInputVoltage(
-                sim_top_pid
-                        .calculate(topWheels.angularVelocityRPM, currentSetPoint)
-                        .coerceIn(-1.0..1.0) * RobotController.getInputVoltage()
+            currentSetSpeed * RobotController.getInputVoltage()
         )
 
         bottomWheels.setInputVoltage(
-                sim_bottom_pid
-                        .calculate(topWheels.angularVelocityRPM, currentSetPoint)
-                        .coerceIn(-1.0..1.0) * RobotController.getInputVoltage()
+            -currentSetSpeed * RobotController.getInputVoltage()
         )
 
         val voltage =
@@ -298,7 +315,11 @@ class Shooter(
     }
 
     fun atSpeed(amp:Boolean): Boolean {
-        return if (amp) {shooterSparkMax.encoder.velocity <= Constants.Shooter.ampShootingRotationSpeed} 
-               else {shooterSparkMax.encoder.velocity <= -4500.0};
+        if (RobotBase.isReal()) {
+            speed = shooterSparkMax.encoder.velocity;
+        }
+
+        return if (amp) {speed <= Constants.Shooter.ampShootingRotationSpeed} 
+               else {speed <= -4500.0};
     }
 }

@@ -24,6 +24,7 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
+import kotlin.math.atan2
 
 class Swerve(
 // private val camera: PhotonCamera
@@ -36,7 +37,7 @@ class Swerve(
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
 
-    val aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
+    // val aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
     //    val poseEstimator =
     //            PhotonPoseEstimator(
     //                    aprilTagFieldLayout,
@@ -142,6 +143,10 @@ class Swerve(
         ) // Open loop is disabled since it shouldn't be used most of the time.
     }
 
+    fun drive(velocity: ChassisSpeeds, isOpenLoop: Boolean, centerOfRotationMeters: Translation2d) {
+        swerveDrive.drive(velocity,isOpenLoop,centerOfRotationMeters);
+    }
+
     fun driveRobotRel(speeds: ChassisSpeeds) {
         drive(
                 Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond),
@@ -172,6 +177,15 @@ class Swerve(
 
     fun getSpeeds(): ChassisSpeeds {
         return swerveDrive.fieldVelocity
+    }
+
+    fun speakerAngle(): Rotation2d {
+        val location = getPos();
+        
+        val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
+        val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
+
+        return Rotation2d.fromRadians(atan2(ydif,xdif));
     }
 
     /** This method will be called once per scheduler run during simulation */

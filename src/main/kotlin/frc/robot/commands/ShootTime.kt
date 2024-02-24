@@ -13,49 +13,38 @@ import java.util.function.BooleanSupplier
 import frc.robot.subsystems.Swerve
 import frc.robot.subsystems.Elevator
 import frc.robot.commands.AimShooter
+import frc.robot.commands.FaceDirection
 import org.photonvision.PhotonCamera
 
 
-class ShootTime(private val shooter: Shooter,private val intake: Intake,private val elevator: Elevator, private val camera: PhotonCamera) : SequentialCommandGroup() {
-    private enum class State {
-        SpinningUp,
-        Shooting,
-    }
 
-    private var spinUpTimer = Timer();
+class ShootTime(private val shooter: Shooter,private val intake: Intake,private val elevator: Elevator, private val swerveDrive: Swerve, private val camera: PhotonCamera) : CommandSequence() {
 
-    private var state = State.SpinningUp;
+    val supplier = {shooter.atSpeed(false)}
 
-    init {
-        addRequirements(shooter);
-        addRequirements(intake);
+    override val commands: List<Command> = listOf(
+        InstantCommand(object: Runnable {
+            override fun run() {
+                intake.startIntaking();
+            }},intake),
+        FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false),
+        AimShooter(camera,shooter,swerveDrive),
+        InstantCommand(object: Runnable {
+            override fun run() {
+                shooter.startShooting(false);
+            }
+        },shooter),
+        WaitUntilCommand(supplier),
+        InstantCommand(object: Runnable {
+            override fun run() {
+                shooter.intake();
+            }
+        },shooter),
+        WaitCommand(Constants.Shooter.shootTime));
 
-        val supplier = {shooter.atSpeed(false)}
-
-        addCommands(
-            InstantCommand(object: Runnable {
-                override fun run() {
-                    intake.startIntaking();
-                }
-            }),
-            AimShooter(camera,shooter),
-            InstantCommand(object: Runnable {
-                override fun run() {
-                    shooter.startShooting(false);
-                }
-            }),
-            WaitUntilCommand(supplier),
-            InstantCommand(object: Runnable {
-                override fun run() {
-                    shooter.intake();
-                }
-            }),
-            WaitCommand(Constants.Shooter.shootTime));
-
-            finallyDo(Runnable {
-                shooter.stopIntaking();
-                intake.stopIntaking();
-                shooter.stopShooting();
-            });
+    override fun finally(interrupted: Boolean) { 
+        shooter.stopIntaking();
+        intake.stopIntaking();
+        shooter.stopShooting();
     }
 }
