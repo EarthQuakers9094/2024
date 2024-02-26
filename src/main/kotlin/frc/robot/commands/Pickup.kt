@@ -7,6 +7,7 @@ import frc.robot.commands.GotoPose
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
+import frc.robot.commands.CommandSequence
 import java.util.function.BooleanSupplier
 
 class Pickup(private val shooter: Shooter, elevator: Elevator, private val intake: Intake) :

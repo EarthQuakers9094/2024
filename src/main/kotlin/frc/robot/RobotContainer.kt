@@ -28,6 +28,8 @@ import frc.robot.commands.SetValue
 import frc.robot.commands.FaceDirection
 import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Rotation2d
+import frc.robot.commands.CommandSequence
+import frc.robot.commands.Climb
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -184,8 +186,9 @@ class RobotContainer {
             JoystickButton(operatorExtra, 9).onTrue(SetValue.setHeight(elevator!!, 47.0));
             JoystickButton(operatorExtra, 10).onTrue(SetValue.setHeight(elevator!!, 0.0));
 
-            JoystickButton(driverLeftStick, 3).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
+            JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
+            JoystickButton(driverRightStick, 12).toggleOnTrue(Climb(elevator!!).build());
         // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
  
             JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))

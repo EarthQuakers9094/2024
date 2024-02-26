@@ -35,24 +35,26 @@ class SetValue(
         fun setShootingAngle(shooter: Shooter, angle: Double): Command {
             return SetValue(shooter, { shooter.setAngle(angle) }) { shooter.atAngle() }
         }
+
         fun setHeight(elevator: Elevator, height: Double): Command {
             return SetValue(elevator, { elevator.setPosition(height) }) {
                 elevator.atPosition()
             }
         }
-        fun climb(elevator: Elevator): Command {
-            return SequentialCommandGroup(
-                    SetValue(
-                            elevator,
-                            { elevator.setPosition(Constants.Elevator.maxHeight) }
-                    ) { elevator.atPosition() },
-                    InstantCommand({ elevator.setClimbing(true) }, elevator),
-                    SetValue(
-                            elevator,
-                            { elevator.setPosition(Constants.Elevator.minHeight) }
-                    ) { elevator.atPosition() },
-                    InstantCommand({ elevator.setClimbing(false) }, elevator)
-            )
-        }
+
+        // fun climb(elevator: Elevator): Command {
+        //     return SequentialCommandGroup(
+        //             SetValue(
+        //                     elevator,
+        //                     { elevator.setPosition(Constants.Elevator.maxHeight) }
+        //             ) { elevator.atPosition() },
+        //             InstantCommand({ elevator.setClimbing(true) }, elevator),
+        //             SetValue(
+        //                     elevator,
+        //                     { elevator.setPosition(Constants.Elevator.minHeight) }
+        //             ) { elevator.atPosition() },
+        //             InstantCommand({ elevator.setClimbing(false) }, elevator)
+        //     )
+        // }
     }
 }

@@ -9,6 +9,7 @@ import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
+import frc.robot.commands.CommandSequence
 import org.photonvision.PhotonCamera
 
 class ShootTime(

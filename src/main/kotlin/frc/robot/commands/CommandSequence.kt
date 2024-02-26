@@ -1,4 +1,4 @@
-
+package frc.robot.commands
 
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
@@ -8,7 +8,7 @@ abstract class CommandSequence() {
     abstract val commands: List<Command>;
     abstract fun finally(interrupted: Boolean);
 
-    fun build(): Command {
+    public fun build(): Command {
 
         var sequence = SequentialCommandGroup();
         

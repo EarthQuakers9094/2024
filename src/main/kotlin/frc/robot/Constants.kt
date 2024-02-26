@@ -50,7 +50,7 @@ object Constants {
     }
     object Intake {
         const val bonusMotorSpeed = 1.0
-        const val speed = -0.60
+        const val speed = -1.0
         // const val speed = 0.0
         const val motorid = 24
         const val followMotorId = 25
@@ -93,15 +93,13 @@ object Constants {
 
     object Shooter {
 
-        val shooterJointCanID = 0
-        const val bottomCanID = 0
-        const val topCanid = 0
+        val shooterJointCanID = 29
+        const val bottomCanID = 31
+        const val topCanid = 32
         const val trapAngle = 0.0
         const val angleOffset = 0.0
         const val distanceOffset = 0.0
         const val heightOffset = 0.0
-        const val mainShooterID = -1
-        const val followerShooterID = -1
         const val p = 0.0
         const val i = 0.0
         const val d = 0.0
