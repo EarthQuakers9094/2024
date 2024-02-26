@@ -30,6 +30,7 @@ import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.commands.CommandSequence
 import frc.robot.commands.Climb
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -58,6 +59,8 @@ class RobotContainer {
     //         )
 
     private var intake: Intake? = null
+
+    private var faceSpeaker = false;
 
     val operatorExtra = XboxController(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
@@ -189,7 +192,17 @@ class RobotContainer {
             JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
             JoystickButton(driverRightStick, 12).toggleOnTrue(Climb(elevator!!).build());
-        // JoystickButton(operatorExtra, 7).whileTrue(FaceDirection(swerveDrive,{swerveDrive.speakerAngle()},true));
+    
+            JoystickButton(operatorExtra, 7).toggleOnTrue(
+                SequentialCommandGroup(
+                    InstantCommand(object : Runnable {
+                        override fun run() {
+                            faceSpeaker = true;
+                        }
+                    }),
+                    AimShooter(aprilCamera, shooter!!, swerveDrive, false)
+                    ).finallyDo({_ -> faceSpeaker = false; })
+                );
  
             JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
@@ -202,7 +215,7 @@ class RobotContainer {
                     }
                 },
                 swerveDrive
-        ),)
+            ),)
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))

@@ -10,7 +10,7 @@ import swervelib.SwerveDrive
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 
-class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter, private val swerveDrive: Swerve) : Command() {
+class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter, private val swerveDrive: Swerve, private val terminate: Boolean) : Command() {
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
         addRequirements(shooter)
@@ -38,7 +38,7 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter,
 
     override fun isFinished(): Boolean {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return shooter.atAngle();
+        return shooter.atAngle() && terminate;
     }
 
     override fun end(interrupted: Boolean) {

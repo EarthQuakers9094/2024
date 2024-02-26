@@ -33,7 +33,7 @@ class ShootTime(
                             intake
                     ),
                     FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false),
-                    AimShooter(camera, shooter, swerveDrive),
+                    AimShooter(camera, shooter, swerveDrive, true),
                     InstantCommand(
                             object : Runnable {
                                 override fun run() {

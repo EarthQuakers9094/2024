@@ -5,16 +5,29 @@
       "x": 1.241177037061454,
       "y": 5.692196626123532
     },
-    "rotation": 90.0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "start to C"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "start to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              }
+            ]
           }
         },
         {
@@ -24,9 +37,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "C to B"
+            "name": "facedown"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C to B"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,9 +68,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "SPIN TEST"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "B to A"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
