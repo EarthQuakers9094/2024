@@ -3,18 +3,26 @@ package frc.robot
 import FollowTrajectory
 import Pickup
 import RunAuto
+import Shoot
+import ShootTime
+import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.PS4Controller
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
+import frc.robot.commands.AimShooter
 import frc.robot.commands.Brake
+import frc.robot.commands.Climb
+import frc.robot.commands.FaceDirection
+import frc.robot.commands.GotoPose
+import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
@@ -22,16 +30,6 @@ import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
-import ShootTime
-import frc.robot.commands.AimShooter
-import frc.robot.commands.SetValue
-import frc.robot.commands.FaceDirection
-import com.pathplanner.lib.auto.NamedCommands
-import edu.wpi.first.math.geometry.Rotation2d
-import frc.robot.commands.CommandSequence
-import frc.robot.commands.Climb
-import frc.robot.commands.GotoPose
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,9 +59,9 @@ class RobotContainer {
 
     private var intake: Intake? = null
 
-    private var faceSpeaker = false;
+    private var faceSpeaker = false
 
-    val operatorExtra = XboxController(Constants.OperatorConstants.kDriverControllerPort)
+    val operatorExtra = CommandXboxController(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
@@ -89,10 +87,19 @@ class RobotContainer {
                     )
             elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
 
-            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
-            NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
-            NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
-            NamedCommands.registerCommand("facedown", FaceDirection(swerveDrive, {Rotation2d.fromRadians(-Math.PI/2.0)}, false));
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!, false).build())
+            NamedCommands.registerCommand(
+                    "faceSpeaker",
+                    FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
+            )
+            NamedCommands.registerCommand(
+                    "shoot",
+                    ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build()
+            )
+            NamedCommands.registerCommand(
+                    "facedown",
+                    FaceDirection(swerveDrive, { Rotation2d.fromRadians(-Math.PI / 2.0) }, false)
+            )
         }
 
         configureBindings()
@@ -108,7 +115,6 @@ class RobotContainer {
 
             return speed
         }
-
 
         val leftY = {
             MathUtil.applyDeadband(
@@ -160,69 +166,102 @@ class RobotContainer {
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
         // driverController.b().whileTrue(exampleSubsystem.exampleMethodCommand())
+        val mattSaysNoFancy = true
         if (shooter != null && intake != null && elevator != null) {
             SmartDashboard.putBoolean("shooter", true)
 
-            JoystickButton(driverLeftStick, 2)
+            if (!mattSaysNoFancy) {
+                JoystickButton(driverLeftStick, 2)
+                        .onTrue(
+                                ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
+                                        .build()
+                        )
+                operatorExtra.x()
+                    .toggleOnTrue(
+                        SequentialCommandGroup(
+                            InstantCommand(
+                                object : Runnable {
+                                    override fun run() {
+                                        faceSpeaker = true
+                                    }
+                                }
+                            ),
+                            AimShooter(aprilCamera, shooter!!, swerveDrive, false)
+                        )
+                            .finallyDo({ _ -> faceSpeaker = false })
+                    )
+                JoystickButton(operatorExtra.hid, 6)
+                    .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.highPickup, true))
+                JoystickButton(driverRightStick, 3)
+                    .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
+                JoystickButton(driverRightStick, 4)
                     .onTrue(
-                            ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
-                                    .build()
+                        FollowTrajectory(
+                            swerveDrive,
+                            PathPlannerPath.fromPathFile("to pickup"),
+                            true
+                        )
+                    )
+                JoystickButton(driverLeftStick, 3)
+                    .onTrue(
+                        FollowTrajectory(
+                            swerveDrive,
+                            PathPlannerPath.fromPathFile("to shoot position1"),
+                            true
+                        )
+                    )
+                JoystickButton(driverRightStick, 4)
+                    .onTrue(
+                        FollowTrajectory(
+                            swerveDrive,
+                            PathPlannerPath.fromPathFile("to shoot position2"),
+                            true
+                        )
+                    )
+            }
+
+            operatorExtra.rightTrigger().whileTrue(Shoot(shooter!!).build())
+            operatorExtra.rightBumper().whileTrue(shooter!!.backButton())
+            operatorExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
+            operatorExtra.leftBumper().whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())
+
+
+
+            operatorExtra.y().onTrue(SetValue.setHeight(elevator!!, 46.0))
+            operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
+            operatorExtra.b()
+                .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
+
+            JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
+            JoystickButton(driverRightStick, 6).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
+
+
+
+//            JoystickButton(driverLeftStick, 5)
+//                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI * 55 / 180))
+
+            JoystickButton(driverLeftStick, 7)
+                    .onTrue(
+                            InstantCommand(
+                                    object : Runnable {
+                                        override fun run() {
+                                            swerveDrive.resetOdomentry(
+                                                    Constants.Camera.resetPosition()
+                                            )
+                                        }
+                                    },
+                                    swerveDrive
+                            ),
                     )
 
-            JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
-            JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
-
-            JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake())
-            JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton())
-
-            JoystickButton(operatorExtra, 7).onTrue(SetValue.setHeight(elevator!!, 46.0));
-            JoystickButton(operatorExtra, 8).onTrue(SetValue.setHeight(elevator!!, 0.0));
-
-            JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
-
-            JoystickButton(driverRightStick, 12).toggleOnTrue(Climb(elevator!!).build());
-    
-            JoystickButton(operatorExtra, 7).toggleOnTrue(
-                SequentialCommandGroup(
-                    InstantCommand(object : Runnable {
-                        override fun run() {
-                            faceSpeaker = true;
-                        }
-                    }),
-                    AimShooter(aprilCamera, shooter!!, swerveDrive, false)
-                    ).finallyDo({_ -> faceSpeaker = false; })
-                );
- 
-            JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
-            JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI * 55 / 180))
-            
-            JoystickButton(driverLeftStick, 10).onTrue(InstantCommand(
-                object : Runnable {
-                    override fun run() {
-                        swerveDrive.resetOdomentry(Constants.Camera.resetPosition());
-                    }
-                },
-                swerveDrive
-            ),)
-
-            JoystickButton(operatorExtra, 5).onTrue(GotoPose(shooter!!,elevator!!, Constants.Poses.amp,true));
-            JoystickButton(operatorExtra, 6).onTrue(GotoPose(shooter!!,elevator!!, Constants.Poses.highPickup,true));
 
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
-        JoystickButton(driverRightStick, 3)
-                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
-        JoystickButton(driverRightStick, 4)
-                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to pickup"), true))
 
-        JoystickButton(driverLeftStick, 3)
-                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position1"), true))
-        JoystickButton(driverRightStick, 4)
-                .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position2"), true))
 
-        
+
+
     }
 
     fun setMotorBrake(enabled: Boolean) {
@@ -230,7 +269,14 @@ class RobotContainer {
     }
 
     fun periodic() {
-        operatorExtra.setRumble(GenericHID.RumbleType.kBothRumble, (if (noteCamera.latestResult.hasTargets()) {1.0} else {0.0}))
+        operatorExtra.hid.setRumble(
+                GenericHID.RumbleType.kBothRumble,
+                (if (noteCamera.latestResult.hasTargets()) {
+                    1.0
+                } else {
+                    0.0
+                })
+        )
     }
 
     /**
