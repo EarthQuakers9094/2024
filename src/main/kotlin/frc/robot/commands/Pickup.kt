@@ -10,7 +10,7 @@ import frc.robot.subsystems.Shooter
 import frc.robot.commands.CommandSequence
 import java.util.function.BooleanSupplier
 
-class Pickup(private val shooter: Shooter, elevator: Elevator, private val intake: Intake) :
+class Pickup(private val shooter: Shooter, elevator: Elevator, private val intake: Intake, private val high: Boolean) :
         CommandSequence() {
 
     val supplier: BooleanSupplier = BooleanSupplier { shooter.noteIn() }

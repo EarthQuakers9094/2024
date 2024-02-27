@@ -16,8 +16,8 @@ import com.pathplanner.lib.path.PathPlannerPath
 
 class ScoreAmp(private val shooter: Shooter,private val elevator: Elevator, private val swerve: Swerve, private val intake: Intake) : CommandSequence() {
     override val commands: List<Command> = listOf(
-        GotoPose(shooter,elevator,Constants.Poses.amp,true),
         FollowTrajectory(swerve, PathPlannerPath.fromPathFile("to amp"), true),
+        GotoPose(shooter,elevator,Constants.Poses.amp,true),
         shooter.shootTime(intake, true));
 
     override fun finally(interrupted: Boolean) { 
