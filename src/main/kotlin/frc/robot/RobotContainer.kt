@@ -89,7 +89,7 @@ class RobotContainer {
                     )
             elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
 
-            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!).build());
+            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!,false).build());
             NamedCommands.registerCommand("faceSpeaker", FaceDirection(swerveDrive,{swerveDrive.speakerAngle()}, false));
             NamedCommands.registerCommand("shoot", ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build());
             NamedCommands.registerCommand("facedown", FaceDirection(swerveDrive, {Rotation2d.fromRadians(-Math.PI/2.0)}, false));
@@ -171,6 +171,7 @@ class RobotContainer {
 
             JoystickButton(operatorExtra, 1).whileTrue(shooter!!.shootButton())
             JoystickButton(operatorExtra, 2).whileTrue(shooter!!.backButton())
+            JoystickButton(operatorExtra, 11).whileTrue(shooter!!.intakeButtonCommand());
 
             JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake())
             JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton())
@@ -178,7 +179,7 @@ class RobotContainer {
             JoystickButton(operatorExtra, 7).onTrue(SetValue.setHeight(elevator!!, 46.0));
             JoystickButton(operatorExtra, 8).onTrue(SetValue.setHeight(elevator!!, 0.0));
 
-            JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
+            //JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
             JoystickButton(driverRightStick, 12).toggleOnTrue(Climb(elevator!!).build());
     

@@ -343,7 +343,7 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return inSensor.get()
+        return !inSensor.get()
     }
 
     fun atSpeed(amp: Boolean): Boolean {
