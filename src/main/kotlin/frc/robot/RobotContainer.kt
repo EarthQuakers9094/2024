@@ -30,6 +30,7 @@ import com.pathplanner.lib.auto.NamedCommands
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.commands.CommandSequence
 import frc.robot.commands.Climb
+import frc.robot.commands.GotoPose
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 
 /**
@@ -114,17 +115,9 @@ class RobotContainer {
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
                     Constants.OperatorConstants.LEFT_Y_DEADBAND
             )
-            MathUtil.applyDeadband(
-                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
-                    Constants.OperatorConstants.LEFT_Y_DEADBAND
-            )
         }
 
         val leftX = {
-            MathUtil.applyDeadband(
-                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
-            )
             MathUtil.applyDeadband(
                     applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
@@ -134,14 +127,13 @@ class RobotContainer {
         val omega = {
             MathUtil.applyDeadband(
                     driverRightStick.getX(),
-                    driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
 
         val driveMode = { true }
 
-        val faceSpeaker = { driverRightStick.getRawButton(7) }
+        val faceSpeaker = { false }
 
         val simClosedFieldRel =
                 TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker)
@@ -183,11 +175,8 @@ class RobotContainer {
             JoystickButton(operatorExtra, 3).whileTrue(intake!!.intake())
             JoystickButton(operatorExtra, 4).whileTrue(intake!!.backButton())
 
-            JoystickButton(operatorExtra, 7).whileTrue(elevator!!.up())
-            JoystickButton(operatorExtra, 8).whileTrue(elevator!!.down())
-
-            JoystickButton(operatorExtra, 9).onTrue(SetValue.setHeight(elevator!!, 47.0));
-            JoystickButton(operatorExtra, 10).onTrue(SetValue.setHeight(elevator!!, 0.0));
+            JoystickButton(operatorExtra, 7).onTrue(SetValue.setHeight(elevator!!, 46.0));
+            JoystickButton(operatorExtra, 8).onTrue(SetValue.setHeight(elevator!!, 0.0));
 
             JoystickButton(driverRightStick, 1).whileTrue(Pickup(shooter!!, elevator!!, intake!!).build());
 
@@ -206,7 +195,7 @@ class RobotContainer {
  
             JoystickButton(driverLeftStick, 4).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
             JoystickButton(driverLeftStick, 5)
-                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI / 3))
+                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI * 55 / 180))
             
             JoystickButton(driverLeftStick, 10).onTrue(InstantCommand(
                 object : Runnable {
@@ -216,6 +205,10 @@ class RobotContainer {
                 },
                 swerveDrive
             ),)
+
+            JoystickButton(operatorExtra, 5).onTrue(GotoPose(shooter!!,elevator!!, Constants.Poses.amp,true));
+            JoystickButton(operatorExtra, 6).onTrue(GotoPose(shooter!!,elevator!!, Constants.Poses.highPickup,true));
+
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
@@ -228,6 +221,8 @@ class RobotContainer {
                 .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position1"), true))
         JoystickButton(driverRightStick, 4)
                 .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to shoot position2"), true))
+
+        
     }
 
     fun setMotorBrake(enabled: Boolean) {

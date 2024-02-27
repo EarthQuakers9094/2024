@@ -56,7 +56,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
     private var pidMode = true
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(10.0,10.0));
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(40.0,20.0));
 
     private var currentState = TrapezoidProfile.State(0.0,0.0);
 
@@ -68,7 +68,9 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
             liftSparkMax.inverted = true; // 0.052404
         }
 
+
         followMotor.follow(liftSparkMax,true);
+
 
         liftSparkMax.encoder.positionConversionFactor = 1.0
         liftSparkMax.encoder.position = 0.0;
@@ -115,7 +117,11 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
             currentState = nextPosition;
 
-            SmartDashboard.putNumber("elevator output", output); // 
+            SmartDashboard.putNumber("elevator output", output); 
+
+            SmartDashboard.putNumber("elevator trapazoid position", nextPosition.position);
+
+
 
             liftSparkMax.set(output);
         }
@@ -161,7 +167,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
     }
 
     fun atPosition(): Boolean {
-        return abs(averagePostion.getAverage() - desiredPosition) <= 0.05
+        return abs(averagePostion.getAverage() - desiredPosition) <= 0.5
     }
 
     override fun simulationPeriodic() {
@@ -177,3 +183,6 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         liftSparkMax.encoder.position = elevator.positionMeters
     }
 }
+
+// 
+// 

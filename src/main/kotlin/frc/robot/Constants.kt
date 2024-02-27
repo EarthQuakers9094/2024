@@ -45,8 +45,8 @@ object Constants {
         const val kDriverControllerPort = 2
         const val driverLeftStickPort = 0
         const val driverRightStickPort = 1
-        const val LEFT_X_DEADBAND = 0.1
-        const val LEFT_Y_DEADBAND = 0.1
+        const val LEFT_X_DEADBAND = 0.05
+        const val LEFT_Y_DEADBAND = 0.05
     }
     object Intake {
         const val bonusMotorSpeed = 1.0
@@ -121,7 +121,7 @@ object Constants {
         const val ampSpeed = -0.2
         const val ampShootingRotationSpeed = 0.0
 
-        const val startAngle = Math.PI * 73.0 / 180.0
+        const val startAngle = Math.PI * 63.0 / 180.0
 
         const val inSensorID = 0
         // const val topCanid = 31
@@ -131,7 +131,7 @@ object Constants {
         // const val bottomCanID = 27
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 0.9
+        const val intakeSpeed = 0.98
         const val speed = -0.75
         const val intakeMotorID = 30
         const val spinuptime = 5.0
@@ -142,20 +142,21 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.12, 0.0, 0.002000)
+        val pid = PIDConstants(0.06, 0.0, 0.001000)
 
         const val gearing = 30.0
         const val followMotorID = 28
         const val maxHeight = 47.0; //45.690002;
         const val minHeight = 0.0
-        const val feedforward = 0.052404
+        const val feedforward = 0.052404/2.0
 
         const val motorID = 27
     }
 
     object Poses {
-        val amp = Pose(-Math.PI / 4.0, 34.0)
-        val pickup = Pose(Math.PI / 4.0, Elevator.minHeight)
+        val amp = Pose(-0.473801, 33.523514)
+        val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
+        val highPickup = Pose(0.598419,11.523871);
     }
 }

@@ -1,6 +1,9 @@
 {
   "NetworkTables": {
     "transitory": {
+      "CameraPublisher": {
+        "open": true
+      },
       "PathPlanner": {
         "HotReload": {
           "open": true
@@ -14,7 +17,10 @@
         "face direction pid": {
           "open": true
         },
-        "open": true
+        "open": true,
+        "turning pid": {
+          "open": true
+        }
       }
     },
     "types": {

@@ -99,7 +99,7 @@ class Shooter(
         jointMotor1.encoder.position = Constants.Shooter.startAngle;
 
         jointMotor1.pidController.setSmartMotionMaxVelocity(1.5,0);
-        jointMotor1.pidController.setSmartMotionMaxAccel(1.0,0);
+        jointMotor1.pidController.setSmartMotionMaxAccel(0.0001,0);
         jointMotor1.pidController.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
 
         followerSparkMax.follow(shooterSparkMax, true)
@@ -137,6 +137,8 @@ class Shooter(
 
         SmartDashboard.putNumber("current motor speed launcher", speed)
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
+
+        SmartDashboard.putBoolean("beam break", noteIn());
     }
 
     fun setSpeed(speed: Double) {
@@ -152,7 +154,7 @@ class Shooter(
     }
 
     fun atAngle():Boolean {
-        return (angleRollingAverage.getAverage() - desiredAngle) <= 0.05;
+        return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05;
     }
 
     fun setIntakingSpeed(speed: Double) {
@@ -225,7 +227,7 @@ class Shooter(
         return Commands.startEnd(
                 object : Runnable {
                     override fun run() {
-                        shooterSparkMax.set(0.1)
+                        shooterSparkMax.set(0.5)
                         currentSetSpeed = 0.1
                         intakingMotor.set(-0.1)
                     }
