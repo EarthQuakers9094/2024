@@ -13,6 +13,7 @@ import frc.robot.commands.CommandSequence
 import org.photonvision.PhotonCamera
 
 class SpeakerShoot(
+    private val elevator: Elevator,
     private val shooter: Shooter
 ) : CommandSequence() {
 
