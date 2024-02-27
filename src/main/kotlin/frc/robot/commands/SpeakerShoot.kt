@@ -12,7 +12,7 @@ import frc.robot.subsystems.Swerve
 import frc.robot.commands.CommandSequence
 import org.photonvision.PhotonCamera
 
-class Shoot(
+class SpeakerShoot(
     private val shooter: Shooter
 ) : CommandSequence() {
 
