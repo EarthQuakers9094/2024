@@ -17,13 +17,17 @@ class Pickup(private val shooter: Shooter, elevator: Elevator, private val intak
 
     override val commands: List<Command> =
             listOf(
-                    GotoPose(shooter, elevator, Constants.Poses.pickup, false),
+                    GotoPose(shooter, elevator, if (high) {Constants.Poses.highPickup} else {Constants.Poses.pickup}, false),
                     InstantCommand(
                             object : Runnable {
                                 override fun run() {
                                     SmartDashboard.putNumber("running pickup", 1.0)
-                                    shooter.intake()
-                                    intake.startIntaking()
+                                    if (high) {
+                                        shooter.back()
+                                    } else {
+                                        shooter.intake()
+                                        intake.startIntaking()
+                                    }
                                 }
                             },
                             shooter,

@@ -222,14 +222,18 @@ class Shooter(
         )
     }
 
+    fun back(): Unit {
+        shooterSparkMax.set(0.5)
+        currentSetSpeed = 0.1
+        intakingMotor.set(-0.1)
+    }
+
     fun backButton(): Command {
         var parent = this
         return Commands.startEnd(
                 object : Runnable {
                     override fun run() {
-                        shooterSparkMax.set(0.5)
-                        currentSetSpeed = 0.1
-                        intakingMotor.set(-0.1)
+                        back();
                     }
                 },
                 object : Runnable {

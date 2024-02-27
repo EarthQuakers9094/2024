@@ -158,5 +158,6 @@ object Constants {
         val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419,11.523871);
+        val speakerShoot = Pose(0.8, Elevator.minHeight);
     }
 }
