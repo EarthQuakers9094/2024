@@ -3,7 +3,7 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
-import com.revrobotics.CANSparkMax
+import com.revrobotics.SparkPIDController
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.DigitalInput
@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
 import java.util.function.BooleanSupplier
-import com.revrobotics.SparkPIDController
 
 class Shooter(
         private val shooterCanID: Int,
@@ -41,7 +40,7 @@ class Shooter(
     private val followerSparkMax =
             CANSparkFlex(secondaryShooterID, CANSparkLowLevel.MotorType.kBrushless)
 
-    private val jointMotor1 = CANSparkMax(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
+    private val jointMotor1 = CANSparkFlex(shooterJointCanID, CANSparkLowLevel.MotorType.kBrushless)
 
     private val intakingMotor = CANSparkFlex(intakeMotorID, CANSparkLowLevel.MotorType.kBrushless)
 
@@ -78,7 +77,7 @@ class Shooter(
 
     private var inSensor = DigitalInput(Constants.Shooter.inSensorID)
 
-    private var currentSetSpeed = 0.0;
+    private var currentSetSpeed = 0.0
 
     init {
         shooterSparkMax.restoreFactoryDefaults()
@@ -96,11 +95,14 @@ class Shooter(
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
 
-        jointMotor1.encoder.position = Constants.Shooter.startAngle;
+        jointMotor1.encoder.position = Constants.Shooter.startAngle
 
-        jointMotor1.pidController.setSmartMotionMaxVelocity(1.5,0);
-        jointMotor1.pidController.setSmartMotionMaxAccel(0.0001,0);
-        jointMotor1.pidController.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
+        jointMotor1.pidController.setSmartMotionMaxVelocity(1.5, 0)
+        jointMotor1.pidController.setSmartMotionMaxAccel(0.0001, 0)
+        jointMotor1.pidController.setSmartMotionAccelStrategy(
+                SparkPIDController.AccelStrategy.kTrapezoidal,
+                0
+        )
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -138,7 +140,7 @@ class Shooter(
         SmartDashboard.putNumber("current motor speed launcher", speed)
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
 
-        SmartDashboard.putBoolean("beam break", noteIn());
+        SmartDashboard.putBoolean("beam break", noteIn())
     }
 
     fun setSpeed(speed: Double) {
@@ -153,8 +155,8 @@ class Shooter(
         DriverStation.reportError("hello :3 from shooter", true)
     }
 
-    fun atAngle():Boolean {
-        return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05;
+    fun atAngle(): Boolean {
+        return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05
     }
 
     fun setIntakingSpeed(speed: Double) {
@@ -222,14 +224,18 @@ class Shooter(
         )
     }
 
+    fun back(): Unit {
+        shooterSparkMax.set(0.5)
+        currentSetSpeed = 0.1
+        intakingMotor.set(-0.1)
+    }
+
     fun backButton(): Command {
         var parent = this
         return Commands.startEnd(
                 object : Runnable {
                     override fun run() {
-                        shooterSparkMax.set(0.5)
-                        currentSetSpeed = 0.1
-                        intakingMotor.set(-0.1)
+                        back()
                     }
                 },
                 object : Runnable {
@@ -339,7 +345,7 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
-        return inSensor.get()
+        return !inSensor.get()
     }
 
     fun atSpeed(amp: Boolean): Boolean {

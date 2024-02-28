@@ -34,24 +34,7 @@ class ShootTime(
                     ),
                     FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false),
                     AimShooter(camera, shooter, swerveDrive, true),
-                    InstantCommand(
-                            object : Runnable {
-                                override fun run() {
-                                    shooter.startShooting(false)
-                                }
-                            },
-                            shooter
-                    ),
-                    WaitUntilCommand(supplier),
-                    InstantCommand(
-                            object : Runnable {
-                                override fun run() {
-                                    shooter.intake()
-                                }
-                            },
-                            shooter
-                    ),
-                    WaitCommand(Constants.Shooter.shootTime)
+                    Shoot(shooter).build()
             )
 
     override fun finally(interrupted: Boolean) {

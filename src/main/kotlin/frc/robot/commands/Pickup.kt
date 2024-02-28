@@ -3,27 +3,44 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
+import frc.robot.commands.CommandSequence
 import frc.robot.commands.GotoPose
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
-import frc.robot.commands.CommandSequence
 import java.util.function.BooleanSupplier
 
-class Pickup(private val shooter: Shooter, elevator: Elevator, private val intake: Intake, private val high: Boolean) :
-        CommandSequence() {
+class Pickup(
+        private val shooter: Shooter,
+        private val elevator: Elevator,
+        private val intake: Intake,
+        private val high: Boolean
+) : CommandSequence() {
 
     val supplier: BooleanSupplier = BooleanSupplier { shooter.noteIn() }
 
     override val commands: List<Command> =
             listOf(
-                    GotoPose(shooter, elevator, Constants.Poses.pickup, false),
+                    GotoPose(
+                            shooter,
+                            elevator,
+                            if (high) {
+                                Constants.Poses.highPickup
+                            } else {
+                                Constants.Poses.pickup
+                            },
+                            false
+                    ),
                     InstantCommand(
                             object : Runnable {
                                 override fun run() {
                                     SmartDashboard.putNumber("running pickup", 1.0)
-                                    shooter.intake()
-                                    intake.startIntaking()
+                                    if (high) {
+                                        shooter.back()
+                                    } else {
+                                        shooter.intake()
+                                        intake.startIntaking()
+                                    }
                                 }
                             },
                             shooter,
@@ -46,7 +63,9 @@ class Pickup(private val shooter: Shooter, elevator: Elevator, private val intak
     override fun finally(interrupted: Boolean) {
         SmartDashboard.putNumber("running pickup", 3.0)
         intake.stopIntaking()
+        shooter.stopShooting()
         shooter.stopIntaking()
         shooter.setAngle(0.0)
+        elevator.setPosition(0.0)
     }
 }

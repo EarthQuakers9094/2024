@@ -10,6 +10,7 @@ import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.commands.CommandSequence
+import frc.robot.commands.GotoPose
 import org.photonvision.PhotonCamera
 
 class SpeakerShoot(
@@ -17,33 +18,13 @@ class SpeakerShoot(
     private val shooter: Shooter
 ) : CommandSequence() {
 
-    val supplier = { shooter.atSpeed(false) }
-
     override val commands: List<Command> =
             listOf(
-                InstantCommand(
-                    object : Runnable {
-                        override fun run() {
-                            shooter.startShooting(false)
-                        }
-                    },
-                    shooter
-            ),
-            WaitUntilCommand(supplier),
-            InstantCommand(
-                    object : Runnable {
-                        override fun run() {
-                            shooter.intake()
-                        }
-                    },
-                    shooter
-            ),
-            WaitCommand(Constants.Shooter.shootTime)
+                GotoPose(shooter,elevator,Constants.Poses.speakerShoot,true),
+                Shoot(shooter).build()
             )
 
     override fun finally(interrupted: Boolean) {
-        shooter.stopIntaking()
-        shooter.stopShooting()
     }
 }
 // 

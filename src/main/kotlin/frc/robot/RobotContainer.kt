@@ -5,6 +5,7 @@ import Pickup
 import RunAuto
 import Shoot
 import ShootTime
+import SpeakerShoot
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.MathUtil
@@ -87,7 +88,10 @@ class RobotContainer {
                     )
             elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
 
-            NamedCommands.registerCommand("pickup", Pickup(shooter!!, elevator!!, intake!!, false).build())
+            NamedCommands.registerCommand(
+                    "pickup",
+                    Pickup(shooter!!, elevator!!, intake!!, false).build()
+            )
             NamedCommands.registerCommand(
                     "faceSpeaker",
                     FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
@@ -106,7 +110,7 @@ class RobotContainer {
 
         fun applyPov(direction: Int, speed: Double): Double {
             if (direction == -1) {
-                return speed * 0.75
+                return speed
             } else if (direction == 0) {
                 return speed
             } else if (direction == 180) {
@@ -132,7 +136,7 @@ class RobotContainer {
 
         val omega = {
             MathUtil.applyDeadband(
-                    driverRightStick.getX(),
+                    -driverRightStick.getX(),
                     Constants.OperatorConstants.LEFT_X_DEADBAND
             )
         }
@@ -176,69 +180,83 @@ class RobotContainer {
                                 ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
                                         .build()
                         )
-                operatorExtra.x()
-                    .toggleOnTrue(
-                        SequentialCommandGroup(
-                            InstantCommand(
-                                object : Runnable {
-                                    override fun run() {
-                                        faceSpeaker = true
-                                    }
-                                }
-                            ),
-                            AimShooter(aprilCamera, shooter!!, swerveDrive, false)
+                operatorExtra
+                        .x()
+                        .toggleOnTrue(
+                                SequentialCommandGroup(
+                                                InstantCommand(
+                                                        object : Runnable {
+                                                            override fun run() {
+                                                                faceSpeaker = true
+                                                            }
+                                                        }
+                                                ),
+                                                AimShooter(
+                                                        aprilCamera,
+                                                        shooter!!,
+                                                        swerveDrive,
+                                                        false
+                                                )
+                                        )
+                                        .finallyDo({ _ -> faceSpeaker = false })
                         )
-                            .finallyDo({ _ -> faceSpeaker = false })
-                    )
                 JoystickButton(operatorExtra.hid, 6)
-                    .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.highPickup, true))
+                        .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.highPickup, true))
                 JoystickButton(driverRightStick, 3)
-                    .onTrue(FollowTrajectory(swerveDrive, PathPlannerPath.fromPathFile("to amp"), true))
-                JoystickButton(driverRightStick, 4)
-                    .onTrue(
-                        FollowTrajectory(
-                            swerveDrive,
-                            PathPlannerPath.fromPathFile("to pickup"),
-                            true
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to amp"),
+                                        true
+                                )
                         )
-                    )
+                JoystickButton(driverRightStick, 4)
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to pickup"),
+                                        true
+                                )
+                        )
                 JoystickButton(driverLeftStick, 3)
-                    .onTrue(
-                        FollowTrajectory(
-                            swerveDrive,
-                            PathPlannerPath.fromPathFile("to shoot position1"),
-                            true
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to shoot position1"),
+                                        true
+                                )
                         )
-                    )
                 JoystickButton(driverRightStick, 4)
-                    .onTrue(
-                        FollowTrajectory(
-                            swerveDrive,
-                            PathPlannerPath.fromPathFile("to shoot position2"),
-                            true
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to shoot position2"),
+                                        true
+                                )
                         )
-                    )
             }
 
             operatorExtra.rightTrigger().whileTrue(Shoot(shooter!!).build())
             operatorExtra.rightBumper().whileTrue(shooter!!.backButton())
-            operatorExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
-            operatorExtra.leftBumper().whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())
+            operatorExtra
+                    .leftTrigger()
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
+            operatorExtra
+                    .leftBumper()
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())
 
-
+            operatorExtra.leftStick().onTrue(SpeakerShoot(elevator!!, shooter!!).build())
 
             operatorExtra.y().onTrue(SetValue.setHeight(elevator!!, 46.0))
             operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
-            operatorExtra.b()
-                .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
+            operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
 
             JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
             JoystickButton(driverRightStick, 6).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
 
-
-
-//            JoystickButton(driverLeftStick, 5)
-//                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI * 55 / 180))
+            //            JoystickButton(driverLeftStick, 5)
+            //                    .whileTrue(SetValue.setShootingAngle(shooter!!, Math.PI * 55 /
+            // 180))
 
             JoystickButton(driverLeftStick, 7)
                     .onTrue(
@@ -253,15 +271,9 @@ class RobotContainer {
                                     swerveDrive
                             ),
                     )
-
-
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
-
-
-
-
     }
 
     fun setMotorBrake(enabled: Boolean) {
