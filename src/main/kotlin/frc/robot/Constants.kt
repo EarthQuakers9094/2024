@@ -135,7 +135,7 @@ object Constants {
         // const val bottomCanID = 27
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 0.98
+        const val intakeSpeed = 1.0
         const val speed = -0.75
         const val intakeMotorID = 30
         const val spinuptime = 5.0
@@ -146,7 +146,7 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.06, 0.0, 0.001000)
+        val pid = PIDConstants(0.12, 0.0, 0.001000)
 
         const val gearing = 30.0
         const val followMotorID = 28
@@ -161,7 +161,7 @@ object Constants {
         val amp = Pose(-0.473801, 33.523514)
         val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
-        val highPickup = Pose(0.598419, 11.523871)
+        val highPickup = Pose(0.598419, 11.523871 - 3.0)
         val speakerShoot = Pose(0.75, Elevator.minHeight)
     }
 }

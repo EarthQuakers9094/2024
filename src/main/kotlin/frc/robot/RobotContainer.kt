@@ -268,9 +268,12 @@ class RobotContainer {
 
             operatorExtra.rightTrigger().whileTrue(Shoot(shooter!!).build())
             operatorExtra.rightBumper().whileTrue(shooter!!.backButton())
-            operatorExtra
-                    .leftTrigger()
+
+            JoystickButton(driverRightStick, 1)
                     .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
+
+            // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
+            // false).build())
             operatorExtra
                     .leftBumper()
                     .whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())

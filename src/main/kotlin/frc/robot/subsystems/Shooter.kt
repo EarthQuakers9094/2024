@@ -3,9 +3,9 @@ package frc.robot.subsystems
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
-import com.revrobotics.SparkPIDController
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
@@ -79,6 +79,10 @@ class Shooter(
 
     private var currentSetSpeed = 0.0
 
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(12.0, 12.0))
+
+    private var currentState = TrapezoidProfile.State(Constants.Shooter.startAngle, 0.0)
+
     init {
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
@@ -97,12 +101,12 @@ class Shooter(
 
         jointMotor1.encoder.position = Constants.Shooter.startAngle
 
-        jointMotor1.pidController.setSmartMotionMaxVelocity(1.5, 0)
-        jointMotor1.pidController.setSmartMotionMaxAccel(0.0001, 0)
-        jointMotor1.pidController.setSmartMotionAccelStrategy(
-                SparkPIDController.AccelStrategy.kTrapezoidal,
-                0
-        )
+        // jointMotor1.pidController.setSmartMotionMaxVelocity(1.5, 0)
+        // jointMotor1.pidController.setSmartMotionMaxAccel(0.00001, 0)
+        // jointMotor1.pidController.setSmartMotionAccelStrategy(
+        // SparkPIDController.AccelStrategy.kTrapezoidal,
+        // 0
+        // )
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -133,6 +137,16 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
+        val nextPosition =
+                profile.calculate(0.02, currentState, TrapezoidProfile.State(desiredAngle, 0.0))
+
+        jointMotor1.pidController.setReference(
+                nextPosition.position,
+                CANSparkBase.ControlType.kPosition
+        )
+
+        currentState = nextPosition
+
         angleRollingAverage.addValue(jointMotor1.encoder.position)
 
         SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
@@ -141,7 +155,18 @@ class Shooter(
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
 
         SmartDashboard.putBoolean("beam break", noteIn())
+
+        SmartDashboard.putNumber("feader current", intakingMotor.outputCurrent)
     }
+
+    // fun configureSparkMax(config: () -> REVLibError) {
+    //     for (int i = 0; i < maximumRetries; i++) {
+    //         if (config.get() == REVLibError.kOk) {
+    //             return;
+    //         }
+    //     }
+    //     DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
+    // }
 
     fun setSpeed(speed: Double) {
         currentSetPoint = speed
@@ -149,7 +174,7 @@ class Shooter(
     }
 
     fun setAngle(angle: Double) {
-        jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
+        // jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
         SmartDashboard.putNumber("shooter desired angle", desiredAngle)
         DriverStation.reportError("hello :3 from shooter", true)
@@ -345,6 +370,7 @@ class Shooter(
     }
 
     fun noteIn(): Boolean {
+        // return intakingMotor.outputCurrent > 35.0
         return !inSensor.get()
     }
 
