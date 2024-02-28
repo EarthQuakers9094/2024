@@ -120,26 +120,56 @@ class RobotContainer {
             return speed
         }
 
-        val leftY = {
-            MathUtil.applyDeadband(
-                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
-                    Constants.OperatorConstants.LEFT_Y_DEADBAND
-            )
-        }
+        val leftY =
+                if (!onTest.config) {
+                    {
+                        MathUtil.applyDeadband(
+                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                                Constants.OperatorConstants.LEFT_Y_DEADBAND
+                        )
+                    }
+                } else {
+                    {
+                        MathUtil.applyDeadband(
+                                operatorExtra.getLeftY(),
+                                Constants.OperatorConstants.LEFT_Y_DEADBAND
+                        )
+                    }
+                }
 
-        val leftX = {
-            MathUtil.applyDeadband(
-                    applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
-            )
-        }
+        val leftX: () -> Double =
+                if (!onTest.config) {
+                    {
+                        MathUtil.applyDeadband(
+                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                                Constants.OperatorConstants.LEFT_X_DEADBAND
+                        )
+                    }
+                } else {
+                    {
+                        MathUtil.applyDeadband(
+                                operatorExtra.getLeftX(),
+                                Constants.OperatorConstants.LEFT_X_DEADBAND
+                        )
+                    }
+                }
 
-        val omega = {
-            MathUtil.applyDeadband(
-                    -driverRightStick.getX(),
-                    Constants.OperatorConstants.LEFT_X_DEADBAND
-            )
-        }
+        val omega =
+                if (!onTest.config) {
+                    {
+                        MathUtil.applyDeadband(
+                                -driverRightStick.getX(),
+                                Constants.OperatorConstants.LEFT_X_DEADBAND
+                        )
+                    }
+                } else {
+                    {
+                        MathUtil.applyDeadband(
+                                operatorExtra.getRightX(),
+                                Constants.OperatorConstants.LEFT_X_DEADBAND
+                        )
+                    }
+                }
 
         val driveMode = { true }
 
