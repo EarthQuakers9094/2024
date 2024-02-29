@@ -31,6 +31,7 @@ import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
+import Pose
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -281,7 +282,8 @@ class RobotContainer {
             operatorExtra.leftStick().onTrue(SpeakerShoot(elevator!!, shooter!!).build())
 
             operatorExtra.y().onTrue(SetValue.setHeight(elevator!!, 46.0))
-            operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
+            operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false));
+        //     operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
             operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
 
             JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
