@@ -79,7 +79,7 @@ class Shooter(
 
     private var currentSetSpeed = 0.0
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(12.0, 12.0))
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(24.0, 24.0))
 
     private var currentState = TrapezoidProfile.State(Constants.Shooter.startAngle, 0.0)
 
@@ -252,8 +252,15 @@ class Shooter(
     fun back(): Unit {
         shooterSparkMax.set(0.5)
         currentSetSpeed = 0.1
+        intakingMotor.set(-1.0)
+    }
+
+    fun back2(): Unit {
+        shooterSparkMax.set(0.20)
+        currentSetSpeed = 0.1
         intakingMotor.set(-0.1)
     }
+
 
     fun backButton(): Command {
         var parent = this

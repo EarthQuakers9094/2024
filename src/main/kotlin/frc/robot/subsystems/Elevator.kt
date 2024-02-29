@@ -56,7 +56,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
     private var pidMode = true
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(40.0,20.0));
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(80.0,40.0));
 
     private var currentState = TrapezoidProfile.State(0.0,0.0);
 

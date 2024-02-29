@@ -37,7 +37,7 @@ class Pickup(
                                 override fun run() {
                                     SmartDashboard.putNumber("running pickup", 1.0)
                                     if (high) {
-                                        shooter.back()
+                                        shooter.back2()
                                     } else {
                                         shooter.intake()
                                         intake.startIntaking()
@@ -50,7 +50,7 @@ class Pickup(
                     WaitUntilCommand(supplier),
                     WaitCommand(
                             if (high) {
-                                0.2
+                                0.1
                             } else {
                                 0.025
                             }

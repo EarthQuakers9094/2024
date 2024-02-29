@@ -161,11 +161,10 @@ class RobotContainer {
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
-                }
+                };
 
-                val omega = {
+        val omega = {
                         MathUtil.applyDeadband(
-                                        driverRightStick.getX(),
                                         driverRightStick.getX(),
                                         Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
@@ -274,23 +273,45 @@ class RobotContainer {
                         )
             }
 
-            operatorExtra.rightTrigger().whileTrue(Shoot(shooter!!).build())
-            operatorExtra.rightBumper().whileTrue(shooter!!.backButton())
+            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true).build());
+            operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
+
+            operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
 
             JoystickButton(driverRightStick, 1)
                     .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
 
             // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
             // false).build())
-            operatorExtra
-                    .leftBumper()
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())
 
-            operatorExtra.leftStick().onTrue(SpeakerShoot(elevator!!, shooter!!).build())
+            operatorExtra.leftStick().whileTrue(shooter!!.backButton())
 
-            operatorExtra.y().onTrue(SetValue.setHeight(elevator!!, 46.0))
+            operatorExtra.y().onTrue(
+                InstantCommand(
+                        object : Runnable {
+                                override fun run() {
+                                        shooter!!.startShooting(false);
+                                }
+                        }
+                ,shooter)
+                        // shooter?.stopShooting();
+            );
+            
+            operatorExtra.y()
+                .onFalse(
+                        InstantCommand(
+                                object : Runnable {
+                                        override fun run() {
+                                                shooter?.stopShooting();
+                                        }
+                                },
+                        shooter
+                )
+                                // shooter?.stopShooting();
+                )
+
+
             operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false));
-        //     operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
             operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
 
             JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
