@@ -55,7 +55,8 @@ object Constants {
         const val frontIntakeId = 26
     }
     object Camera {
-        val aprilTagFieldLayout: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
+        val aprilTagFieldLayout: AprilTagFieldLayout =
+                AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
         const val arducamOne = "Arducam1"
         val visionSTDEV = run {
             val mat = Matrix(Nat.N3(), Nat.N1())
@@ -69,11 +70,13 @@ object Constants {
         // AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
         val validTargets = arrayOf(4, 3)
 
-        val shootElevation = 1.4478;
-        val xPositionOfSpeaker = {           
-            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
-                {0.0 + 0.254} else 
-                {16.5 - 0.254};
+        val shootElevation = 1.4478
+        val xPositionOfSpeaker = {
+            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) {
+                0.0 + 0.254
+            } else {
+                16.5 - 0.254
+            }
         }
 
         val yPositionOfSpeaker = 5.5
@@ -139,7 +142,7 @@ object Constants {
 
         const val gearing = 30.0
         const val followMotorID = 28
-        const val maxHeight = 47.0; //45.690002;
+        const val maxHeight = 47.0 // 45.690002;
         const val minHeight = 0.0
         const val feedforward = 0.052404
 
