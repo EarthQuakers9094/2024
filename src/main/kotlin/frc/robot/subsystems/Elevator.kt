@@ -82,7 +82,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         liftSparkMax.pidController.d = Constants.Elevator.pid.kD
 
         SmartDashboard.putData("sim pid", sim_pid)
-        SmartDashboard.putData("elevator pid", pid);
+        SmartDashboard.putData("elevator pid", pid());
         SmartDashboard.putNumber("desired elevator location", 0.1)
 
         if (!RobotBase.isReal()) {
@@ -113,7 +113,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                 currentState, 
                 TrapezoidProfile.State(desiredPosition,0.0));
 
-            val output = pid.calculate(liftSparkMax.encoder.position, nextPosition.position) + Constants.Elevator.feedforward
+            val output = pid().calculate(liftSparkMax.encoder.position, nextPosition.position) + Constants.Elevator.feedforward
 
             currentState = nextPosition;
 
