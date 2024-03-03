@@ -8,10 +8,13 @@ import ShootTime
 import SpeakerShoot
 import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.path.PathPlannerPath
+import com.pathplanner.lib.util.PIDConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.geometry.Rotation2d
+
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.AimShooter
 import frc.robot.commands.Brake
 import frc.robot.commands.Climb
+import frc.robot.commands.CollectNote
 import frc.robot.commands.FaceDirection
 import frc.robot.commands.GotoPose
 import frc.robot.commands.SetValue
@@ -31,6 +35,7 @@ import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
+import Pose
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,26 +44,26 @@ import org.photonvision.PhotonCamera
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 class RobotContainer {
-    // The robot's subsystems and commands are defined here...
+        // The robot's subsystems and commands are defined here...
 
-    private val aprilCamera = PhotonCamera("BW")
-    private val noteCamera = PhotonCamera("NC")
-    private val swerveDrive = Swerve(/*aprilCamera*/ )
+        private val aprilCamera = PhotonCamera("ATBack")
+        private val noteCamera = PhotonCamera("NTBack")
+        private val swerveDrive = Swerve(/*aprilCamera*/ )
 
-    private var elevator: Elevator? = null
-    // (Constants.Elevator.motorID)
-    // (Constants.Elevator.motorID)
+        private var elevator: Elevator? = null
+        // (Constants.Elevator.motorID)
+        // (Constants.Elevator.motorID)
 
-    private var shooter: Shooter? = null
+        private var shooter: Shooter? = null
 
-    //         Shooter(
-    //                 Constants.Shooter.topCanid,
-    //                 Constants.Shooter.bottomCanID,
-    //                 Constants.Shooter.shooterJointCanID,
-    //                 Constants.Shooter.shooterJoint2CanID
-    //         )
+        //         Shooter(
+        //                 Constants.Shooter.topCanid,
+        //                 Constants.Shooter.bottomCanID,
+        //                 Constants.Shooter.shooterJointCanID,
+        //                 Constants.Shooter.shooterJoint2CanID
+        //         )
 
-    private var intake: Intake? = null
+        private var intake: Intake? = null
 
     private var faceSpeaker = false
 
@@ -66,27 +71,31 @@ class RobotContainer {
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    init {
-        // Configure the trigger bindings
+        /** The container for the robot. Contains subsystems, OI devices, and commands. */
+        init {
+                // Configure the trigger bindings
 
-        val onTest = Config(true, false)
+                val onTest = Config(true, false)
 
-        if (!onTest.config) {
-            intake =
-                    Intake(
-                            Constants.Intake.motorid,
-                            Constants.Intake.followMotorId,
-                            Constants.Intake.frontIntakeId
-                    )
-            shooter =
-                    Shooter(
-                            Constants.Shooter.topCanid,
-                            Constants.Shooter.bottomCanID,
-                            Constants.Shooter.shooterJointCanID,
-                            Constants.Shooter.intakeMotorID
-                    )
-            elevator = Elevator(Constants.Elevator.motorID, Constants.Elevator.followMotorID)
+                if (!onTest.config) {
+                        intake =
+                                        Intake(
+                                                        Constants.Intake.motorid,
+                                                        Constants.Intake.followMotorId,
+                                                        Constants.Intake.frontIntakeId
+                                        )
+                        shooter =
+                                        Shooter(
+                                                        Constants.Shooter.topCanid,
+                                                        Constants.Shooter.bottomCanID,
+                                                        Constants.Shooter.shooterJointCanID,
+                                                        Constants.Shooter.intakeMotorID
+                                        )
+                        elevator =
+                                        Elevator(
+                                                        Constants.Elevator.motorID,
+                                                        Constants.Elevator.followMotorID
+                                        )
 
             NamedCommands.registerCommand(
                     "pickup",
@@ -106,15 +115,11 @@ class RobotContainer {
             )
         }
 
-        configureBindings()
+                configureBindings()
 
-        fun applyPov(direction: Int, speed: Double): Double {
-            if (direction == -1) {
-                return speed
-            } else if (direction == 0) {
-                return speed
-            } else if (direction == 180) {
-                return speed * 0.5
+        fun applyBreak(breaky: Boolean, speed: Double): Double {
+            if (breaky) {
+                return speed * 0.8
             }
 
             return speed
@@ -124,7 +129,7 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                                applyBreak(driverLeftStick.trigger, driverLeftStick.getY()),
                                 Constants.OperatorConstants.LEFT_Y_DEADBAND
                         )
                     }
@@ -141,7 +146,7 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                                applyBreak(driverLeftStick.trigger, driverLeftStick.getX()),
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
@@ -152,50 +157,48 @@ class RobotContainer {
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
+                };
+
+        val omega = {
+                        MathUtil.applyDeadband( 
+                                        applyBreak(driverLeftStick.trigger,driverRightStick.getX()),
+                                        Constants.OperatorConstants.LEFT_X_DEADBAND
+                        )
                 }
 
-        val omega =
-                if (!onTest.config) {
-                    {
-                        MathUtil.applyDeadband(
-                                -driverRightStick.getX(),
-                                Constants.OperatorConstants.LEFT_X_DEADBAND
-                        )
-                    }
-                } else {
-                    {
-                        MathUtil.applyDeadband(
-                                operatorExtra.getRightX(),
-                                Constants.OperatorConstants.LEFT_X_DEADBAND
-                        )
-                    }
-                }
-
-        val driveMode = { true }
+                val driveMode = { true }
 
         val faceSpeaker = { false }
 
-        val simClosedFieldRel =
-                TeleopDrive(swerveDrive, leftY, leftX, omega, driveMode, faceSpeaker)
+                val simClosedFieldRel =
+                                TeleopDrive(
+                                                swerveDrive,
+                                                leftY,
+                                                leftX,
+                                                omega,
+                                                driveMode,
+                                                faceSpeaker
+                                )
 
-        swerveDrive.defaultCommand = simClosedFieldRel
-    }
+                swerveDrive.defaultCommand = simClosedFieldRel
+        }
 
-    fun debugPeriodic() {
-        SmartDashboard.putBoolean("Connected or nay", aprilCamera.isConnected)
-    }
+        fun debugPeriodic() {
+                SmartDashboard.putBoolean("Connected or nay", aprilCamera.isConnected)
+        }
 
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be created via the
-     * [Trigger#Trigger(java.util.function.BooleanSupplier)] constructor with an arbitrary
-     * predicate, or via the named factories in
-     * [edu.wpi.first.wpilibj2.command.button.CommandGenericHID]'s subclasses for
-     * [CommandXboxController]/[edu.wpi.first.wpilibj2.command.button.CommandPS4Controller]
-     * controllers or [edu.wpi.first.wpilibj2.command.button.CommandJoystick].
-     */
-    private fun configureBindings() {
-        // Schedule ExampleCommand when exampleCondition changes to true
-        // Trigger { exampleSubsystem.exampleCondition() }.onTrue(ExampleCommand(exampleSubsystem))
+        /**
+         * Use this method to define your trigger->command mappings. Triggers can be created via the
+         * [Trigger#Trigger(java.util.function.BooleanSupplier)] constructor with an arbitrary
+         * predicate, or via the named factories in
+         * [edu.wpi.first.wpilibj2.command.button.CommandGenericHID]'s subclasses for
+         * [CommandXboxController]/[edu.wpi.first.wpilibj2.command.button.CommandPS4Controller]
+         * controllers or [edu.wpi.first.wpilibj2.command.button.CommandJoystick].
+         */
+        private fun configureBindings() {
+                // Schedule ExampleCommand when exampleCondition changes to true
+                // Trigger { exampleSubsystem.exampleCondition()
+                // }.onTrue(ExampleCommand(exampleSubsystem))
 
         // Schedule exampleMethodCommand when the Xbox controller's B button is pressed,
         // cancelling on release.
@@ -266,19 +269,44 @@ class RobotContainer {
                         )
             }
 
-            operatorExtra.rightTrigger().whileTrue(Shoot(shooter!!).build())
-            operatorExtra.rightBumper().whileTrue(shooter!!.backButton())
-            operatorExtra
-                    .leftTrigger()
+            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true).build());
+            operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
+
+            operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
+
+            JoystickButton(driverRightStick, 1)
                     .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
-            operatorExtra
-                    .leftBumper()
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, true).build())
 
-            operatorExtra.leftStick().onTrue(SpeakerShoot(elevator!!, shooter!!).build())
+            // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
+            // false).build())
 
-            operatorExtra.y().onTrue(SetValue.setHeight(elevator!!, 46.0))
-            operatorExtra.a().onTrue(SetValue.setHeight(elevator!!, 0.0))
+            operatorExtra.leftStick().whileTrue(shooter!!.backButton())
+
+            operatorExtra.y().onTrue(
+                InstantCommand(
+                        object : Runnable {
+                                override fun run() {
+                                        shooter!!.startShooting(false);
+                                }
+                        }
+                )
+                        // shooter?.stopShooting();
+            );
+            
+            operatorExtra.y()
+                .onFalse(
+                        InstantCommand(
+                                object : Runnable {
+                                        override fun run() {
+                                                shooter?.stopShooting();
+                                        }
+                                }
+                )
+                                // shooter?.stopShooting();
+                )
+
+
+            operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false));
             operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
 
             JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
@@ -304,12 +332,12 @@ class RobotContainer {
             JoystickButton(driverLeftStick, 10).whileTrue(ShootTime(shooter!!,intake!!,elevator!!,swerveDrive,aprilCamera).build());
         }
 
-        JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
+        // JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
     }
 
-    fun setMotorBrake(enabled: Boolean) {
-        swerveDrive.setMotorBrake(enabled)
-    }
+        fun setMotorBrake(enabled: Boolean) {
+                swerveDrive.setMotorBrake(enabled)
+        }
 
     fun periodic() {
         operatorExtra.hid.setRumble(
@@ -322,14 +350,20 @@ class RobotContainer {
         )
     }
 
-    /**
-     * Use this to pass the autonomous command to the main [Robot] class.
-     *
-     * @return the command to run in autonomous
-     */
-    val autonomousCommand: Command
-        get() {
-            // An example command will be run in autonomous
-            return RunAuto("do nothing")
-        }
+        /**
+         * Use this to pass the autonomous command to the main [Robot] class.
+         *
+         * @return the command to run in autonomous
+         */
+        val autonomousCommand: Command
+                get() {
+                        // An example command will be run in autonomous
+                        return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
+                        // return CollectNote(
+                        //                 PIDConstants(0.045, 0.0, 0.001000),
+                        //                 noteCamera,
+                        //                 intake,
+                        //                 swerveDrive,
+                        //                 10)
+                }
 }

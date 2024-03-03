@@ -5,12 +5,16 @@ import frc.robot.commands.GotoPose
 import frc.robot.subsystems.Elevator
 import frc.robot.subsystems.Shooter
 
-class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter) :
+class LocationShoot(
+        private val elevator: Elevator, 
+        private val shooter: Shooter,
+        private val pose:Pose,
+        private val elevatorFirst: Boolean) :
         CommandSequence() {
 
     override val commands: List<Command> =
             listOf(
-                    GotoPose(shooter, elevator, Constants.Poses.speakerShoot, true),
+                    GotoPose(shooter, elevator, pose, elevatorFirst),
                     Shoot(shooter).build()
             )
 

@@ -100,7 +100,7 @@ public class TeleopDrive(
     // Drive using raw values.
     swerve.drive(
         Translation2d(xVelocity * swerve.maximumSpeed, yVelocity * swerve.maximumSpeed),
-        angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
+        -angVelocity * Constants.Drivebase.MAX_TURNING_SPEEDS,
         driveMode.asBoolean
     )
   }

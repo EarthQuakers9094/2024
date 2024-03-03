@@ -12,8 +12,12 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.apriltag.AprilTagPoseEstimate
 import frc.robot.Constants
+import frc.robot.camera.AprilTagPoseEstimator
+import frc.robot.camera.AprilTagResult
 import frc.robot.utils.Config
 import java.io.File
 import java.util.function.Consumer
@@ -24,6 +28,7 @@ import swervelib.math.SwerveMath
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
+import org.photonvision.PhotonCamera
 
 class Swerve(
 // private val camera: PhotonCamera
@@ -35,6 +40,12 @@ class Swerve(
     var swerveDrive: SwerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
+    val poseEstimators = arrayOf(
+        AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, -Math.PI / 6, 0.0))),
+        AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), Transform3d(0.2794, 0.127, 0.2252, Rotation3d(0.0, Math.PI / 6, 0.0))))
+    //0.0794 meters left of center && 0.3429 meters back from center && 0.2252 meters above && 30 degrees from vertical
+    //
+    
 
     // val aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
     //    val poseEstimator =
@@ -130,6 +141,24 @@ class Swerve(
 
         // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
+        poseEstimators.map { it.update() }
+
+        // val sum = results.fold(0) { acc, result ->  
+        //     acc + result.targets
+        // }
+        //     SmartDashboard.putBoolean("valid vision data", true)
+
+        //     results.forEach { res ->
+        //         res.estimatedPose?.let {swerveDrive.addVisionMeasurement(
+        //         it.estimatedPose.toPose2d(),
+        //         Timer.getFPGATimestamp(),
+        //         Constants.Camera.visionSTDEV)
+        //         }
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("valid vision data", false)
+        // }
+
 
     }
 

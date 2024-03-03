@@ -1,6 +1,7 @@
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.commands.CommandSequence
@@ -36,7 +37,7 @@ class Pickup(
                                 override fun run() {
                                     SmartDashboard.putNumber("running pickup", 1.0)
                                     if (high) {
-                                        shooter.back()
+                                        shooter.back2()
                                     } else {
                                         shooter.intake()
                                         intake.startIntaking()
@@ -47,6 +48,13 @@ class Pickup(
                             intake
                     ),
                     WaitUntilCommand(supplier),
+                    WaitCommand(
+                            if (high) {
+                                0.75
+                            } else {
+                                0.075
+                            }
+                    ),
                     InstantCommand(
                             object : Runnable {
                                 override fun run() {
