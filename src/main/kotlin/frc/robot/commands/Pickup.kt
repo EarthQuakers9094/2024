@@ -50,9 +50,9 @@ class Pickup(
                     WaitUntilCommand(supplier),
                     WaitCommand(
                             if (high) {
-                                0.1
+                                0.75
                             } else {
-                                0.025
+                                0.075
                             }
                     ),
                     InstantCommand(

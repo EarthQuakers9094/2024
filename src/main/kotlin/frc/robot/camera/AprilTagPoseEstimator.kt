@@ -8,8 +8,10 @@ import frc.robot.Constants
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.toNullable
 import frc.robot.utils.toPose3d
+import frc.robot.camera.AprilTagResult
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
+import org.photonvision.EstimatedRobotPose
 import swervelib.SwerveDrive
 
 class AprilTagPoseEstimator(val swerve: SwerveDrive, val camera: PhotonCamera, private val offset: Transform3d) {
@@ -30,15 +32,23 @@ class AprilTagPoseEstimator(val swerve: SwerveDrive, val camera: PhotonCamera, p
     fun update() {
         if (!camera.isConnected) {
             DriverStation.reportWarning("Camera with name: ${camera.name} is not connected", false)
-            return
+            return// AprilTagResult(null, 0)
         }
 
-        poseEstimator.update().toNullable()?.let {
-            swerve.addVisionMeasurement(
-                it.estimatedPose.toPose2d(),
-                Timer.getFPGATimestamp(),
-                Constants.Camera.visionSTDEV
-            )
+        if(camera.latestResult.targets.size >= 2) {
+            poseEstimator.update().toNullable()?.let { 
+                swerve.addVisionMeasurement(
+                    it.estimatedPose.toPose2d(),
+                    Timer.getFPGATimestamp(),
+                    Constants.Camera.visionSTDEV)
+            }
         }
+        return
+
     }
+        
+        // AprilTagResult(, camera.latestResult.targets.size)/*?.let {   
+                
+    
+    
 }

@@ -125,7 +125,7 @@ object Constants {
         const val ampSpeed = -0.2
         const val ampShootingRotationSpeed = 0.0
 
-        const val startAngle = Math.PI * 63.0 / 180.0
+        const val startAngle = Math.PI * 58.0 / 180.0
 
         const val inSensorID = 0
         // const val topCanid = 31
@@ -146,7 +146,7 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.12, 0.0, 0.001000)
+        val pid = PIDConstants(0.24, 0.0, 0.001000)
 
         const val gearing = 30.0
         const val followMotorID = 28
@@ -161,7 +161,7 @@ object Constants {
         val amp = Pose(-0.473801, 33.523514)
         val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
-        val highPickup = Pose(0.598419, 11.523871 - 3.0)
-        val speakerShoot = Pose(0.7, Elevator.minHeight)
+        val highPickup = Pose(0.598419, 11.523871 - 1.0)
+        val speakerShoot = Pose(0.8, Elevator.minHeight)
     }
 }

@@ -31,7 +31,7 @@ class Shoot(private val shooter: Shooter) : CommandSequence() {
                             shooter
                     ),
                     WaitUntilCommand(inShooter),
-                    WaitCommand(1.0)
+                    WaitCommand(2.0)
             )
 
     override fun finally(interrupted: Boolean) {

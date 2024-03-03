@@ -12,10 +12,12 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.apriltag.AprilTagPoseEstimate
 import frc.robot.Constants
 import frc.robot.camera.AprilTagPoseEstimator
+import frc.robot.camera.AprilTagResult
 import frc.robot.utils.Config
 import java.io.File
 import java.util.function.Consumer
@@ -139,8 +141,24 @@ class Swerve(
 
         // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
+        poseEstimators.map { it.update() }
 
-        poseEstimators.forEach { it.update() }
+        // val sum = results.fold(0) { acc, result ->  
+        //     acc + result.targets
+        // }
+        //     SmartDashboard.putBoolean("valid vision data", true)
+
+        //     results.forEach { res ->
+        //         res.estimatedPose?.let {swerveDrive.addVisionMeasurement(
+        //         it.estimatedPose.toPose2d(),
+        //         Timer.getFPGATimestamp(),
+        //         Constants.Camera.visionSTDEV)
+        //         }
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("valid vision data", false)
+        // }
+
 
     }
 

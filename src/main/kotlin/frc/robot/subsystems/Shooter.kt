@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import com.revrobotics.AbsoluteEncoder
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
@@ -8,11 +9,13 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.DutyCycleEncoder
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.InstantCommand
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
 import java.util.function.BooleanSupplier
+import java.lang.Math
 
 class Shooter(
         private val shooterCanID: Int,
@@ -29,10 +33,14 @@ class Shooter(
         private val shooterJointCanID: Int,
         private val intakeMotorID: Int,
 ) : SubsystemBase() {
+    private val jointAbsoluteEncoder = DutyCycleEncoder(1)
+
+
+    private var startingPosition = Constants.Shooter.startAngle//(jointAbsoluteEncoder.get() * Math.PI * 2)// + 1.44558;
 
     private var speed = 0.0
 
-    private var desiredAngle = 0.0
+    private var desiredAngle = startingPosition
 
     private var angleRollingAverage = MovingAverage(20)
 
@@ -46,6 +54,8 @@ class Shooter(
 
     private var currentSetPoint = 0.0
     private var currentAverage = MovingAverage(10)
+
+    
 
     private var topWheels = FlywheelSim(DCMotor.getNeoVortex(1), 1.0, 0.00176)
 
@@ -81,9 +91,10 @@ class Shooter(
 
     private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(24.0, 24.0))
 
-    private var currentState = TrapezoidProfile.State(Constants.Shooter.startAngle, 0.0)
+    private var currentState = TrapezoidProfile.State(startingPosition, 0.0)
 
     init {
+        
         shooterSparkMax.restoreFactoryDefaults()
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
@@ -98,8 +109,9 @@ class Shooter(
         jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
+        //joinAbsoluteEncoder.distancePerRotation = 
 
-        jointMotor1.encoder.position = Constants.Shooter.startAngle
+        jointMotor1.encoder.position = startingPosition //Constants.Shooter.startAngle
 
         // jointMotor1.pidController.setSmartMotionMaxVelocity(1.5, 0)
         // jointMotor1.pidController.setSmartMotionMaxAccel(0.00001, 0)
@@ -133,6 +145,7 @@ class Shooter(
     }
 
     override fun periodic() {
+        
         if (RobotBase.isReal()) {
             speed = shooterSparkMax.encoder.velocity
         }
@@ -148,8 +161,17 @@ class Shooter(
         currentState = nextPosition
 
         angleRollingAverage.addValue(jointMotor1.encoder.position)
+        
 
         SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
+        SmartDashboard.putNumber("jointValueAbsolute", jointAbsoluteEncoder.get())
+        SmartDashboard.putNumber("jointValue", (jointAbsoluteEncoder.get() * Math.PI * 2) + 1.44558
+
+)
+
+
+
+
 
         SmartDashboard.putNumber("current motor speed launcher", speed)
         SmartDashboard.putNumber("shooter speed", shooterSparkMax.encoder.velocity)
@@ -250,15 +272,15 @@ class Shooter(
     }
 
     fun back(): Unit {
-        shooterSparkMax.set(0.5)
+        shooterSparkMax.set(1.0)
         currentSetSpeed = 0.1
         intakingMotor.set(-1.0)
     }
 
     fun back2(): Unit {
-        shooterSparkMax.set(0.20)
+        shooterSparkMax.set(0.40)
         currentSetSpeed = 0.1
-        intakingMotor.set(-0.1)
+        intakingMotor.set(-0.3)
     }
 
 

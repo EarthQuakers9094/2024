@@ -47,7 +47,7 @@ class RobotContainer {
         // The robot's subsystems and commands are defined here...
 
         private val aprilCamera = PhotonCamera("ATBack")
-        private val noteCamera = PhotonCamera("NTBAck")
+        private val noteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
         private var elevator: Elevator? = null
@@ -117,13 +117,9 @@ class RobotContainer {
 
                 configureBindings()
 
-        fun applyPov(direction: Int, speed: Double): Double {
-            if (direction == -1) {
-                return speed
-            } else if (direction == 0) {
-                return speed
-            } else if (direction == 180) {
-                return speed * 0.5
+        fun applyBreak(breaky: Boolean, speed: Double): Double {
+            if (breaky) {
+                return speed * 0.8
             }
 
             return speed
@@ -133,7 +129,7 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getY()),
+                                applyBreak(driverLeftStick.trigger, driverLeftStick.getY()),
                                 Constants.OperatorConstants.LEFT_Y_DEADBAND
                         )
                     }
@@ -150,7 +146,7 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyPov(driverLeftStick.getPOV(), driverLeftStick.getX()),
+                                applyBreak(driverLeftStick.trigger, driverLeftStick.getX()),
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
@@ -164,8 +160,8 @@ class RobotContainer {
                 };
 
         val omega = {
-                        MathUtil.applyDeadband(
-                                        driverRightStick.getX(),
+                        MathUtil.applyDeadband( 
+                                        applyBreak(driverLeftStick.trigger,driverRightStick.getX()),
                                         Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                 }
@@ -293,7 +289,7 @@ class RobotContainer {
                                         shooter!!.startShooting(false);
                                 }
                         }
-                ,shooter)
+                )
                         // shooter?.stopShooting();
             );
             
@@ -304,8 +300,7 @@ class RobotContainer {
                                         override fun run() {
                                                 shooter?.stopShooting();
                                         }
-                                },
-                        shooter
+                                }
                 )
                                 // shooter?.stopShooting();
                 )
@@ -336,7 +331,7 @@ class RobotContainer {
                     )
         }
 
-        JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
+        // JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
     }
 
         fun setMotorBrake(enabled: Boolean) {
@@ -362,12 +357,12 @@ class RobotContainer {
         val autonomousCommand: Command
                 get() {
                         // An example command will be run in autonomous
-                        return CollectNote(
-                                        PIDConstants(0.045, 0.0, 0.001000),
-                                        noteCamera,
-                                        intake,
-                                        swerveDrive,
-                                        10
-                        )
+                        return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
+                        // return CollectNote(
+                        //                 PIDConstants(0.045, 0.0, 0.001000),
+                        //                 noteCamera,
+                        //                 intake,
+                        //                 swerveDrive,
+                        //                 10)
                 }
 }
