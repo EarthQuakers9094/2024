@@ -301,6 +301,7 @@ class RobotContainer {
                                     swerveDrive
                             ),
                     )
+            JoystickButton(driverLeftStick, 10).whileTrue(ShootTime(shooter!!,intake!!,elevator!!,swerveDrive,aprilCamera).build());
         }
 
         JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
