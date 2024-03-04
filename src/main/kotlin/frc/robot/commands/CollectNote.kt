@@ -8,16 +8,17 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.MovingAverage
+import frc.robot.commands.CollectNote
 import org.photonvision.PhotonCamera
 
 class CollectNote(
         private val rotationPidConstants: PIDConstants,
-        private val camera: PhotonCamera,
-        private val intake: Intake?,
+        private val frontCamera: PhotonCamera,
+        private val backCamera: PhotonCamera,
         private val swerve: Swerve,
-        private val dataInconsistency: Int
+        private val dataInconsistency: Int,
 ) : Command() {
-
+    private var forward = true
     private val targetYaw = MovingAverage(dataInconsistency)
     private var updatesSinceLastTarget = 0
 
@@ -26,11 +27,11 @@ class CollectNote(
 
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
-        if (intake != null) {
-            addRequirements(intake, swerve)
-        } else {
+        // if (intake != null) {
+        //     addRequirements(intake, swerve)
+        // } else {
             addRequirements(swerve)
-        }
+        //}
     }
 
     /** The initial subroutine of a command. Called once when the command is initially scheduled. */
@@ -39,6 +40,7 @@ class CollectNote(
         for (unused in 1..10) {
             targetYaw.addValue(0.0)
         }
+        forward = CollectNote.pickDirection(frontCamera, backCamera)
     }
 
     /**
@@ -47,24 +49,31 @@ class CollectNote(
      */
     override fun execute() {
         SmartDashboard.putData("notepid", rotationPID)
+        val camera = if (forward) frontCamera else backCamera
         val res = camera.latestResult
         var calculation = 0.0
-        if (updatesSinceLastTarget > 50) {
-            intake?.stopIntaking()
-        } else {
-            intake?.startIntaking()
-        }
+        var speedFactor = 1.0
+        // if (updatesSinceLastTarget > (30)) {
+        //     intake?.stopIntaking()
+        // } else {
+        //     intake?.startIntaking()
+        // }
         if (res.hasTargets() && res.bestTarget.area > 2.0) {
             updatesSinceLastTarget = 0
             val target = res.bestTarget
             val averageYaw = targetYaw.addValue(target.yaw)
             SmartDashboard.putNumber("note yaw", averageYaw)
             calculation = rotationPID.calculate(averageYaw)
+            if (target.area > 15) {
+                speedFactor = 0.5
+            }
         } else {
             updatesSinceLastTarget++
         }
-
-        swerve.drive(Translation2d(0.0 /*-0.75*/, 0.0), calculation, false)
+        if (updatesSinceLastTarget < (20)) {
+            val direction = if (forward) {1.0} else {-1.0}
+            swerve.drive(Translation2d(2.0 * speedFactor * (direction) /*-0.75*/, 0.0), calculation, false)
+        }
     }
 
     /**
@@ -81,7 +90,7 @@ class CollectNote(
      */
     override fun isFinished(): Boolean {
         // TODO: Make this return true when this Command no longer needs to run execute()
-        return updatesSinceLastTarget > 60
+        return updatesSinceLastTarget > (40)
     }
 
     /**
@@ -93,4 +102,19 @@ class CollectNote(
      * @param interrupted whether the command was interrupted/canceled
      */
     override fun end(interrupted: Boolean) {}
+
+
+    companion object {
+        fun pickDirection(frontCamera: PhotonCamera, backCamera: PhotonCamera): Boolean {
+            val frontResult = frontCamera.latestResult
+            val backResult = backCamera.latestResult
+            if(frontResult.hasTargets() && backResult.hasTargets()) {
+                return frontResult.bestTarget.area > backResult.bestTarget.area
+            } else if (frontResult.hasTargets()) {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
 }

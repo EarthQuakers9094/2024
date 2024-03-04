@@ -41,7 +41,7 @@ class Swerve(
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
     val poseEstimators = arrayOf(
-        AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, -Math.PI / 6, 0.0))),
+        AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, Math.PI / 6, Math.PI))),
         AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), Transform3d(0.2794, 0.127, 0.2252, Rotation3d(0.0, Math.PI / 6, 0.0))))
     //0.0794 meters left of center && 0.3429 meters back from center && 0.2252 meters above && 30 degrees from vertical
     //
@@ -141,7 +141,22 @@ class Swerve(
 
         // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
-        poseEstimators.map { it.update() }
+        val estimates = poseEstimators.map { it.update() }
+        val sum = estimates.fold(0) {acc, estimate -> 
+            acc + estimate.targets
+        }
+        if(sum >= 2) {
+            estimates.forEach { estimate ->
+                estimate.estimatedPose?.let { 
+                    swerveDrive.addVisionMeasurement(   
+                        it.estimatedPose.toPose2d(),
+                        estimate.timestamp,
+                        Constants.Camera.visionSTDEV
+                    )
+                
+                }
+            }
+        }
 
         // val sum = results.fold(0) { acc, result ->  
         //     acc + result.targets
@@ -149,11 +164,7 @@ class Swerve(
         //     SmartDashboard.putBoolean("valid vision data", true)
 
         //     results.forEach { res ->
-        //         res.estimatedPose?.let {swerveDrive.addVisionMeasurement(
-        //         it.estimatedPose.toPose2d(),
-        //         Timer.getFPGATimestamp(),
-        //         Constants.Camera.visionSTDEV)
-        //         }
+        //         res.estimatedPose?.let {
         //     }
         // } else {
         //     SmartDashboard.putBoolean("valid vision data", false)

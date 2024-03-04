@@ -11,6 +11,12 @@
         "open": true
       },
       "SmartDashboard": {
+        "Field": {
+          "double[]##v_/SmartDashboard/Field/Robot": {
+            "open": true
+          },
+          "open": true
+        },
         "elevator pid": {
           "open": true
         },

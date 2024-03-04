@@ -36,6 +36,8 @@ import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
 import Pose
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,7 +49,8 @@ class RobotContainer {
         // The robot's subsystems and commands are defined here...
 
         private val aprilCamera = PhotonCamera("ATBack")
-        private val noteCamera = PhotonCamera("NTBack")
+        private val frontNoteCamera = PhotonCamera("NTFront")
+        private val backNoteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
         private var elevator: Elevator? = null
@@ -235,14 +238,8 @@ class RobotContainer {
                         )
                 JoystickButton(operatorExtra.hid, 6)
                         .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.highPickup, true))
-                JoystickButton(driverRightStick, 3)
-                        .onTrue(
-                                FollowTrajectory(
-                                        swerveDrive,
-                                        PathPlannerPath.fromPathFile("to amp"),
-                                        true
-                                )
-                        )
+                
+                        
                 JoystickButton(driverRightStick, 4)
                         .onTrue(
                                 FollowTrajectory(
@@ -268,14 +265,36 @@ class RobotContainer {
                                 )
                         )
             }
-
+JoystickButton(driverRightStick, 3)
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to amp"),
+                                        true
+                                ))
             operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true).build());
             operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
 
             operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
 
             JoystickButton(driverRightStick, 1)
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
+                    .whileTrue(ParallelRaceGroup(
+                SequentialCommandGroup(
+                                WaitUntilCommand { ->
+                                        frontNoteCamera.latestResult.hasTargets() ||
+                                                        backNoteCamera.latestResult.hasTargets()
+                                },
+                                CollectNote(
+                                                PIDConstants(0.045, 0.0, 0.001000),
+                                                frontNoteCamera,
+                                                backNoteCamera,
+                                                swerveDrive,
+                                                10
+                                )
+                ),
+                Pickup(shooter!!, elevator!!, intake!!, false).build()
+)
+/*Pickup(shooter!!, elevator!!, intake!!, false).build()*/)
 
             // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
             // false).build())
@@ -341,8 +360,8 @@ class RobotContainer {
     fun periodic() {
         operatorExtra.hid.setRumble(
                 GenericHID.RumbleType.kBothRumble,
-                (if (noteCamera.latestResult.hasTargets()) {
-                    1.0
+                (if (frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()) {
+                    0.4
                 } else {
                     0.0
                 })
@@ -357,12 +376,15 @@ class RobotContainer {
         val autonomousCommand: Command
                 get() {
                         // An example command will be run in autonomous
-                        return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
-                        // return CollectNote(
-                        //                 PIDConstants(0.045, 0.0, 0.001000),
-                        //                 noteCamera,
-                        //                 intake,
-                        //                 swerveDrive,
-                        //                 10)
+                       // return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
+                        return ParallelRaceGroup(SequentialCommandGroup(WaitUntilCommand { ->
+                            frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()
+                        },
+                            CollectNote(
+                                        PIDConstants(0.045, 0.0, 0.001000),
+                                        frontNoteCamera,
+                                        backNoteCamera,
+                                        swerveDrive,
+                                        10)), Pickup(shooter!!, elevator!!, intake!!, false).build())
                 }
 }
