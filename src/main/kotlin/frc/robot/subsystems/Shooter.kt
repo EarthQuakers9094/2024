@@ -100,6 +100,8 @@ class Shooter(
 
     var disableUpdates = false;
 
+    
+
     init {
         
         shooterSparkMax.restoreFactoryDefaults()
