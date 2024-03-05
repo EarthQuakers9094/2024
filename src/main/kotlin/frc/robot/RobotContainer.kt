@@ -54,7 +54,7 @@ class RobotContainer {
         // (Constants.Elevator.motorID)
         // (Constants.Elevator.motorID)
 
-        private var shooter: Shooter? = null
+        public var shooter: Shooter? = null
 
         //         Shooter(
         //                 Constants.Shooter.topCanid,
@@ -99,8 +99,15 @@ class RobotContainer {
 
             NamedCommands.registerCommand(
                     "pickup",
-                    Pickup(shooter!!, elevator!!, intake!!, false).build()
+                    Pickup(shooter!!, elevator!!, intake!!, false, false).build()
             )
+            
+            
+            NamedCommands.registerCommand(
+                    "pickupReturn",
+                    Pickup(shooter!!, elevator!!, intake!!, false, true).build()
+            )
+
             NamedCommands.registerCommand(
                     "faceSpeaker",
                     FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
@@ -113,6 +120,10 @@ class RobotContainer {
                     "facedown",
                     FaceDirection(swerveDrive, { Rotation2d.fromRadians(-Math.PI / 2.0) }, false)
             )
+            NamedCommands.registerCommand(
+                "shootSpeaker",
+                SpeakerShoot(elevator!!, shooter!!).build()
+        )
         }
 
                 configureBindings()
@@ -269,13 +280,16 @@ class RobotContainer {
                         )
             }
 
-            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true).build());
+            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true, true).build());
             operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
 
             operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
 
             JoystickButton(driverRightStick, 1)
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false).build())
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false, true).build())
+
+            JoystickButton(driverRightStick, 2)
+                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false, false).build())
 
             // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
             // false).build())
@@ -358,12 +372,6 @@ class RobotContainer {
         val autonomousCommand: Command
                 get() {
                         // An example command will be run in autonomous
-                        return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
-                        // return CollectNote(
-                        //                 PIDConstants(0.045, 0.0, 0.001000),
-                        //                 noteCamera,
-                        //                 intake,
-                        //                 swerveDrive,
-                        //                 10)
+                        return RunAuto("3piece");
                 }
 }

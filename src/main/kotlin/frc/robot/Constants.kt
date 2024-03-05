@@ -51,7 +51,7 @@ object Constants {
 
     object Intake {
         const val bonusMotorSpeed = 1.0
-        const val speed = -1.0
+        const val speed = 1.0
         // const val speed = 0.0
         const val motorid = 24
         const val followMotorId = 25
@@ -134,7 +134,7 @@ object Constants {
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
         const val intakeSpeed = 1.0
-        const val speed = -0.75
+        const val speed = -0.60
         const val intakeMotorID = 30
         const val spinuptime = 5.0
         const val shootTime = 0.6
@@ -144,7 +144,7 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.24, 0.0, 0.001000)
+        val pid = PIDConstants(0.48, 0.0, 0.001000)
 
         const val gearing = 30.0
         const val followMotorID = 28

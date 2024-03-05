@@ -1,4 +1,5 @@
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import frc.robot.Constants
 import frc.robot.commands.CommandSequence
 import frc.robot.commands.GotoPose
@@ -10,12 +11,21 @@ class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter)
 
     override val commands: List<Command> =
             listOf(
-                    GotoPose(shooter, elevator, Constants.Poses.speakerShoot, true),
-                    Shoot(shooter).build()
+                InstantCommand(
+                        object : Runnable {
+                            override fun run() {
+                                shooter.disableUpdates = true
+                            }
+                        },
+                        shooter
+                ),
+                GotoPose(shooter, elevator, Constants.Poses.speakerShoot, true),
+                Shoot(shooter).build()
             )
 
     override fun finally(interrupted: Boolean) {
         shooter.setAngle(0.0)
+        shooter.disableUpdates = false
     }
 }
 //

@@ -34,6 +34,7 @@
       "/SmartDashboard/elevator pid": "PIDController",
       "/SmartDashboard/face direction pid": "PIDController",
       "/SmartDashboard/joint pid": "PIDController",
+      "/SmartDashboard/notepid": "PIDController",
       "/SmartDashboard/sim pid": "PIDController",
       "/SmartDashboard/turning pid": "PIDController"
     },
@@ -76,7 +77,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/shooter desired angle"
+              "id": "NT:/SmartDashboard/shooter angle"
             },
             {
               "color": [
@@ -85,7 +86,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/shooter angle"
+              "id": "NT:/SmartDashboard/jointValueAbsolute"
             },
             {
               "color": [
@@ -94,7 +95,7 @@
                 0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/elevator position"
+              "id": "NT:/SmartDashboard/jointValue"
             },
             {
               "color": [
@@ -103,7 +104,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/desired elevator location"
+              "id": "NT:/SmartDashboard/elevator position"
             },
             {
               "color": [
@@ -112,7 +113,7 @@
                 0.7019608020782471,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/desired elevator position"
+              "id": "NT:/SmartDashboard/elevator pid/setpoint"
             },
             {
               "color": [
@@ -121,65 +122,27 @@
                 0.3764706254005432,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/face direction pid/setpoint"
-            },
-            {
-              "color": [
-                0.8549020290374756,
-                0.545098066329956,
-                0.7647059559822083,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/my angle"
-            },
-            {
-              "color": [
-                0.5490196347236633,
-                0.5490196347236633,
-                0.5490196347236633,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/elevator trapazoid position"
-            },
-            {
-              "color": [
-                0.8000000715255737,
-                0.7254902124404907,
-                0.4549019932746887,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] Speed Setpoint"
-            },
-            {
-              "color": [
-                0.3921568989753723,
-                0.7098039388656616,
-                0.803921639919281,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[backleft] speed"
-            },
-            {
-              "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[frontright] Angle Setpoint"
-            },
-            {
-              "color": [
-                0.8666667342185974,
-                0.5176470875740051,
-                0.32156863808631897,
-                1.0
-              ],
-              "id": "NT:/SmartDashboard/Module[frontright] Raw Angle Encoder"
+              "id": "NT:/SmartDashboard/elevator output"
             }
           ]
         }
       ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 0
+        }
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }

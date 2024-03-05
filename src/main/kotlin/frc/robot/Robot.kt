@@ -76,6 +76,7 @@ class Robot : TimedRobot() {
         // Schedule the autonomous command (example)
         // Note the Kotlin safe-call(?.), this ensures autonomousCommand is not null before scheduling it
         autonomousCommand?.schedule()
+        robotContainer?.shooter?.enable();
     }
 
     /** This function is called periodically during autonomous.  */
@@ -88,6 +89,7 @@ class Robot : TimedRobot() {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         // Note the Kotlin safe-call(?.), this ensures autonomousCommand is not null before cancelling it
+        robotContainer?.shooter?.enable();
         autonomousCommand?.cancel()
         robotContainer?.setMotorBrake(true);
     }
