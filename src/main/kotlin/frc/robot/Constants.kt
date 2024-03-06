@@ -58,6 +58,7 @@ object Constants {
         const val frontIntakeId = 26
     }
     object Camera {
+        const val cameraOfffsetEstimation = true
         val aprilTagFieldLayout: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
         const val arducamOne = "Arducam1"
         val visionSTDEV = run {

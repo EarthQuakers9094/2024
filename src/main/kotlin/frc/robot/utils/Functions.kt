@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
 import java.util.*
 
 fun Pose2d.toPose3d(): Pose3d {
@@ -20,4 +21,8 @@ fun <T> Optional<T>.toNullable(): T? {
     } else {
         null
     }
+}
+
+fun Pose3d.debug(): String {
+    return "X: ${this.getX()} | Y: ${this.getY()} | Z: ${this.getZ()} | Pitch: ${this.rotation.getY()} | Yaw: ${this.rotation.getZ()} | Roll: ${this.rotation.getX()}"
 }
