@@ -40,6 +40,7 @@ import Pose
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
+import edu.wpi.first.wpilibj2.command.Commands
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -128,7 +129,19 @@ class RobotContainer {
             NamedCommands.registerCommand(
                 "shootSpeaker",
                 SpeakerShoot(elevator!!, shooter!!).build()
-        )
+           )
+           NamedCommands.registerCommand("rev shooter", Commands.startEnd(
+                object : Runnable {
+                        override fun run() {
+                                shooter!!.startShooting(false);
+                        }
+                },
+                object : Runnable {
+                        override fun run() {
+                                shooter?.stopShooting();
+                        }
+                }
+           )),
         }
 
                 configureBindings()

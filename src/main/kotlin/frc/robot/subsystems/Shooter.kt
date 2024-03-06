@@ -100,6 +100,8 @@ class Shooter(
 
     var disableUpdates = false;
 
+    private var updates = 0    
+
     init {
         
         shooterSparkMax.restoreFactoryDefaults()
@@ -146,6 +148,7 @@ class Shooter(
     }
 
     override fun periodic() {
+        updates++
         
         if (RobotBase.isReal()) {
             speed = shooterSparkMax.encoder.velocity
@@ -176,11 +179,15 @@ class Shooter(
         if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.02  && !disableUpdates) {
             stillUpdates = stillUpdates + 1;
             if (stillUpdates >= 20) {
-                jointMotor1.encoder.position = absoluteAngle();
+                //jointMotor1.encoder.position = absoluteAngle();
             } 
         } else {
             stillUpdates = 0;
         }
+
+        if (updates <= 20 && updates >= 5) {
+            jointMotor1.encoder.position = absoluteAngle();
+        } 
 
         // jointMotor1.encoder.position = absoluteAngle();
 
