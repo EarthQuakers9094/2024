@@ -1,0 +1,57 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeaker"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Amp side to B"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeaker"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Amp side to C"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootSpeaker"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp start",
+  "choreoAuto": false
+}
