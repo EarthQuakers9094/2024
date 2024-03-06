@@ -4,9 +4,12 @@
   "holonomicMode": true,
   "pathFolders": [
     "New Folder",
-    "New New Folder"
+    "New New Folder",
+    "Amp start"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Amp start"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
