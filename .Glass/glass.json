@@ -1,7 +1,7 @@
 {
   "NetworkTables": {
     "transitory": {
-      "CameraPublisher": {
+      "LiveWindow": {
         "open": true
       },
       "PathPlanner": {
@@ -11,18 +11,21 @@
         "open": true
       },
       "SmartDashboard": {
+        "Field": {
+          "double[]##v_/SmartDashboard/Field/Robot": {
+            "open": true
+          },
+          "open": true
+        },
         "elevator pid": {
           "open": true
         },
         "face direction pid": {
           "open": true
         },
-        "open": true,
-        "turning pid": {
+        "notepid": {
           "open": true
-        }
-      },
-      "photonvision": {
+        },
         "open": true
       }
     },
@@ -40,11 +43,12 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "bottom": 1476,
-        "height": 8.210550308227539,
-        "left": 150,
-        "right": 2961,
-        "top": 79,
+        "bottom": 544,
+        "builtin": "2024 Crescendo",
+        "height": 8.013679504394531,
+        "left": 46,
+        "right": 1088,
+        "top": 36,
         "width": 16.541748046875,
         "window": {
           "visible": true
@@ -53,10 +57,14 @@
     }
   },
   "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
     "visible": true
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT4)"
+    "mode": "Client (NT3)",
+    "serverTeam": "9094"
   },
   "Plots": {
     "Plot <0>": {
@@ -68,7 +76,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 801,
+          "height": 873,
           "series": [
             {
               "color": [
@@ -77,7 +85,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/shooter angle"
+              "id": "NT:/SmartDashboard/shooter desired angle"
             },
             {
               "color": [
@@ -86,7 +94,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/jointValueAbsolute"
+              "id": "NT:/SmartDashboard/shooter angle"
             },
             {
               "color": [
@@ -95,7 +103,7 @@
                 0.4078431725502014,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/jointValue"
+              "id": "NT:/SmartDashboard/elevator position"
             },
             {
               "color": [
@@ -104,7 +112,7 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/elevator position"
+              "id": "NT:/SmartDashboard/desired elevator location"
             },
             {
               "color": [
@@ -113,7 +121,25 @@
                 0.7019608020782471,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/elevator pid/setpoint"
+              "id": "NT:/SmartDashboard/desired elevator position"
+            },
+            {
+              "color": [
+                0.5490196347236633,
+                0.5490196347236633,
+                0.5490196347236633,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/note yaw"
+            },
+            {
+              "color": [
+                0.8549020290374756,
+                0.545098066329956,
+                0.7647059559822083,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/my angle"
             },
             {
               "color": [
@@ -122,27 +148,47 @@
                 0.3764706254005432,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/elevator output"
+              "id": "NT:/SmartDashboard/face direction pid/setpoint"
+            },
+            {
+              "color": [
+                0.8000000715255737,
+                0.7254902124404907,
+                0.4549019932746887,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/jointValue"
+            },
+            {
+              "color": [
+                0.3921568989753723,
+                0.7098039388656616,
+                0.803921639919281,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/jointValueAbsolute"
+            },
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontright] Angle Setpoint"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontright] Raw Angle Encoder"
             }
           ]
         }
       ]
-    },
-    "Plot <1>": {
-      "plots": [
-        {
-          "backgroundColor": [
-            0.0,
-            0.0,
-            0.0,
-            0.8500000238418579
-          ],
-          "height": 0
-        }
-      ],
-      "window": {
-        "visible": false
-      }
     }
   }
 }

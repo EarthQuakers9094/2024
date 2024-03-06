@@ -96,7 +96,7 @@ class Robot : TimedRobot() {
 
     /** This function is called periodically during operator control.  */
     override fun teleopPeriodic() {
-        robotContainer!!.periodic()
+        robotContainer!!.teleperiodic()
     }
 
     /** This function is called once when test mode is enabled.  */

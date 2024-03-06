@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.AimShooter
@@ -36,6 +37,9 @@ import frc.robot.subsystems.Swerve
 import frc.robot.utils.Config
 import org.photonvision.PhotonCamera
 import Pose
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,7 +51,8 @@ class RobotContainer {
         // The robot's subsystems and commands are defined here...
 
         private val aprilCamera = PhotonCamera("ATBack")
-        private val noteCamera = PhotonCamera("NTBack")
+        private val frontNoteCamera = PhotonCamera("NTFront")
+        private val backNoteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
         private var elevator: Elevator? = null
@@ -246,14 +251,8 @@ class RobotContainer {
                         )
                 JoystickButton(operatorExtra.hid, 6)
                         .onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.highPickup, true))
-                JoystickButton(driverRightStick, 3)
-                        .onTrue(
-                                FollowTrajectory(
-                                        swerveDrive,
-                                        PathPlannerPath.fromPathFile("to amp"),
-                                        true
-                                )
-                        )
+                
+                        
                 JoystickButton(driverRightStick, 4)
                         .onTrue(
                                 FollowTrajectory(
@@ -279,17 +278,42 @@ class RobotContainer {
                                 )
                         )
             }
-
-            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true, true).build());
+JoystickButton(driverRightStick, 3)
+                        .onTrue(
+                                FollowTrajectory(
+                                        swerveDrive,
+                                        PathPlannerPath.fromPathFile("to amp"),
+                                        true
+                                ))
+            operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true, false).build());
             operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
 
             operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
 
-            JoystickButton(driverRightStick, 1)
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false, true).build())
-
             JoystickButton(driverRightStick, 2)
-                    .whileTrue(Pickup(shooter!!, elevator!!, intake!!, false, false).build())
+                    .whileTrue(ParallelCommandGroup(
+                        Pickup(shooter!!, elevator!!, intake!!, false, false).build(),
+                        SequentialCommandGroup(
+                                        WaitUntilCommand { ->
+                                                frontNoteCamera.latestResult.hasTargets() ||
+                                                                backNoteCamera.latestResult.hasTargets()
+                                        },
+                                        CollectNote(
+                                                        PIDConstants(0.045, 0.0, 0.001000),
+                                                        frontNoteCamera,
+                                                        backNoteCamera,
+                                                        swerveDrive,
+                                                        10,
+                                            {->shooter!!.noteIn()}
+                                        ),
+
+                        )
+                ))
+JoystickButton(driverRightStick, 1)
+                    .whileTrue(
+                Pickup(shooter!!, elevator!!, intake!!, false, false).build()
+)
+/*Pickup(shooter!!, elevator!!, intake!!, false).build()*/
 
             // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
             // false).build())
@@ -353,11 +377,11 @@ class RobotContainer {
                 swerveDrive.setMotorBrake(enabled)
         }
 
-    fun periodic() {
+    fun teleperiodic() {
         operatorExtra.hid.setRumble(
                 GenericHID.RumbleType.kBothRumble,
-                (if (noteCamera.latestResult.hasTargets()) {
-                    1.0
+                (if (frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()) {
+                    0.0
                 } else {
                     0.0
                 })
@@ -372,6 +396,15 @@ class RobotContainer {
         val autonomousCommand: Command
                 get() {
                         // An example command will be run in autonomous
-                        return RunAuto("3piece");
+                       return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
+//                        return ParallelRaceGroup(SequentialCommandGroup(WaitUntilCommand { ->
+//                            frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()
+//                        },
+//                            CollectNote(
+//                                        PIDConstants(0.045, 0.0, 0.001000),
+//                                        frontNoteCamera,
+//                                        backNoteCamera,
+//                                        swerveDrive,
+//                                        10)), Pickup(shooter!!, elevator!!, intake!!, false, false).build())
                 }
 }

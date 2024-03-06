@@ -25,7 +25,7 @@ class Intake(
     private val intakeSparkMax = CANSparkMax(intakeCANId, CANSparkLowLevel.MotorType.kBrushless)
     private val intakeFollowSparkMax =
             CANSparkMax(intakeFollowCanId, CANSparkLowLevel.MotorType.kBrushless)
-    private val frontIntakeMotor = CANSparkMax(frontIntakeId, CANSparkLowLevel.MotorType.kBrushless)
+    //private val frontIntakeMotor = CANSparkMax(frontIntakeId, CANSparkLowLevel.MotorType.kBrushless)
 
     // private val limitSwitch = DigitalInput(limitSwitchId)
     private var state = State.Looking
@@ -33,11 +33,11 @@ class Intake(
     init {
         intakeSparkMax.restoreFactoryDefaults()
         intakeFollowSparkMax.restoreFactoryDefaults()
-        frontIntakeMotor.restoreFactoryDefaults()
-        frontIntakeMotor.follow(intakeSparkMax, true)
+        //frontIntakeMotor.restoreFactoryDefaults()
+        //frontIntakeMotor.follow(intakeSparkMax, true)
         intakeFollowSparkMax.follow(intakeSparkMax)
 
-        frontIntakeMotor.setSmartCurrentLimit(40, 40)
+        //frontIntakeMotor.setSmartCurrentLimit(40, 40)
         intakeFollowSparkMax.setSmartCurrentLimit(40, 40)
         intakeSparkMax.setSmartCurrentLimit(40, 40)
     }

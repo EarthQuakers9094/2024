@@ -4,6 +4,7 @@ import edu.wpi.first.hal.HALUtil
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.apriltag.AprilTag
 import frc.robot.Constants
 import frc.robot.subsystems.Swerve
 import frc.robot.utils.toNullable
@@ -29,21 +30,21 @@ class AprilTagPoseEstimator(val swerve: SwerveDrive, val camera: PhotonCamera, p
         poseEstimator.referencePose = swerve.pose.toPose3d()
     }
 
-    fun update() {
+    fun update(): AprilTagResult {
         if (!camera.isConnected) {
             DriverStation.reportWarning("Camera with name: ${camera.name} is not connected", false)
-            return// AprilTagResult(null, 0)
+            return AprilTagResult(null, Timer.getFPGATimestamp(), 0)
         }
+        val timestamp = Timer.getFPGATimestamp()
+        val targets = camera.latestResult.targets
+        
 
-        if(camera.latestResult.targets.size >= 2) {
-            poseEstimator.update().toNullable()?.let { 
-                swerve.addVisionMeasurement(
-                    it.estimatedPose.toPose2d(),
-                    Timer.getFPGATimestamp(),
-                    Constants.Camera.visionSTDEV)
-            }
+        if(targets.all { it.poseAmbiguity <= 0.5 }) {
+            return AprilTagResult(poseEstimator.update().toNullable(), timestamp, targets.size)
         }
-        return
+        
+        return AprilTagResult(null, Timer.getFPGATimestamp(), 0)
+
 
     }
         

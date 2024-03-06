@@ -144,7 +144,11 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
+<<<<<<< HEAD
         val pid = PIDConstants(0.24, 0.0, 0.001000)
+=======
+        val pid = PIDConstants(0.12, 0.0, 0.001000)
+>>>>>>> e13ba7dc1ad865a4945010ff3d85fcad8d46f5e5
 
         const val gearing = 30.0
         const val followMotorID = 28
@@ -160,6 +164,6 @@ object Constants {
         val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
-        val speakerShoot = Pose(0.8, Elevator.minHeight)
+        val speakerShoot = Pose(0.887, Elevator.minHeight)
     }
 }

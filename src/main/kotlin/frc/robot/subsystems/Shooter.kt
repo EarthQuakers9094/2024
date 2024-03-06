@@ -241,6 +241,7 @@ class Shooter(
     }
 
     fun atAngle(): Boolean {
+        return true
         return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05
     }
 
