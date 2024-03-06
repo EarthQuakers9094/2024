@@ -5,7 +5,7 @@
       "x": 0.7,
       "y": 4.5
     },
-    "rotation": 119.69612481412007
+    "rotation": 121.29189052782665
   },
   "command": {
     "type": "sequential",
@@ -24,19 +24,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "pickup edge b"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pickup"
+                  "pathName": "pickup edge center"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "rev"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
                 }
               }
             ]

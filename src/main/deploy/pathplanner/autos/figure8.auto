@@ -14,13 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "figure8"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "backtostart"
           }
         }
       ]

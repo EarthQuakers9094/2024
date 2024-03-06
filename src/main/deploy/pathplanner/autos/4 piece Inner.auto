@@ -55,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": null
+                  "pathName": "C to B"
                 }
               }
             ]
@@ -80,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": null
+                  "pathName": "B to A"
                 }
               }
             ]
