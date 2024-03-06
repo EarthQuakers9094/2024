@@ -145,18 +145,18 @@ class Swerve(
         val sum = estimates.fold(0) {acc, estimate -> 
             acc + estimate.targets
         }
-        if(sum >= 2) {
-            estimates.forEach { estimate ->
-                estimate.estimatedPose?.let { 
-                    swerveDrive.addVisionMeasurement(   
-                        it.estimatedPose.toPose2d(),
-                        estimate.timestamp,
-                        Constants.Camera.visionSTDEV
-                    )
+        // if(sum >= 2) {
+        //     estimates.forEach { estimate ->
+        //         estimate.estimatedPose?.let { 
+        //             swerveDrive.addVisionMeasurement(   
+        //                 it.estimatedPose.toPose2d(),
+        //                 estimate.timestamp,
+        //                 Constants.Camera.visionSTDEV
+        //             )
                 
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
 
         // val sum = results.fold(0) { acc, result ->  
         //     acc + result.targets
@@ -221,10 +221,31 @@ class Swerve(
     fun speakerAngle(): Rotation2d {
         val location = getPos()
 
-        val ydif = Constants.Camera.yPositionOfSpeaker - location.getY()
+        val aimingLoc:Double = if (location.getY() <= Constants.Camera.yPositionOfSpeaker) {
+            Constants.Camera.yPositionOfSpeaker + Constants.Camera.offset
+        } else {
+            Constants.Camera.yPositionOfSpeaker - Constants.Camera.offset
+        }
+
+        val ydif = aimingLoc - location.getY()
         val xdif = Constants.Camera.xPositionOfSpeaker() - location.getX()
 
         return Rotation2d.fromRadians(atan2(ydif, xdif))
+    }
+
+    fun speakerDistance(): Double {
+        val location = getPos()
+
+        val aimingLoc:Double = if (location.getY() <= Constants.Camera.yPositionOfSpeaker) {
+            Constants.Camera.yPositionOfSpeaker + Constants.Camera.offset
+        } else {
+            Constants.Camera.yPositionOfSpeaker - Constants.Camera.offset
+        }
+
+        val ydif = aimingLoc - location.getY()
+        val xdif = Constants.Camera.xPositionOfSpeaker() - location.getX()
+
+        return Math.sqrt(ydif*ydif+xdif*xdif);
     }
 
     /** This method will be called once per scheduler run during simulation */

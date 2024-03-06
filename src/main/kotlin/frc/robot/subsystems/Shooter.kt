@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
 import java.util.function.BooleanSupplier
@@ -36,11 +37,11 @@ class Shooter(
     private val jointAbsoluteEncoder = DutyCycleEncoder(1)
 
 
-    private var startingPosition = Constants.Shooter.startAngle//(jointAbsoluteEncoder.get() * Math.PI * 2)// + 1.44558;
+    private var startingPosition = absoluteAngle() //(jointAbsoluteEncoder.get() * Math.PI * 2)// + 1.44558;
 
     private var speed = 0.0
 
-    private var desiredAngle = startingPosition
+    private var desiredAngle = 0.8
 
     private var angleRollingAverage = MovingAverage(20)
 
@@ -54,8 +55,6 @@ class Shooter(
 
     private var currentSetPoint = 0.0
     private var currentAverage = MovingAverage(10)
-
-    
 
     private var topWheels = FlywheelSim(DCMotor.getNeoVortex(1), 1.0, 0.00176)
 
@@ -89,9 +88,17 @@ class Shooter(
 
     private var currentSetSpeed = 0.0
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(24.0, 24.0))
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(24.0, 18.0))
 
     private var currentState = TrapezoidProfile.State(startingPosition, 0.0)
+
+    private var lastAbsoluteAngle = 0.0;
+
+    private var pid = PIDController(Constants.Shooter.join_pid.kP, Constants.Shooter.join_pid.kI, Constants.Shooter.join_pid.kD);
+
+    private var stillUpdates = 0; 
+
+    var disableUpdates = false;
 
     init {
         
@@ -99,6 +106,8 @@ class Shooter(
         followerSparkMax.restoreFactoryDefaults()
         jointMotor1.restoreFactoryDefaults()
         intakingMotor.restoreFactoryDefaults()
+
+        lastAbsoluteAngle = absoluteAngle();
 
         while (!jointMotor1.inverted) {
             jointMotor1.inverted = true
@@ -112,13 +121,6 @@ class Shooter(
         //joinAbsoluteEncoder.distancePerRotation = 
 
         jointMotor1.encoder.position = startingPosition //Constants.Shooter.startAngle
-
-        // jointMotor1.pidController.setSmartMotionMaxVelocity(1.5, 0)
-        // jointMotor1.pidController.setSmartMotionMaxAccel(0.00001, 0)
-        // jointMotor1.pidController.setSmartMotionAccelStrategy(
-        // SparkPIDController.AccelStrategy.kTrapezoidal,
-        // 0
-        // )
 
         followerSparkMax.follow(shooterSparkMax, true)
 
@@ -140,8 +142,7 @@ class Shooter(
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
         followerSparkMax.follow(shooterSparkMax)
-        // shooterSparkMax.set(Constants.Shooter.speed)
-        // intakingMotor.set(0.75)
+        
     }
 
     override fun periodic() {
@@ -150,27 +151,48 @@ class Shooter(
             speed = shooterSparkMax.encoder.velocity
         }
 
-        val nextPosition =
-                profile.calculate(0.02, currentState, TrapezoidProfile.State(desiredAngle, 0.0))
 
-        jointMotor1.pidController.setReference(
-                nextPosition.position,
-                CANSparkBase.ControlType.kPosition
-        )
+        val nextPosition =
+                profile.calculate(0.02,
+                    currentState, 
+                    TrapezoidProfile.State(desiredAngle, 0.0));
+
+
+        // jointMotor1.set(pid.calculate(absoluteAngle(),nextPosition.position))
+
+        // jointMotor1.pidController.setReference(
+        //         nextPosition.position,
+        //         CANSparkBase.ControlType.kPosition
+        // )
 
         currentState = nextPosition
 
         angleRollingAverage.addValue(jointMotor1.encoder.position)
-        
+
+        val aangle = absoluteAngle();
+
+        SmartDashboard.putNumber("angular velocity absolute encoder", Math.abs((aangle - lastAbsoluteAngle) / 0.02));
+
+        if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.02  && !disableUpdates) {
+            stillUpdates = stillUpdates + 1;
+            if (stillUpdates >= 20) {
+                jointMotor1.encoder.position = absoluteAngle();
+            } 
+        } else {
+            stillUpdates = 0;
+        }
+
+        // jointMotor1.encoder.position = absoluteAngle();
+
+        lastAbsoluteAngle = absoluteAngle();
 
         SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
+        SmartDashboard.putNumber("shooter angle velocity", jointMotor1.encoder.velocity)
+        SmartDashboard.putNumber("pid angle joint", nextPosition.position)
         SmartDashboard.putNumber("jointValueAbsolute", jointAbsoluteEncoder.get())
-        SmartDashboard.putNumber("jointValue", (jointAbsoluteEncoder.get() * Math.PI * 2) + 1.44558
-
-)
-
-
-
+        SmartDashboard.putNumber("jointValue", absoluteAngle())
+        SmartDashboard.putNumber("shooter desired angle", desiredAngle)
+        SmartDashboard.putNumber("still updates", stillUpdates.toDouble())
 
 
         SmartDashboard.putNumber("current motor speed launcher", speed)
@@ -181,6 +203,11 @@ class Shooter(
         SmartDashboard.putNumber("feader current", intakingMotor.outputCurrent)
     }
 
+    fun enable() {
+        currentState = TrapezoidProfile.State(jointMotor1.encoder.position, 0.0);
+    }
+
+
     // fun configureSparkMax(config: () -> REVLibError) {
     //     for (int i = 0; i < maximumRetries; i++) {
     //         if (config.get() == REVLibError.kOk) {
@@ -189,6 +216,10 @@ class Shooter(
     //     }
     //     DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
     // }
+
+    fun absoluteAngle():Double {
+        return (jointAbsoluteEncoder.get() * Math.PI * 2)-1.281065-0.1
+    }
 
     fun setSpeed(speed: Double) {
         currentSetPoint = speed
@@ -203,6 +234,7 @@ class Shooter(
     }
 
     fun atAngle(): Boolean {
+        return true
         return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05
     }
 
@@ -272,13 +304,13 @@ class Shooter(
     }
 
     fun back(): Unit {
-        shooterSparkMax.set(1.0)
+        //shooterSparkMax.set(1.0)
         currentSetSpeed = 0.1
-        intakingMotor.set(-1.0)
+        intakingMotor.set(-0.2)
     }
 
     fun back2(): Unit {
-        shooterSparkMax.set(0.40)
+        shooterSparkMax.set(0.70)
         currentSetSpeed = 0.1
         intakingMotor.set(-0.3)
     }
@@ -411,7 +443,7 @@ class Shooter(
         return if (amp) {
             speed <= Constants.Shooter.ampShootingRotationSpeed
         } else {
-            speed <= -4500.0
+            speed <= -3550.0
         }
     }
 }

@@ -11,24 +11,28 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 
 class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter, private val swerveDrive: Swerve, private val terminate: Boolean) : Command() {
+    var height = Constants.Camera.shootElevation;
     init {
         // each subsystem used by the command must be passed into the addRequirements() method
         addRequirements(shooter)
     }
 
     override fun initialize() {
+        SmartDashboard.putNumber("aiming height", height);
         SmartDashboard.putBoolean("aim shooter running", true);
     }
 
 
     override fun execute() {
-        val location = swerveDrive.getPos();
+        height = SmartDashboard.getNumber("aiming height", height);
         
-        val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
-        val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
+        // val ydif = Constants.Camera.yPositionOfSpeaker-location.getY();
+        // val xdif = Constants.Camera.xPositionOfSpeaker()-location.getX();
 
-        val distance = Math.sqrt( ydif*ydif + 
-                                  xdif*xdif );
+        // val distance = Math.sqrt( ydif*ydif + 
+        //                           xdif*xdif );
+
+        val distance = swerveDrive.speakerDistance()
 
         val angle = atan2(Constants.Camera.shootElevation,distance);
 

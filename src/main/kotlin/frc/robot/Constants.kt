@@ -6,10 +6,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
 import frc.robot.utils.Config
@@ -48,6 +48,7 @@ object Constants {
         const val LEFT_X_DEADBAND = 0.05
         const val LEFT_Y_DEADBAND = 0.05
     }
+
     object Intake {
         const val bonusMotorSpeed = 1.0
         const val speed = 1.0
@@ -57,8 +58,7 @@ object Constants {
         const val frontIntakeId = 26
     }
     object Camera {
-        val aprilTagFieldLayout: AprilTagFieldLayout =
-                AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
+        val aprilTagFieldLayout: AprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
         const val arducamOne = "Arducam1"
         val visionSTDEV = run {
             val mat = Matrix(Nat.N3(), Nat.N1())
@@ -72,24 +72,22 @@ object Constants {
         // AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
         val validTargets = arrayOf(4, 3)
 
-        val shootElevation = 1.4478
-        val xPositionOfSpeaker = {
-            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) {
-                0.0 + 0.254
-            } else {
-                16.5 - 0.254
-            }
+        val shootElevation = 1.4478;
+        val xPositionOfSpeaker = {           
+            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
+                {0.0 + 0.254} else 
+                {16.5 - 0.254};
         }
 
         val yPositionOfSpeaker = 5.5
+        val offset = 0.3;
 
         val resetPosition = {
-            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) {
-                Pose2d(0.5, 4.13, Rotation2d.fromRadians(0.0))
-            } else {
-                Pose2d(16.04, 4.13, Rotation2d.fromRadians(Math.PI))
+            if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
+                {Pose2d(0.5,4.13,Rotation2d.fromRadians(0.0))} else 
+                {Pose2d(16.04,4.13,Rotation2d.fromRadians(Math.PI))};
+
             }
-        }
     }
     object Auto {
         val TARGET_ROTATION = PIDConstants(0.03, 0.0, 0.0)
@@ -136,7 +134,7 @@ object Constants {
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
         const val intakeSpeed = 1.0
-        const val speed = -0.75
+        const val speed = -0.60
         const val intakeMotorID = 30
         const val spinuptime = 5.0
         const val shootTime = 0.6
@@ -146,13 +144,13 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-        val pid = PIDConstants(0.24, 0.0, 0.001000)
+        val pid = PIDConstants(0.12, 0.0, 0.001000)
 
         const val gearing = 30.0
         const val followMotorID = 28
-        const val maxHeight = 47.0 // 45.690002;
+        const val maxHeight = 47.0; //45.690002;
         const val minHeight = 0.0
-        const val feedforward = 0.052404 / 2.0
+        const val feedforward = 0.052404/2.0
 
         const val motorID = 27
     }
@@ -162,6 +160,6 @@ object Constants {
         val pickup = Pose(0.8, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
-        val speakerShoot = Pose(0.8, Elevator.minHeight)
+        val speakerShoot = Pose(0.887, Elevator.minHeight)
     }
 }

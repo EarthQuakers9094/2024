@@ -15,13 +15,22 @@ class Pickup(
         private val shooter: Shooter,
         private val elevator: Elevator,
         private val intake: Intake,
-        private val high: Boolean
+        private val high: Boolean,
+        private val resting: Boolean,
 ) : CommandSequence() {
 
     val supplier: BooleanSupplier = BooleanSupplier { shooter.noteIn() }
 
     override val commands: List<Command> =
             listOf(
+                    InstantCommand(
+                        object : Runnable {
+                            override fun run() {
+                                shooter.disableUpdates = true
+                            }
+                        },
+                        shooter
+                    ),
                     GotoPose(
                             shooter,
                             elevator,
@@ -49,10 +58,11 @@ class Pickup(
                     ),
                     WaitUntilCommand(supplier),
                     WaitCommand(
+                        // 0.0
                             if (high) {
-                                0.75
+                                0.0
                             } else {
-                                0.075
+                                0.0
                             }
                     ),
                     InstantCommand(
@@ -73,7 +83,11 @@ class Pickup(
         intake.stopIntaking()
         shooter.stopShooting()
         shooter.stopIntaking()
-        shooter.setAngle(0.0)
+        shooter.disableUpdates = false
+
+        if (resting) {
+            shooter.setAngle(0.0)
+        }
         elevator.setPosition(0.0)
     }
 }

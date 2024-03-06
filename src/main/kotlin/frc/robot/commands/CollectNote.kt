@@ -10,6 +10,7 @@ import frc.robot.subsystems.Swerve
 import frc.robot.utils.MovingAverage
 import frc.robot.commands.CollectNote
 import org.photonvision.PhotonCamera
+import java.util.function.BooleanSupplier
 
 class CollectNote(
         private val rotationPidConstants: PIDConstants,
@@ -17,6 +18,7 @@ class CollectNote(
         private val backCamera: PhotonCamera,
         private val swerve: Swerve,
         private val dataInconsistency: Int,
+        private val hasNote: BooleanSupplier
 ) : Command() {
     private var forward = true
     private val targetYaw = MovingAverage(dataInconsistency)
@@ -58,7 +60,7 @@ class CollectNote(
         // } else {
         //     intake?.startIntaking()
         // }
-        if (res.hasTargets() && res.bestTarget.area > 2.0) {
+        if (!hasNote.asBoolean && res.hasTargets() && res.bestTarget.area > 2.0) {
             updatesSinceLastTarget = 0
             val target = res.bestTarget
             val averageYaw = targetYaw.addValue(target.yaw)
