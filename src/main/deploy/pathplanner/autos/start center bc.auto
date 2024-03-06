@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.1993994471449507,
-      "y": 5.493753074020143
+      "x": 1.2,
+      "y": 5.49
     },
     "rotation": 180.0
   },
@@ -31,6 +31,43 @@
                 "type": "named",
                 "data": {
                   "name": "pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "rev shooter"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "start center to c"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "pickup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "rev shooter"
                 }
               }
             ]
