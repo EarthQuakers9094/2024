@@ -1,5 +1,7 @@
 package frc.robot.utils
 
+import edu.wpi.first.wpilibj.DriverStation
+
 class MovingAverage(private val numberValues: Int) {
     private var values: Array<Double>
     private var currentSum = 0.0
@@ -29,3 +31,4 @@ class MovingAverage(private val numberValues: Int) {
         return currentSum / numberValues
     }
 }
+

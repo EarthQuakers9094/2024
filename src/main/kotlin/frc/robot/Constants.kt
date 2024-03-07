@@ -111,7 +111,7 @@ object Constants {
         val sim_pid = PIDConstants(20.0, 0.0, 0.0)
         const val velocityConversionFactor = 1.0
 
-        const val positionConversionFactor = 1.0 / 24.0 * Math.PI
+        const val positionConversionFactor = 1.0 / 80.0 * Math.PI * 2.0
         const val tolerance = 30.0
         // const val intakeSpeed = 0.9
         // const val speed = -0.75
@@ -144,11 +144,7 @@ object Constants {
     object Elevator {
         val sim_pid = PIDConstants(5.0, 0.0, 0.0)
         val sim_feedforward = 0.125641
-<<<<<<< HEAD
-        val pid = PIDConstants(0.24, 0.0, 0.001000)
-=======
         val pid = PIDConstants(0.12, 0.0, 0.001000)
->>>>>>> e13ba7dc1ad865a4945010ff3d85fcad8d46f5e5
 
         const val gearing = 30.0
         const val followMotorID = 28
@@ -161,9 +157,11 @@ object Constants {
 
     object Poses {
         val amp = Pose(-0.473801, 33.523514)
-        val pickup = Pose(0.8, Elevator.minHeight)
+        val pickup = Pose(0.95, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
         val speakerShoot = Pose(0.887, Elevator.minHeight)
+        val halfUp = Pose(0.8, 33.3)
+        val allUp = Pose(0.0, Elevator.maxHeight)
     }
 }

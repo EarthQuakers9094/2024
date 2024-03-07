@@ -7,4 +7,4 @@ import frc.robot.subsystems.Shooter
 
 // TODO: Add your sequential commands in the super constructor call,
 //       e.g. SequentialCommandGroup(OpenClawCommand(), MoveArmCommand())
-class ClimbAndTrap(elevator: Elevator, shooter: Shooter) : SequentialCommandGroup(Climb(elevator).build(), ScoreTrap(elevator, shooter))
+class ClimbAndTrap(elevator: Elevator, shooter: Shooter) : SequentialCommandGroup(Climb(elevator,shooter).build(), ScoreTrap(elevator, shooter))

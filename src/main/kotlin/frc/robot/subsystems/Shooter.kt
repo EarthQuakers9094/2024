@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import frc.robot.utils.configureSparkMax
 import java.util.function.BooleanSupplier
 import java.lang.Math
 
@@ -111,13 +112,12 @@ class Shooter(
 
         lastAbsoluteAngle = absoluteAngle();
 
-        while (!jointMotor1.inverted) {
-            jointMotor1.inverted = true
-        }
+        // configureSparkMax {jointMotor1.setInverted(true q) };
+        
 
-        jointMotor1.pidController.p = Constants.Shooter.join_pid.kP
-        jointMotor1.pidController.i = Constants.Shooter.join_pid.kI
-        jointMotor1.pidController.d = Constants.Shooter.join_pid.kD
+        configureSparkMax {jointMotor1.pidController.setP(Constants.Shooter.join_pid.kP)};
+        configureSparkMax {jointMotor1.pidController.setI(Constants.Shooter.join_pid.kI)};
+        configureSparkMax {jointMotor1.pidController.setD(Constants.Shooter.join_pid.kD)};
 
         jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
         //joinAbsoluteEncoder.distancePerRotation = 
@@ -133,7 +133,7 @@ class Shooter(
         followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
         intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)
 
-        shooterSparkMax.pidController.setP(Constants.Shooter.p)
+        configureSparkMax {shooterSparkMax.pidController.setP(Constants.Shooter.p)};
         shooterSparkMax.pidController.setI(Constants.Shooter.i)
         shooterSparkMax.pidController.setD(Constants.Shooter.d)
 
@@ -160,13 +160,10 @@ class Shooter(
                     currentState, 
                     TrapezoidProfile.State(desiredAngle, 0.0));
 
-
-        // jointMotor1.set(pid.calculate(absoluteAngle(),nextPosition.position))
-
-        // jointMotor1.pidController.setReference(
-        //         nextPosition.position,
-        //         CANSparkBase.ControlType.kPosition
-        // )
+        jointMotor1.pidController.setReference(
+                nextPosition.position,
+                CANSparkBase.ControlType.kPosition
+        )
 
         currentState = nextPosition
 
@@ -178,18 +175,16 @@ class Shooter(
 
         if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.02  && !disableUpdates) {
             stillUpdates = stillUpdates + 1;
-            if (stillUpdates >= 20) {
-                //jointMotor1.encoder.position = absoluteAngle();
-            } 
+            if (stillUpdates > 20) {
+                jointMotor1.encoder.position = absoluteAngle();
+            }
         } else {
             stillUpdates = 0;
         }
 
         if (updates <= 20 && updates >= 5) {
             jointMotor1.encoder.position = absoluteAngle();
-        } 
-
-        // jointMotor1.encoder.position = absoluteAngle();
+        }
 
         lastAbsoluteAngle = absoluteAngle();
 
@@ -197,7 +192,7 @@ class Shooter(
         SmartDashboard.putNumber("shooter angle velocity", jointMotor1.encoder.velocity)
         SmartDashboard.putNumber("pid angle joint", nextPosition.position)
         SmartDashboard.putNumber("jointValueAbsolute", jointAbsoluteEncoder.get())
-        SmartDashboard.putNumber("jointValue", absoluteAngle())
+        SmartDashboard.putNumber("jointValue", -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194906)
         SmartDashboard.putNumber("shooter desired angle", desiredAngle)
         SmartDashboard.putNumber("still updates", stillUpdates.toDouble())
 
@@ -208,10 +203,18 @@ class Shooter(
         SmartDashboard.putBoolean("beam break", noteIn())
 
         SmartDashboard.putNumber("feader current", intakingMotor.outputCurrent)
+
+        SmartDashboard.putNumber("Is joint motor inverted", if (jointMotor1.inverted) {1.0} else {-1.0})
+        if(jointMotor1.inverted) {
+            jointMotor1.inverted = false
+        }
     }
 
     fun enable() {
         currentState = TrapezoidProfile.State(jointMotor1.encoder.position, 0.0);
+        // while (!jointMotor1.inverted) {
+        //     jointMotor1.inverted = true
+        // }
     }
 
 
@@ -225,7 +228,7 @@ class Shooter(
     // }
 
     fun absoluteAngle():Double {
-        return (jointAbsoluteEncoder.get() * Math.PI * 2)-1.281065-0.1
+        return -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194906
     }
 
     fun setSpeed(speed: Double) {
@@ -241,7 +244,7 @@ class Shooter(
     }
 
     fun atAngle(): Boolean {
-        return true
+        // return true
         return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05
     }
 

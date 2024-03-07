@@ -1,16 +1,15 @@
 package frc.robot.commands
 
 import frc.robot.subsystems.Elevator
+import frc.robot.subsystems.Shooter
 import frc.robot.commands.SetValue
 import frc.robot.Constants
 import frc.robot.commands.CommandSequence
 import edu.wpi.first.wpilibj2.command.InstantCommand
 
 
-class Climb(private val elevator: Elevator):CommandSequence() {
+class Climb(private val elevator: Elevator, private val shooter: Shooter):CommandSequence() {
     override val commands = listOf (
-        SetValue(elevator,
-            { elevator.setPosition(Constants.Elevator.maxHeight) }) { elevator.atPosition() },
         InstantCommand({ elevator.setClimbing(true) }, elevator),
         SetValue( elevator, { elevator.setPosition(Constants.Elevator.minHeight) }) { elevator.atPosition() });
 

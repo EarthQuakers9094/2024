@@ -73,6 +73,8 @@ class RobotContainer {
 
     private var faceSpeaker = false
 
+    private var readyShoot = false
+
     val operatorExtra = CommandXboxController(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
     val driverRightStick = Joystick(Constants.OperatorConstants.driverRightStickPort)
@@ -141,7 +143,7 @@ class RobotContainer {
                                 shooter?.stopShooting();
                         }
                 }
-           )),
+           ))
         }
 
                 configureBindings()
@@ -322,9 +324,9 @@ JoystickButton(driverRightStick, 3)
 
                         )
                 ))
-JoystickButton(driverRightStick, 1)
+                JoystickButton(driverRightStick, 1)
                     .whileTrue(
-                Pickup(shooter!!, elevator!!, intake!!, false, false).build()
+                Pickup(shooter!!, elevator!!, intake!!, false, true).build()
 )
 /*Pickup(shooter!!, elevator!!, intake!!, false).build()*/
 
@@ -358,9 +360,28 @@ JoystickButton(driverRightStick, 1)
 
 
             operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false));
-            operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true))
+            operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true).alongWith(
+                Commands.startEnd(
+                object : Runnable {
+                        override fun run() {
+                                shooter!!.startShooting(false);
+                        }
+                },
+                object : Runnable {
+                        override fun run() {
+                                shooter?.stopShooting();
+                        }
+                }
+                )
+            ))
 
-            JoystickButton(driverRightStick, 5).toggleOnTrue(Climb(elevator!!).build())
+            JoystickButton(driverLeftStick, 5).toggleOnTrue(Climb(elevator!!,shooter!!).build())
+            JoystickButton(driverLeftStick, 6).onTrue(
+                Commands.sequence(
+                        GotoPose(shooter!!,elevator!!,Constants.Poses.halfUp,false),
+                        GotoPose(shooter!!,elevator!!,Constants.Poses.allUp,false)
+                )
+           );
             JoystickButton(driverRightStick, 6).whileTrue(SetValue.setShootingAngle(shooter!!, 0.0))
 
             //            JoystickButton(driverLeftStick, 5)
