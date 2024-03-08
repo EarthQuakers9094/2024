@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.PathPlannerPath
 import com.pathplanner.lib.util.PIDConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
@@ -41,8 +42,11 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.WaitCommand
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -76,6 +80,7 @@ class RobotContainer {
     private var faceSpeaker = false
 
     private var readyShoot = false
+    private var autoChooser: SendableChooser<Command>;
 //     private var autoChooser: AutoBuilder;
 
     val operatorExtra = CommandXboxController(Constants.OperatorConstants.kDriverControllerPort)
@@ -135,18 +140,26 @@ class RobotContainer {
                 "shootSpeaker",
                 SpeakerShoot(elevator!!, shooter!!).build()
            )
-           NamedCommands.registerCommand("rev shooter", Commands.startEnd(
+           NamedCommands.registerCommand("rev shooter", InstantCommand(
                 object : Runnable {
                         override fun run() {
                                 shooter!!.startShooting(false);
                         }
-                },
-                object : Runnable {
-                        override fun run() {
-                                shooter?.stopShooting();
-                        }
                 }
            ))
+           NamedCommands.registerCommand("move forward", InstantCommand(
+                object : Runnable {
+                        override fun run() {
+                                swerveDrive.drive(Translation2d(1.0,0.0),0.0,false);
+                        }
+                }
+           ).andThen(WaitCommand(0.3)).andThen(
+                object : Runnable {
+                        override fun run() {
+                                swerveDrive.drive(Translation2d(0.0,0.0),0.0,false);
+                        }
+                }
+                ));
         }
 
                 configureBindings()
@@ -216,7 +229,7 @@ class RobotContainer {
 
                 swerveDrive.defaultCommand = simClosedFieldRel
 
-                val autoChooser = AutoBuilder.buildAutoChooser();
+                autoChooser = AutoBuilder.buildAutoChooser();
 
                 // Another option that allows you to specify the default auto by its name
                 // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
@@ -438,9 +451,9 @@ JoystickButton(driverRightStick, 3)
          * @return the command to run in autonomous
          */
         val autonomousCommand: Command
-                get() {
+                get() { return autoChooser.getSelected();
                         // An example command will be run in autonomous
-                       return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
+                //        return SequentialCommandGroup(Shoot(shooter!!).build(),RunAuto("4 piece Inner"));
 //                        return ParallelRaceGroup(SequentialCommandGroup(WaitUntilCommand { ->
 //                            frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()
 //                        },

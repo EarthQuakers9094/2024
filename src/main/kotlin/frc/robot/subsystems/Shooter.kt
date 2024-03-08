@@ -124,7 +124,7 @@ class Shooter(
 
         jointMotor1.encoder.position = startingPosition //Constants.Shooter.startAngle
 
-        followerSparkMax.follow(shooterSparkMax, true)
+        // followerSparkMax.follow(shooterSparkMax, true)
 
         shooterSparkMax.encoder.velocityConversionFactor =
                 Constants.Shooter.velocityConversionFactor

@@ -14,6 +14,7 @@ import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.EstimatedRobotPose
 import swervelib.SwerveDrive
+import kotlin.arrayOf
 
 class AprilTagPoseEstimator(val swerve: SwerveDrive, val camera: PhotonCamera, private val offset: Transform3d) {
 
@@ -39,7 +40,7 @@ class AprilTagPoseEstimator(val swerve: SwerveDrive, val camera: PhotonCamera, p
         val targets = camera.latestResult.targets
         
 
-        if(targets.all { it.poseAmbiguity <= 0.5 }) {
+        if(targets.all { /*oseAmbiguity <= 0.5 && */arrayOf(4,3).contains(it.fiducialId) }) {
             return AprilTagResult(poseEstimator.update().toNullable(), timestamp, targets.size)
         }
         
