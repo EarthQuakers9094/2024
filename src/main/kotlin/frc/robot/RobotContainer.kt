@@ -42,6 +42,8 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import edu.wpi.first.wpilibj2.command.Commands
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the [Robot]
@@ -74,6 +76,7 @@ class RobotContainer {
     private var faceSpeaker = false
 
     private var readyShoot = false
+//     private var autoChooser: AutoBuilder;
 
     val operatorExtra = CommandXboxController(Constants.OperatorConstants.kDriverControllerPort)
     val driverLeftStick = Joystick(Constants.OperatorConstants.driverLeftStickPort)
@@ -212,6 +215,13 @@ class RobotContainer {
                                 )
 
                 swerveDrive.defaultCommand = simClosedFieldRel
+
+                val autoChooser = AutoBuilder.buildAutoChooser();
+
+                // Another option that allows you to specify the default auto by its name
+                // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+            
+                SmartDashboard.putData("Auto Chooser", autoChooser);
         }
 
         fun debugPeriodic() {
