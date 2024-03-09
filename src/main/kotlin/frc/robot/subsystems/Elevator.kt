@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.RobotBase
+import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.ElevatorSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import frc.robot.Constants
 import frc.robot.utils.MovingAverage
+import frc.robot.utils.configureSparkMax
 import edu.wpi.first.wpilibj.DigitalInput
 import kotlin.math.abs
 import kotlin.math.max
@@ -56,7 +58,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
     private var pidMode = true
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(80.0,40.0));
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(960.0,960.0));
 
     private var currentState = TrapezoidProfile.State(0.0,0.0);
 
@@ -69,17 +71,21 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         }
 
 
-        followMotor.follow(liftSparkMax,true);
+        configureSparkMax {followMotor.follow(liftSparkMax,true)};
 
 
-        liftSparkMax.encoder.positionConversionFactor = 1.0
-        liftSparkMax.encoder.position = 0.0;
-        liftSparkMax.setSmartCurrentLimit(40, 40);
-        followMotor.setSmartCurrentLimit(40, 40);
+        configureSparkMax {liftSparkMax.encoder.setPositionConversionFactor(1.0)};
+        configureSparkMax {liftSparkMax.encoder.setPosition(0.0)};
+        configureSparkMax {liftSparkMax.setSmartCurrentLimit(40, 40)};
+        configureSparkMax {followMotor.setSmartCurrentLimit(40, 40)};
 
-        liftSparkMax.pidController.p = Constants.Elevator.pid.kP
-        liftSparkMax.pidController.i = Constants.Elevator.pid.kI
-        liftSparkMax.pidController.d = Constants.Elevator.pid.kD
+        configureSparkMax {liftSparkMax.pidController.setP(Constants.Elevator.pid.kP)};
+        configureSparkMax {liftSparkMax.pidController.setI(Constants.Elevator.pid.kI)};
+        configureSparkMax {liftSparkMax.pidController.setD(Constants.Elevator.pid.kD)};
+        configureSparkMax {liftSparkMax.setIdleMode(IdleMode.kBrake)}
+        configureSparkMax {followMotor.setIdleMode(IdleMode.kBrake)}
+
+
 
         SmartDashboard.putData("sim pid", sim_pid)
         SmartDashboard.putData("elevator pid", pid);
@@ -123,7 +129,7 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
 
 
-            liftSparkMax.set(output);
+            liftSparkMax.set(output)
         }
     }
 

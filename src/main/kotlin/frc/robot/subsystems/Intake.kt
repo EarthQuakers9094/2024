@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
+import frc.robot.utils.configureSparkMax
 
 /** Creates a new ExampleSubsystem. */
 class Intake(
@@ -35,11 +36,11 @@ class Intake(
         intakeFollowSparkMax.restoreFactoryDefaults()
         //frontIntakeMotor.restoreFactoryDefaults()
         //frontIntakeMotor.follow(intakeSparkMax, true)
-        intakeFollowSparkMax.follow(intakeSparkMax)
+        configureSparkMax {intakeFollowSparkMax.follow(intakeSparkMax)}
 
         //frontIntakeMotor.setSmartCurrentLimit(40, 40)
-        intakeFollowSparkMax.setSmartCurrentLimit(40, 40)
-        intakeSparkMax.setSmartCurrentLimit(40, 40)
+        configureSparkMax {intakeFollowSparkMax.setSmartCurrentLimit(40, 40)}
+        configureSparkMax {intakeSparkMax.setSmartCurrentLimit(40, 40)}
     }
 
     fun startIntaking() {

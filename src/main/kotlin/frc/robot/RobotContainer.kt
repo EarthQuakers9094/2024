@@ -47,6 +47,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DriverStation
+import java.util.Optional
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -116,8 +118,7 @@ class RobotContainer {
             NamedCommands.registerCommand(
                     "pickup",
                     Pickup(shooter!!, elevator!!, intake!!, false, false).build()
-            )
-            
+            )            
             
             NamedCommands.registerCommand(
                     "pickupReturn",
@@ -172,18 +173,26 @@ class RobotContainer {
             return speed
         }
 
+        fun applyTeam(speed: Double):Double {
+                if (DriverStation.getAlliance() == Optional.of(DriverStation.Alliance.Blue)) {
+                        return -speed;
+                } else {
+                        return speed;
+                }
+        }
+
         val leftY =
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyBreak(driverLeftStick.trigger, driverLeftStick.getY()),
+                                applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getY())),
                                 Constants.OperatorConstants.LEFT_Y_DEADBAND
                         )
                     }
                 } else {
                     {
                         MathUtil.applyDeadband(
-                                operatorExtra.getLeftY(),
+                                applyTeam(operatorExtra.getLeftY()),
                                 Constants.OperatorConstants.LEFT_Y_DEADBAND
                         )
                     }
@@ -193,14 +202,14 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyBreak(driverLeftStick.trigger, driverLeftStick.getX()),
+                                applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getX())),
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
                 } else {
                     {
                         MathUtil.applyDeadband(
-                                operatorExtra.getLeftX(),
+                                applyTeam(operatorExtra.getLeftX()),
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
@@ -208,8 +217,8 @@ class RobotContainer {
 
         val omega = {
                         MathUtil.applyDeadband( 
-                                        applyBreak(driverLeftStick.trigger,driverRightStick.getX()),
-                                        Constants.OperatorConstants.LEFT_X_DEADBAND
+                                applyBreak(driverLeftStick.trigger,driverRightStick.getX()),
+                                Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                 }
 
@@ -339,7 +348,7 @@ JoystickButton(driverRightStick, 3)
                                         CollectNote(
                                                         PIDConstants(0.045, 0.0, 0.001000),
                                                         frontNoteCamera,
-                                                        backNoteCamera,
+                                                       
                                                         swerveDrive,
                                                         10,
                                             {->shooter!!.noteIn()}
@@ -356,7 +365,7 @@ JoystickButton(driverRightStick, 3)
             // orExtra.leftTrigger().whileTrue(Pickup(shooter!!, elevator!!, intake!!,
             // false).build())
 
-            operatorExtra.leftStick().whileTrue(shooter!!.backButton())
+            operatorExtra.leftStick().whileTrue(shooter!!.backButton().alongWith(intake!!.backButton()));
 
             operatorExtra.y().onTrue(
                 InstantCommand(
@@ -398,6 +407,10 @@ JoystickButton(driverRightStick, 3)
                 )
             ))
 
+            operatorExtra.rightStick().whileTrue(
+                shooter!!.forwardButton()
+            )
+
             JoystickButton(driverLeftStick, 5).toggleOnTrue(Climb(elevator!!,shooter!!).build())
             JoystickButton(driverLeftStick, 6).onTrue(
                 Commands.sequence(
@@ -437,11 +450,17 @@ JoystickButton(driverRightStick, 3)
     fun teleperiodic() {
         operatorExtra.hid.setRumble(
                 GenericHID.RumbleType.kBothRumble,
-                (if (frontNoteCamera.latestResult.hasTargets() || backNoteCamera.latestResult.hasTargets()) {
-                    0.0
+                (if (shooter?.noteIn() ?: false) {
+                    0.5
                 } else {
                     0.0
                 })
+        )
+    }
+    fun cleanUp() {
+        operatorExtra.hid.setRumble(
+                GenericHID.RumbleType.kBothRumble,
+                0.0
         )
     }
 

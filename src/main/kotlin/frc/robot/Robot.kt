@@ -56,6 +56,7 @@ class Robot : TimedRobot() {
         robotContainer?.setMotorBrake(true);
         disabledTimer.reset();
         disabledTimer.start();
+        robotContainer?.cleanUp()
     }
 
     /** This function is called periodically when disabled.  */

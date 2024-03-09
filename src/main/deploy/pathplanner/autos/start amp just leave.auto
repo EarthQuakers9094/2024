@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7294015605842922,
+      "y": 6.579970411849221
+    },
+    "rotation": -118.34569362307668
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSpeaker"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp side leave"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "Amp start",
+  "choreoAuto": false
+}

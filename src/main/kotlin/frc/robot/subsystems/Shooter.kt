@@ -1,6 +1,7 @@
 package frc.robot.subsystems
 
 import com.revrobotics.AbsoluteEncoder
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase
 import com.revrobotics.CANSparkFlex
 import com.revrobotics.CANSparkLowLevel
@@ -89,7 +90,7 @@ class Shooter(
 
     private var currentSetSpeed = 0.0
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(24.0, 18.0))
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(60.0, 72.0))
 
     private var currentState = TrapezoidProfile.State(startingPosition, 0.0)
 
@@ -119,32 +120,34 @@ class Shooter(
         configureSparkMax {jointMotor1.pidController.setI(Constants.Shooter.join_pid.kI)};
         configureSparkMax {jointMotor1.pidController.setD(Constants.Shooter.join_pid.kD)};
 
-        jointMotor1.encoder.positionConversionFactor = Constants.Shooter.positionConversionFactor
+        configureSparkMax {jointMotor1.encoder.setPositionConversionFactor(Constants.Shooter.positionConversionFactor)};
         //joinAbsoluteEncoder.distancePerRotation = 
 
-        jointMotor1.encoder.position = startingPosition //Constants.Shooter.startAngle
+        configureSparkMax {jointMotor1.encoder.setPosition(startingPosition)} //Constants.Shooter.startAngle
 
         // followerSparkMax.follow(shooterSparkMax, true)
 
-        shooterSparkMax.encoder.velocityConversionFactor =
-                Constants.Shooter.velocityConversionFactor
+        configureSparkMax {shooterSparkMax.encoder.setVelocityConversionFactor(
+                Constants.Shooter.velocityConversionFactor)}
 
-        shooterSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
-        followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)
-        intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)
+        configureSparkMax {shooterSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)}
+        configureSparkMax {followerSparkMax.setSmartCurrentLimit(40, 40, 10_000_000)}
+        configureSparkMax {intakingMotor.setSmartCurrentLimit(40, 40, 10_000_000)}
 
-        configureSparkMax {shooterSparkMax.pidController.setP(Constants.Shooter.p)};
-        shooterSparkMax.pidController.setI(Constants.Shooter.i)
-        shooterSparkMax.pidController.setD(Constants.Shooter.d)
+        configureSparkMax {shooterSparkMax.pidController.setP(Constants.Shooter.p)}
+        configureSparkMax {shooterSparkMax.pidController.setI(Constants.Shooter.i)}
+        configureSparkMax {shooterSparkMax.pidController.setD(Constants.Shooter.d)}
 
-        followerSparkMax.pidController.setP(Constants.Shooter.p)
-        followerSparkMax.pidController.setI(Constants.Shooter.i)
-        followerSparkMax.pidController.setD(Constants.Shooter.d)
+        configureSparkMax {followerSparkMax.pidController.setP(Constants.Shooter.p)}
+        configureSparkMax {followerSparkMax.pidController.setI(Constants.Shooter.i)}
+        configureSparkMax {followerSparkMax.pidController.setD(Constants.Shooter.d)}
+
         SmartDashboard.putNumber("current set speed launcher", 0.0)
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
-        followerSparkMax.follow(shooterSparkMax)
-        
+        configureSparkMax {followerSparkMax.follow(shooterSparkMax)}
+                // configureSparkMax {followerSparkMax.follow(shooterSparkMax)}
+
     }
 
     override fun periodic() {
@@ -160,10 +163,10 @@ class Shooter(
                     currentState, 
                     TrapezoidProfile.State(desiredAngle, 0.0));
 
-        jointMotor1.pidController.setReference(
+        configureSparkMax {jointMotor1.pidController.setReference(
                 nextPosition.position,
                 CANSparkBase.ControlType.kPosition
-        )
+        )}
 
         currentState = nextPosition
 
@@ -187,6 +190,10 @@ class Shooter(
         }
 
         lastAbsoluteAngle = absoluteAngle();
+
+        configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kBrake)}
+        configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kBrake)}
+
 
         SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
         SmartDashboard.putNumber("shooter angle velocity", jointMotor1.encoder.velocity)
@@ -233,7 +240,7 @@ class Shooter(
 
     fun setSpeed(speed: Double) {
         currentSetPoint = speed
-        shooterSparkMax.pidController.setReference(speed, CANSparkBase.ControlType.kSmartVelocity)
+        configureSparkMax {shooterSparkMax.pidController.setReference(speed, CANSparkBase.ControlType.kSmartVelocity)}
     }
 
     fun setAngle(angle: Double) {
@@ -250,6 +257,8 @@ class Shooter(
 
     fun setIntakingSpeed(speed: Double) {
         intakingMotor.set(speed)
+        
+        // shooterSparkMax.set(0.25);
     }
 
     fun intake() {
@@ -314,7 +323,7 @@ class Shooter(
     }
 
     fun back(): Unit {
-        //shooterSparkMax.set(1.0)
+        shooterSparkMax.set(1.0)
         currentSetSpeed = 0.1
         intakingMotor.set(-0.2)
     }
@@ -332,6 +341,24 @@ class Shooter(
                 object : Runnable {
                     override fun run() {
                         back()
+                    }
+                },
+                object : Runnable {
+                    override fun run() {
+                        parent.stopShooting()
+                        parent.stopIntaking()
+                    }
+                },
+                parent
+        )
+    }
+
+    fun forwardButton(): Command {
+        var parent = this
+        return Commands.startEnd(
+                object : Runnable {
+                    override fun run() {
+                        intakingMotor.set(1.0)
                     }
                 },
                 object : Runnable {

@@ -133,7 +133,7 @@ object Constants {
         // const val bottomCanID = 27
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 1.0
+        const val intakeSpeed = 0.80
         const val speed = -0.60
         const val intakeMotorID = 30
         const val spinuptime = 5.0
