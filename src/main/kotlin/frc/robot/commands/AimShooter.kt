@@ -5,12 +5,13 @@ import frc.robot.Constants
 import frc.robot.subsystems.Shooter
 import frc.robot.subsystems.Swerve
 import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 import kotlin.math.atan2
 import swervelib.SwerveDrive
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 
-class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter, private val swerveDrive: Swerve, private val terminate: Boolean) : Command() {
+class AimShooter( private val shooter: Shooter, private val swerveDrive: Swerve, private val terminate: Boolean) : Command() {
     var height = Constants.Camera.shootElevation;
     init {
         // each subsystem used by the command must be passed into the addRequirements() method

@@ -33,7 +33,7 @@ class ShootTime(
                             intake
                     ),
                     FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false),
-                    AimShooter(camera, shooter, swerveDrive, true),
+                    AimShooter(shooter, swerveDrive, true),
                     Shoot(shooter).build()
             )
 

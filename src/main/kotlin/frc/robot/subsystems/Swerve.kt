@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.apriltag.AprilTagPoseEstimate
+import edu.wpi.first.apriltag.AprilTagFields
 import frc.robot.Constants
 import frc.robot.camera.AprilTagPoseEstimator
 import frc.robot.camera.AprilTagResult
 import frc.robot.utils.Config
+import frc.robot.utils.toNullable
 import java.io.File
 import java.util.function.Consumer
 import kotlin.math.atan2
@@ -29,6 +31,7 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import org.photonvision.PhotonCamera
+import org.photonvision.PhotonPoseEstimator
 
 class Swerve(
 // private val camera: PhotonCamera
@@ -40,13 +43,19 @@ class Swerve(
     var swerveDrive: SwerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
 
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
-    val poseEstimators = arrayOf(
-        AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, Math.PI / 6, Math.PI))),
-        //AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), Transform3d(0.2794, 0.127, 0.2252, Rotation3d(0.0, Math.PI / 6, 0.0)))
-        )
+    // val poseEstimators = arrayOf(
+    //     AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, Math.PI / 6, Math.PI))),
+    //     //AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), )))
+    //     )
     //0.0794 meters left of center && 0.3429 meters back from center && 0.2252 meters above && 30 degrees from vertical
     //
-    
+    val cameraPoseEstimator = PhotonPoseEstimator(
+        AprilTagFields.k2024Crescendo.loadAprilTagLayoutField(), 
+        PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
+        PhotonCamera("ATFront"), 
+        Transform3d(0.2794, 0.127, 0.2252, Rotation3d(0.0, Math.PI / 6, 0.0))
+)
+
 
     // val aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField()
     //    val poseEstimator =
@@ -142,10 +151,11 @@ class Swerve(
 
         // SmartDashboard.putNumber("current: backleft", pdh.getCurrent(17))
         // SmartDashboard.putNumber("current: backright", pdh.getCurrent(1))
-        val estimates = poseEstimators.map { it.update() }
-        val sum = estimates.fold(0) {acc, estimate -> 
-            acc + estimate.targets
-        }
+        // val estimates = poseEstimators.map { it.update() }
+        // val sum = estimates.fold(0) {acc, estimate -> 
+        //     acc + estimate.targets
+        // }
+        cameraPoseEstimator.update()
         // if(sum >= 0) {
         //     estimates.forEach { estimate ->
         //         estimate.estimatedPose?.let { 
@@ -235,7 +245,7 @@ class Swerve(
     }
 
     fun speakerDistance(): Double {
-        val location = getPos()
+        val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
 
         val aimingLoc:Double =
         if (Math.abs(location.getY() - Constants.Camera.yPositionOfSpeaker) <= Constants.Camera.offset) {

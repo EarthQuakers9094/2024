@@ -271,11 +271,6 @@ class RobotContainer {
             SmartDashboard.putBoolean("shooter", true)
 
             if (!mattSaysNoFancy) {
-                JoystickButton(driverLeftStick, 2)
-                        .onTrue(
-                                ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
-                                        .build()
-                        )
                 operatorExtra
                         .x()
                         .toggleOnTrue(
@@ -288,7 +283,7 @@ class RobotContainer {
                                                         }
                                                 ),
                                                 AimShooter(
-                                                        aprilCamera,
+                                                        
                                                         shooter!!,
                                                         swerveDrive,
                                                         false
@@ -438,6 +433,11 @@ JoystickButton(driverRightStick, 3)
                             ),
                     )
             JoystickButton(driverLeftStick, 10).whileTrue(ShootTime(shooter!!,intake!!,elevator!!,swerveDrive,aprilCamera).build());
+            JoystickButton(driverLeftStick, 12)
+                .onTrue(
+                                ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
+                                                .build()
+                )
         }
 
         // JoystickButton(driverLeftStick, 1).whileTrue(Brake(swerveDrive))
