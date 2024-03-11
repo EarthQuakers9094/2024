@@ -48,6 +48,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.simulation.JoystickSim
 import java.util.Optional
 
 /**
@@ -437,6 +438,26 @@ JoystickButton(driverRightStick, 3)
                 .onTrue(
                                 ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
                                                 .build()
+                )
+
+            JoystickButton(driverLeftStick,1)
+                .toggleOnTrue(
+                        SequentialCommandGroup(
+                                        InstantCommand(
+                                                object : Runnable {
+                                                    override fun run() {
+                                                        faceSpeaker = true
+                                                    }
+                                                }
+                                        ),
+                                        AimShooter(
+                                                
+                                                shooter!!,
+                                                swerveDrive,
+                                                false
+                                        )
+                                )
+                                .finallyDo({ _ -> faceSpeaker = false })
                 )
         }
 

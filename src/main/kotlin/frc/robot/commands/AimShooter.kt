@@ -35,7 +35,7 @@ class AimShooter( private val shooter: Shooter, private val swerveDrive: Swerve,
 
         val distance = swerveDrive.speakerDistance()
 
-        val angle = atan2(Constants.Camera.shootElevation,distance);
+        val angle = atan2(Constants.Camera.shootElevation,distance) - 3.5 * Math.PI/180.0;
 
         // both are in radians? https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.math/atan2.html#:~:text=Returns%20the%20angle%20theta%20of,from%20%2DPI%20to%20PI%20radians.
         shooter.setAngle(angle.coerceIn(0.0, 0.887))

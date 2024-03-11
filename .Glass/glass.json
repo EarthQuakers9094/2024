@@ -1,35 +1,77 @@
 {
   "NetworkTables": {
     "transitory": {
+      "CameraPublisher": {
+        "open": true
+      },
       "PathPlanner": {
         "HotReload": {
-          "open": false
+          "open": true
         },
         "double[]##v_/PathPlanner/currentPose": {
-          "open": false
+          "open": true
         },
         "double[]##v_/PathPlanner/targetPose": {
-          "open": false
+          "open": true
         },
-        "open": false
+        "open": true
       },
       "SmartDashboard": {
         "Auto Chooser": {
           "string[]##v_/SmartDashboard/Auto Chooser/options": {
-            "open": false
+            "open": true
           }
         },
+        "open": true,
+        "turning pid": {
+          "open": true
+        }
+      },
+      "photonvision": {
         "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 (v6) [10]": "Gyro",
+      "/SmartDashboard/Pigeon 2 (v6) [5]": "Gyro",
+      "/SmartDashboard/elevator pid": "PIDController",
+      "/SmartDashboard/face direction pid": "PIDController",
+      "/SmartDashboard/joint pid": "PIDController",
+      "/SmartDashboard/notepid": "PIDController",
+      "/SmartDashboard/sim pid": "PIDController",
+      "/SmartDashboard/turning pid": "PIDController"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables Info": {
     "Clients": {
-      "open": false
+      "open": true
+    },
+    "Connections": {
+      "open": true
     },
     "Server": {
-      "open": false
-    }
+      "open": true
+    },
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)"
   },
   "Plots": {
     "Plot <0>": {
@@ -41,7 +83,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 644,
+          "height": 801,
           "series": [
             {
               "color": [
@@ -50,7 +92,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/shooter desired angle"
+              "id": "NT:/SmartDashboard/shooter angle"
             },
             {
               "color": [
@@ -59,7 +101,146 @@
                 0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/shooter angle"
+              "id": "NT:/SmartDashboard/jointValueAbsolute"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/jointValue"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/elevator position"
+            },
+            {
+              "color": [
+                0.5058823823928833,
+                0.44705885648727417,
+                0.7019608020782471,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/elevator pid/setpoint"
+            },
+            {
+              "color": [
+                0.5764706134796143,
+                0.4705882668495178,
+                0.3764706254005432,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/elevator output"
+            },
+            {
+              "color": [
+                0.8549020290374756,
+                0.545098066329956,
+                0.7647059559822083,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/shooter desired angle"
+            },
+            {
+              "color": [
+                0.5490196347236633,
+                0.5490196347236633,
+                0.5490196347236633,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/pid angle joint"
+            },
+            {
+              "color": [
+                0.3921568989753723,
+                0.7098039388656616,
+                0.803921639919281,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] speed"
+            },
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] Speed Setpoint"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/PathPlanner/currentPose[0]"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/PathPlanner/targetPose[0]"
+            },
+            {
+              "color": [
+                0.8000000715255737,
+                0.7254902124404907,
+                0.4549019932746887,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Is joint motor inverted"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 0
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 501,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/xdif"
             }
           ]
         }

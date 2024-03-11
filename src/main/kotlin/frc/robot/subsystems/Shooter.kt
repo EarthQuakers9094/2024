@@ -39,7 +39,7 @@ class Shooter(
     private val jointAbsoluteEncoder = DutyCycleEncoder(1)
 
 
-    private var startingPosition = absoluteAngle() //(jointAbsoluteEncoder.get() * Math.PI * 2)// + 1.44558;
+    private var startingPosition = absoluteAngle(); //(jointAbsoluteEncoder.get() * Math.PI * 2)// + 1.44558;
 
     private var speed = 0.0
 
@@ -199,7 +199,7 @@ class Shooter(
         SmartDashboard.putNumber("shooter angle velocity", jointMotor1.encoder.velocity)
         SmartDashboard.putNumber("pid angle joint", nextPosition.position)
         SmartDashboard.putNumber("jointValueAbsolute", jointAbsoluteEncoder.get())
-        SmartDashboard.putNumber("jointValue", -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194906)
+        SmartDashboard.putNumber("jointValue", -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194946)
         SmartDashboard.putNumber("shooter desired angle", desiredAngle)
         SmartDashboard.putNumber("still updates", stillUpdates.toDouble())
 
@@ -235,7 +235,7 @@ class Shooter(
     // }
 
     fun absoluteAngle():Double {
-        return -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.24
+        return -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194946
     }
 
     fun setSpeed(speed: Double) {
@@ -480,7 +480,7 @@ class Shooter(
         return if (amp) {
             speed <= Constants.Shooter.ampShootingRotationSpeed
         } else {
-            speed <= -3550.0
+            speed <= -4500.0
         }
     }
 }

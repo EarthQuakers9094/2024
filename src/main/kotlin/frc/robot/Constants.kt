@@ -80,7 +80,7 @@ object Constants {
         }
 
         val yPositionOfSpeaker = 5.5
-        val offset = 0.3;
+        val offset = 0.15;
 
         val resetPosition = {
             if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
@@ -123,7 +123,7 @@ object Constants {
         const val ampSpeed = -0.2
         const val ampShootingRotationSpeed = 0.0
 
-        const val startAngle = Math.PI * 58.0 / 180.0
+        const val startAngle = Math.PI * 74.0 / 180.0
 
         const val inSensorID = 0
         // const val topCanid = 31
@@ -134,7 +134,7 @@ object Constants {
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
         const val intakeSpeed = 0.85
-        const val speed = -0.60
+        const val speed = -0.80
         const val intakeMotorID = 30
         const val spinuptime = 5.0
         const val shootTime = 0.6
