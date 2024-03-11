@@ -72,7 +72,7 @@ object Constants {
         // AprilTagFieldLayout(AprilTagFields.k2024Crescendo.m_resourceFile)
         val validTargets = arrayOf(4, 3)
 
-        val shootElevation = 1.4478;
+        val shootElevation = 1.2827;
         val xPositionOfSpeaker = {           
             if (Optional.of(DriverStation.Alliance.Blue) == DriverStation.getAlliance()) 
                 {0.0 + 0.254} else 

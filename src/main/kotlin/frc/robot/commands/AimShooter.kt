@@ -37,7 +37,7 @@ class AimShooter(private val camera: PhotonCamera, private val shooter: Shooter,
         val angle = atan2(Constants.Camera.shootElevation,distance);
 
         // both are in radians? https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.math/atan2.html#:~:text=Returns%20the%20angle%20theta%20of,from%20%2DPI%20to%20PI%20radians.
-        shooter.setAngle(angle)
+        shooter.setAngle(angle.coerceIn(0.0, 0.887))
     }
 
     override fun isFinished(): Boolean {

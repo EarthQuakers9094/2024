@@ -237,7 +237,10 @@ class Swerve(
     fun speakerDistance(): Double {
         val location = getPos()
 
-        val aimingLoc:Double = if (location.getY() <= Constants.Camera.yPositionOfSpeaker) {
+        val aimingLoc:Double =
+        if (Math.abs(location.getY() - Constants.Camera.yPositionOfSpeaker) <= Constants.Camera.offset) {
+            -location.getY() + 2.0 * Constants.Camera.yPositionOfSpeaker
+        } else if (location.getY() <= Constants.Camera.yPositionOfSpeaker) {
             Constants.Camera.yPositionOfSpeaker + Constants.Camera.offset
         } else {
             Constants.Camera.yPositionOfSpeaker - Constants.Camera.offset
@@ -246,7 +249,7 @@ class Swerve(
         val ydif = aimingLoc - location.getY()
         val xdif = Constants.Camera.xPositionOfSpeaker() - location.getX()
 
-        return Math.sqrt(ydif*ydif+xdif*xdif);
+        return Math.sqrt(ydif*ydif+xdif*xdif) - 0.2286;
     }
 
     /** This method will be called once per scheduler run during simulation */
