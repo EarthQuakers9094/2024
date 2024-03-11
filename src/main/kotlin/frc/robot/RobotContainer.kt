@@ -166,9 +166,9 @@ class RobotContainer {
                 configureBindings()
 
         fun applyBreak(breaky: Boolean, speed: Double): Double {
-            if (breaky) {
-                return speed * 0.8
-            }
+        //     if (breaky) {
+        //         return speed * 0.8
+        //     }
 
             return speed
         }
@@ -414,7 +414,7 @@ JoystickButton(driverRightStick, 3)
             JoystickButton(driverLeftStick, 5).toggleOnTrue(Climb(elevator!!,shooter!!).build())
             JoystickButton(driverLeftStick, 6).onTrue(
                 Commands.sequence(
-                        GotoPose(shooter!!,elevator!!,Constants.Poses.halfUp,false),
+                        //GotoPose(shooter!!,elevator!!,Constants.Poses.halfUp,false),
                         GotoPose(shooter!!,elevator!!,Constants.Poses.allUp,false)
                 )
            );

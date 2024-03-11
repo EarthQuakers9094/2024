@@ -31,6 +31,21 @@ class Pickup(
                         },
                         shooter
                     ),
+                    InstantCommand(
+                        object : Runnable {
+                            override fun run() {
+                                SmartDashboard.putNumber("running pickup", 1.0)
+                                if (high) {
+                                    shooter.back2()
+                                } else {
+                                    shooter.intake()
+                                    intake.startIntaking()
+                                }
+                            }
+                        },
+                        shooter,
+                        intake
+                    ),
                     GotoPose(
                             shooter,
                             elevator,
@@ -41,29 +56,13 @@ class Pickup(
                             },
                             false
                     ),
-                    InstantCommand(
-                            object : Runnable {
-                                override fun run() {
-                                    SmartDashboard.putNumber("running pickup", 1.0)
-                                    if (high) {
-                                        shooter.back2()
-                                    } else {
-                                        shooter.intake()
-                                        intake.startIntaking()
-                                    }
-                                }
-                            },
-                            shooter,
-                            intake
-                    ),
                     WaitUntilCommand(supplier),
                     WaitCommand(
-                        // 0.0
-                            if (high) {
-                                0.0
-                            } else {
-                                0.0
-                            }
+                        if (high) {
+                            0.0
+                        } else {
+                            0.0
+                        }
                     ),
                     InstantCommand(
                             object : Runnable {

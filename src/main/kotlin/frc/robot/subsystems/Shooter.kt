@@ -235,7 +235,7 @@ class Shooter(
     // }
 
     fun absoluteAngle():Double {
-        return -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.194906
+        return -(jointAbsoluteEncoder.get() * Math.PI * 2) + 5.24
     }
 
     fun setSpeed(speed: Double) {
@@ -244,7 +244,7 @@ class Shooter(
     }
 
     fun setAngle(angle: Double) {
-        // jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
+        jointMotor1.pidController.setReference(angle, CANSparkBase.ControlType.kPosition)
         desiredAngle = angle
         SmartDashboard.putNumber("shooter desired angle", desiredAngle)
         DriverStation.reportError("hello :3 from shooter", true)

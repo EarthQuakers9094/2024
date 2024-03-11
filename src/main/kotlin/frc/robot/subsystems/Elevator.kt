@@ -119,17 +119,22 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
                 currentState, 
                 TrapezoidProfile.State(desiredPosition,0.0));
 
-            val output = pid.calculate(liftSparkMax.encoder.position, nextPosition.position) + Constants.Elevator.feedforward
+            // val output = pid.calculate(liftSparkMax.encoder.position, nextPosition.position) + Constants.Elevator.feedforward
+
+            configureSparkMax {liftSparkMax.pidController.setReference(nextPosition.position, 
+                CANSparkBase.ControlType.kPosition
+            )}
+
 
             currentState = nextPosition;
 
-            SmartDashboard.putNumber("elevator output", output); 
+            // SmartDashboard.putNumber("elevator output", output); 
 
             SmartDashboard.putNumber("elevator trapazoid position", nextPosition.position);
 
 
 
-            liftSparkMax.set(output)
+            // liftSparkMax.set(output)
         }
     }
 

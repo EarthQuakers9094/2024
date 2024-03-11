@@ -45,6 +45,12 @@
         {
           "type": "named",
           "data": {
+            "name": "move forward"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "shootSpeaker"
           }
         },

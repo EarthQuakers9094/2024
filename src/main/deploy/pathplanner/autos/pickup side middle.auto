@@ -5,7 +5,7 @@
       "x": 0.7,
       "y": 4.5
     },
-    "rotation": 119.69612481412007
+    "rotation": 115.16513679656705
   },
   "command": {
     "type": "sequential",
@@ -22,9 +22,9 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "pickup edge a"
+                  "name": "rev"
                 }
               },
               {
@@ -34,46 +34,9 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "rev"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "move forward"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shootSpeaker"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "pickup edge b"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "rev"
+                  "pathName": "pickup edge center"
                 }
               }
             ]

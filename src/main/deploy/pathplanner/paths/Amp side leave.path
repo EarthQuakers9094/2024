@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7294015605842922,
-        "y": 6.579970411849221
+        "x": 0.7189571631051666,
+        "y": 6.569526014370095
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.729401560584292,
-        "y": 6.579970411849221
+        "x": 1.7189571631051663,
+        "y": 6.569526014370095
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp Start"
     },
     {
       "anchor": {
@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 1.75,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
