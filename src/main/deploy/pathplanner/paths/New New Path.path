@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7718481866382481,
-        "y": 6.534327279805212
+        "x": 7.423033778451899,
+        "y": 1.1491067347496495
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7718481866382478,
-        "y": 6.534327279805212
+        "x": 5.572777171651615,
+        "y": 0.8666991473959236
       },
       "isLocked": false,
-      "linkedName": "Amp Start"
+      "linkedName": "F note pickup"
     },
     {
       "anchor": {
-        "x": 5.471158016107381,
-        "y": 7.624410159761795
+        "x": 2.7000103347774913,
+        "y": 3.3402000849078815
       },
       "prevControl": {
-        "x": 4.471158016107381,
-        "y": 7.624410159761795
+        "x": 3.0213706928006983,
+        "y": 2.3761190108382597
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 120.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -118.61045966596524,
+    "rotation": 133.09084756700372,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "pickupside",
   "previewStartingState": {
-    "rotation": -119.21924669048462,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

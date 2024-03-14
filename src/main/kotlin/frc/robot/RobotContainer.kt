@@ -149,6 +149,19 @@ class RobotContainer {
                         }
                 }
            ))
+           NamedCommands.registerCommand(
+                "autoPickup",
+                CollectNote(
+                                                        PIDConstants(0.045, 0.0, 0.001000),
+                                                        frontNoteCamera,
+                                                       
+                                                        swerveDrive,
+                                                        10,
+                                            {->shooter!!.noteIn()},
+                                            false, intake!!
+                                        ),
+        )
+
            NamedCommands.registerCommand("move forward", InstantCommand(
                 object : Runnable {
                         override fun run() {
@@ -163,6 +176,7 @@ class RobotContainer {
                 }
                 ));
         }
+        
 
                 configureBindings()
 
@@ -347,7 +361,8 @@ JoystickButton(driverRightStick, 3)
                                                        
                                                         swerveDrive,
                                                         10,
-                                            {->shooter!!.noteIn()}
+                                            {->shooter!!.noteIn()},
+                                            true, intake!!
                                         ),
 
                         )
