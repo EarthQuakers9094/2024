@@ -180,9 +180,9 @@ class Shooter(
 
         SmartDashboard.putNumber("angular velocity absolute encoder", Math.abs((aangle - lastAbsoluteAngle) / 0.02));
 
-        if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.02  && !disableUpdates) {
+        if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.04  && !disableUpdates) {
             stillUpdates = stillUpdates + 1;
-            if (stillUpdates > 20) {
+            if (stillUpdates > 10) {
                 jointMotor1.encoder.position = absoluteAngle();
             }
         } else {
