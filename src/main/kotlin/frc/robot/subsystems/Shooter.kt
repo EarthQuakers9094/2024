@@ -150,6 +150,10 @@ class Shooter(
 
     }
 
+    fun resetAngle() {
+        jointMotor1.encoder.position = absoluteAngle();
+    }
+
     override fun periodic() {
         updates++
         

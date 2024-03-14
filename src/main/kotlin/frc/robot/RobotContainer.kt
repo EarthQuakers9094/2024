@@ -507,6 +507,16 @@ JoystickButton(driverRightStick, 3)
         )
     }
 
+//     fun settingAngle():Command {
+//         return WaitCommand(2.0).andThen(InstantCommand(
+//                 object : Runnable {
+//                     override fun run() {
+//                         shooter?.resetAngle()
+//                     }
+//                 }
+//         )),
+//     }
+
         /**
          * Use this to pass the autonomous command to the main [Robot] class.
          *

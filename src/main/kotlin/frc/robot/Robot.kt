@@ -72,7 +72,7 @@ class Robot : TimedRobot() {
     override fun autonomousInit() {
         autonomousCommand = robotContainer?.autonomousCommand
         
-        robotContainer?.setMotorBrake(true);
+        robotContainer?.setMotorBrake(true)
 
         // Schedule the autonomous command (example)
         // Note the Kotlin safe-call(?.), this ensures autonomousCommand is not null before scheduling it
