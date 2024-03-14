@@ -37,7 +37,8 @@ class Swerve(
 // private val camera: PhotonCamera
 ) : SubsystemBase() {
 
-    var maximumSpeed = Units.feetToMeters(14.5)
+    var maximumSpeed = Units.feetToMeters(16.0)
+    
     var swerveJsonDirectory =
             File(Filesystem.getDeployDirectory(), Config("testswerve", "swerve").config)
     var swerveDrive: SwerveDrive = SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed)
@@ -155,7 +156,7 @@ class Swerve(
         // val sum = estimates.fold(0) {acc, estimate -> 
         //     acc + estimate.targets
         // }
-        cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d()?.let { swerveDrive.resetOdometry(it)}
+        cameraPoseEstimator.update()//.toNullable()?.estimatedPose?.toPose2d()//?.let { swerveDrive.resetOdometry(it)}
         
         // if(sum >= 0) {
         //     estimates.forEach { estimate ->
@@ -235,7 +236,7 @@ class Swerve(
         // SmartDashboard.putString("Pose Estimation for speaker angle", poseEstimation?.let { "hello there is a thing here" } ?: "null")
         // val location = poseEstimation ?: getPos()
 
-        val location = getPos();
+        val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
 
         val aimingLoc:Double = Constants.Camera.yPositionOfSpeaker;
         // if (Math.abs(location.getY() - Constants.Camera.yPositionOfSpeaker) <= Constants.Camera.offset) {
@@ -263,7 +264,7 @@ class Swerve(
 
     fun speakerDistance(): Double {
         // val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
-        val location = getPos();
+        val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos();
 
         val aimingLoc:Double = Constants.Camera.yPositionOfSpeaker;
 

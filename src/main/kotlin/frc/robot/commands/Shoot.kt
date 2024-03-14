@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import frc.robot.commands.CommandSequence
 import frc.robot.subsystems.Shooter
+import frc.robot.subsystems.Elevator
+import frc.robot.commands.GotoPose
 
-class Shoot(private val shooter: Shooter) : CommandSequence() {
+class Shoot(private val shooter: Shooter, private val elevator: Elevator, private val amp: Boolean) : CommandSequence() {
 
     val supplier = { shooter.atSpeed(false) }
 
@@ -16,7 +18,7 @@ class Shoot(private val shooter: Shooter) : CommandSequence() {
                     InstantCommand(
                             object : Runnable {
                                 override fun run() {
-                                    shooter.startShooting(false)
+                                    shooter.startShooting(amp)
                                 }
                             },
                             shooter
@@ -37,6 +39,7 @@ class Shoot(private val shooter: Shooter) : CommandSequence() {
     override fun finally(interrupted: Boolean) {
         shooter.stopIntaking()
         shooter.stopShooting()
+        GotoPose(shooter, elevator, Pose(0.0, 0.0), false).schedule();
     }
 }
 //

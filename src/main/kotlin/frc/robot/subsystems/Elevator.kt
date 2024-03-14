@@ -98,6 +98,11 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         averagePostion.setAverage(liftSparkMax.encoder.position)
     }
 
+    fun enable() {
+        desiredPosition = liftSparkMax.encoder.position;
+        currentState = TrapezoidProfile.State(desiredPosition,0.0);
+    }
+
     fun setClimbing(climbing: Boolean) {
         if (climbing) {
             pid = PIDController(Constants.Elevator.pid.kP,Constants.Elevator.pid.kI,Constants.Elevator.pid.kD);

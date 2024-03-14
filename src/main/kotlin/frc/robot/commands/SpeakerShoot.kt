@@ -15,12 +15,13 @@ class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter)
                         object : Runnable {
                             override fun run() {
                                 shooter.disableUpdates = true
+                                shooter.startShooting(false);
                             }
                         },
                         shooter
                 ),
                 GotoPose(shooter, elevator, Constants.Poses.speakerShoot, true),
-                Shoot(shooter).build()
+                Shoot(shooter,elevator,false).build()
             )
 
     override fun finally(interrupted: Boolean) {

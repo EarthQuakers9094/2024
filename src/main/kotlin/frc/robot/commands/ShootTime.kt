@@ -28,13 +28,14 @@ class ShootTime(
                             object : Runnable {
                                 override fun run() {
                                     intake.startIntaking()
+                                    shooter.startShooting(false);
                                 }
                             },
                             intake
                     ),
-                    FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false),
-                    AimShooter(shooter, swerveDrive, true),
-                    Shoot(shooter).build()
+                    FaceDirection(swerveDrive, { swerveDrive.speakerAngle() }, false)
+                        .alongWith(AimShooter(shooter, swerveDrive, true)),
+                    Shoot(shooter,elevator,false).build()
             )
 
     override fun finally(interrupted: Boolean) {

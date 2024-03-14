@@ -120,7 +120,7 @@ object Constants {
         // const val shootTime = 0.6
         // const val closestDistance = 200
         val validTargets = arrayOf(4, 3)
-        const val ampSpeed = -0.2
+        const val ampSpeed = -0.5
         const val ampShootingRotationSpeed = 0.0
 
         const val startAngle = Math.PI * 74.0 / 180.0
@@ -133,7 +133,7 @@ object Constants {
         // const val bottomCanID = 27
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 0.85
+        const val intakeSpeed = 0.90
         const val speed = -0.80
         const val intakeMotorID = 30
         const val spinuptime = 5.0
@@ -160,8 +160,12 @@ object Constants {
         val pickup = Pose(0.95, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
-        val speakerShoot = Pose(0.887, Elevator.minHeight)
+        // val speakerShoot = Pose(0.887, Elevator.minHeight)
+        val speakerShoot = Pose(0.870, Elevator.minHeight)
+
+        val lob = Pose(Math.PI/4.0, Elevator.minHeight)
         val halfUp = Pose(0.8, 33.3)
         val allUp = Pose(0.0, Elevator.maxHeight)
+        val highShot = Pose(Math.PI/12.0,40.0)
     }
 }

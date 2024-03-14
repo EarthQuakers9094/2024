@@ -29,6 +29,7 @@ import frc.robot.commands.Climb
 import frc.robot.commands.CollectNote
 import frc.robot.commands.FaceDirection
 import frc.robot.commands.GotoPose
+import frc.robot.commands.GotoPoseParAmp
 import frc.robot.commands.SetValue
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive
 import frc.robot.subsystems.Elevator
@@ -50,6 +51,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.simulation.JoystickSim
 import java.util.Optional
+import Lob
+import LocationShoot
+import kotlin.math.sign
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -65,7 +69,7 @@ class RobotContainer {
         private val backNoteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
-        private var elevator: Elevator? = null
+        var elevator: Elevator? = null
         // (Constants.Elevator.motorID)
         // (Constants.Elevator.motorID)
 
@@ -164,7 +168,7 @@ class RobotContainer {
                 ));
         }
 
-                configureBindings()
+        configureBindings()
 
         fun applyBreak(breaky: Boolean, speed: Double): Double {
         //     if (breaky) {
@@ -182,11 +186,16 @@ class RobotContainer {
                 }
         }
 
+        fun upMax(speed: Double):Double {
+                val sign = speed.sign;
+                return sign * Math.min(Math.abs(speed) - 0.1,1.0);
+        }
+
         val leftY =
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getY())),
+                                upMax(applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getY()))),
                                 Constants.OperatorConstants.LEFT_Y_DEADBAND
                         )
                     }
@@ -203,7 +212,7 @@ class RobotContainer {
                 if (!onTest.config) {
                     {
                         MathUtil.applyDeadband(
-                                applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getX())),
+                                upMax(applyTeam(applyBreak(driverLeftStick.trigger, driverLeftStick.getX()))),
                                 Constants.OperatorConstants.LEFT_X_DEADBAND
                         )
                     }
@@ -329,7 +338,7 @@ JoystickButton(driverRightStick, 3)
                                         true
                                 ))
             operatorExtra.rightBumper().toggleOnTrue(Pickup(shooter!!, elevator!!, intake!!, true, false).build());
-            operatorExtra.leftBumper().whileTrue(Shoot(shooter!!).build());
+            operatorExtra.leftBumper().whileTrue(Shoot(shooter!!,elevator!!,false).build());
 
             operatorExtra.rightTrigger(0.5).whileTrue(SpeakerShoot(elevator!!, shooter!!).build());
 
@@ -368,6 +377,7 @@ JoystickButton(driverRightStick, 3)
                         object : Runnable {
                                 override fun run() {
                                         shooter!!.startShooting(false);
+                                        shooter!!.setAngle(Constants.Poses.speakerShoot.angle)
                                 }
                         }
                 )
@@ -382,13 +392,21 @@ JoystickButton(driverRightStick, 3)
                                                 shooter?.stopShooting();
                                         }
                                 }
-                )
+                        )
                                 // shooter?.stopShooting();
                 )
 
 
-            operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false));
-            operatorExtra.b().onTrue(GotoPose(shooter!!, elevator!!, Constants.Poses.amp, true).alongWith(
+            operatorExtra.a().onTrue(GotoPose(shooter!!, elevator!!, Pose(0.0, 0.0), false).alongWith(
+                InstantCommand(
+                        object : Runnable {
+                                override fun run() {
+                                        shooter?.stopShooting();
+                                }
+                        }
+                )
+            ));
+            operatorExtra.b().onTrue(GotoPoseParAmp(shooter!!, elevator!!).alongWith(
                 Commands.startEnd(
                 object : Runnable {
                         override fun run() {
@@ -436,9 +454,13 @@ JoystickButton(driverRightStick, 3)
             JoystickButton(driverLeftStick, 10).whileTrue(ShootTime(shooter!!,intake!!,elevator!!,swerveDrive,aprilCamera).build());
             JoystickButton(driverLeftStick, 12)
                 .onTrue(
-                                ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera)
-                                                .build()
+                        ShootTime(shooter!!, intake!!, elevator!!, swerveDrive, aprilCamera).build()
                 )
+
+            operatorExtra.povUp().toggleOnTrue(Lob(shooter!!,elevator!!).build())
+            operatorExtra.povDown().toggleOnTrue(Shoot(shooter!!,elevator!!,true).build())
+
+            operatorExtra.povLeft().toggleOnTrue(LocationShoot(elevator!!,shooter!!,Constants.Poses.highShot,true).build());
 
             JoystickButton(driverLeftStick,1)
                 .toggleOnTrue(
