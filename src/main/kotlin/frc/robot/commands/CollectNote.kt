@@ -18,7 +18,9 @@ class CollectNote(
         //private val backCamera: PhotonCamera,
         private val swerve: Swerve,
         private val dataInconsistency: Int,
-        private val hasNote: BooleanSupplier
+        private val hasNote: BooleanSupplier,
+        private val teleop: Boolean,
+        private val intake: Intake?
 ) : Command() {
     private var forward = true
     private val targetYaw = MovingAverage(dataInconsistency)
@@ -55,11 +57,12 @@ class CollectNote(
         val res = camera.latestResult
         var calculation = 0.0
         var speedFactor = 1.0
-        // if (updatesSinceLastTarget > (30)) {
-        //     intake?.stopIntaking()
-        // } else {
-        //     intake?.startIntaking()
-        // }
+        if(!teleop) {
+        if (updatesSinceLastTarget > (30)) {
+            intake?.stopIntaking()
+        } else {
+            intake?.startIntaking()
+        }}
         if (!hasNote.asBoolean && res.hasTargets() && res.bestTarget.area > 2.0) {
             updatesSinceLastTarget = 0
             val target = res.bestTarget
