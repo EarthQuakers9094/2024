@@ -182,7 +182,7 @@ class Shooter(
 
         if (Math.abs((aangle - lastAbsoluteAngle) / 0.02) <= 0.04  && !disableUpdates) {
             stillUpdates = stillUpdates + 1;
-            if (stillUpdates > 10) {
+            if (stillUpdates > 10 && absoluteAngle() < 2.0 && absoluteAngle() > 0.0) {
                 jointMotor1.encoder.position = absoluteAngle();
             }
         } else {

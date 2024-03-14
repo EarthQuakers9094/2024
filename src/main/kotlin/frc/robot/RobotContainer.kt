@@ -260,14 +260,15 @@ class RobotContainer {
                                                 faceSpeaker
                                 )
 
-                swerveDrive.defaultCommand = simClosedFieldRel
+        swerveDrive.defaultCommand = simClosedFieldRel
 
-                autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = AutoBuilder.buildAutoChooser();
 
                 // Another option that allows you to specify the default auto by its name
                 // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
             
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        
         }
 
         fun debugPeriodic() {

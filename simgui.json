@@ -12,6 +12,11 @@
       "/SmartDashboard/turning pid": "PIDController"
     },
     "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "bottom": 1476,
         "height": 8.210550308227539,
@@ -29,7 +34,6 @@
     "transitory": {
       "SmartDashboard": {
         "Auto Chooser": {
-          "open": true,
           "string[]##v_/SmartDashboard/Auto Chooser/options": {
             "open": true
           }
