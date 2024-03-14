@@ -46,8 +46,8 @@ class Swerve(
     val robotToCam = Transform3d(Translation3d(0.5, 0.0, 0.5), Rotation3d(0.0, 0.0, 0.0))
     // val poseEstimators = arrayOf(
     //     AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATBack"), Transform3d(-0.3429, 0.0794, 0.2252, Rotation3d(0.0, Math.PI / 6, Math.PI))),
-    //     //AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), )))
-    //     )
+    //     AprilTagPoseEstimator(swerveDrive, PhotonCamera("ATFront"), Transform3d(0.2794, 0.127, 0.2252, Rotation3d(0.0, Math.PI / 6, 0.0))))
+        
     //0.0794 meters left of center && 0.3429 meters back from center && 0.2252 meters above && 30 degrees from vertical
     //
     val cameraPoseEstimator = PhotonPoseEstimator(
