@@ -1,5 +1,6 @@
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 import frc.robot.commands.CommandSequence
 import frc.robot.commands.GotoPose
@@ -16,6 +17,7 @@ class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter)
                             override fun run() {
                                 shooter.disableUpdates = true
                                 shooter.startShooting(false);
+                                SmartDashboard.putBoolean("in speaker shoot", true)
                             }
                         },
                         shooter
@@ -27,6 +29,7 @@ class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter)
     override fun finally(interrupted: Boolean) {
         shooter.setAngle(0.0)
         shooter.disableUpdates = false
+        SmartDashboard.putBoolean("in speaker shoot", false)
     }
 }
 //

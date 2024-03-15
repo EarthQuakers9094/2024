@@ -142,6 +142,9 @@ class Shooter(
         configureSparkMax {followerSparkMax.pidController.setI(Constants.Shooter.i)}
         configureSparkMax {followerSparkMax.pidController.setD(Constants.Shooter.d)}
 
+        configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kBrake)}
+        configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kBrake)}
+
         SmartDashboard.putNumber("current set speed launcher", 0.0)
         SmartDashboard.putNumber("current set joint location launcher", 0.0)
         SmartDashboard.putData("joint pid", sim_joint_pid)
@@ -195,9 +198,6 @@ class Shooter(
 
         lastAbsoluteAngle = absoluteAngle();
 
-        configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kBrake)}
-        configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kBrake)}
-
 
         SmartDashboard.putNumber("shooter angle", jointMotor1.encoder.position)
         SmartDashboard.putNumber("shooter angle velocity", jointMotor1.encoder.velocity)
@@ -215,10 +215,10 @@ class Shooter(
 
         SmartDashboard.putNumber("feader current", intakingMotor.outputCurrent)
 
-        SmartDashboard.putNumber("Is joint motor inverted", if (jointMotor1.inverted) {1.0} else {-1.0})
-        if(jointMotor1.inverted) {
-            jointMotor1.inverted = false
-        }
+        // SmartDashboard.putNumber("Is joint motor inverted", if (jointMotor1.inverted) {1.0} else {-1.0})
+        // if(jointMotor1.inverted) {
+        //     jointMotor1.inverted = false
+        // }
     }
 
     fun enable() {
@@ -256,7 +256,7 @@ class Shooter(
 
     fun atAngle(): Boolean {
         // return true
-        return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.05
+        return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.1
     }
 
     fun setIntakingSpeed(speed: Double) {

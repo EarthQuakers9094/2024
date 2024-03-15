@@ -133,7 +133,7 @@ object Constants {
         // const val bottomCanID = 27
         // const val shooterJointCanID = 28
         const val shooterJoint2CanID = 29
-        const val intakeSpeed = 0.90
+        const val intakeSpeed = 1.0
         const val speed = -0.80
         const val intakeMotorID = 30
         const val spinuptime = 5.0
@@ -157,7 +157,7 @@ object Constants {
 
     object Poses {
         val amp = Pose(-0.473801, 33.523514)
-        val pickup = Pose(0.85, Elevator.minHeight)
+        val pickup = Pose(0.95, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
         // val speakerShoot = Pose(0.887, Elevator.minHeight)

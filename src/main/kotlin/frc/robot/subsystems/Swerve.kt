@@ -69,10 +69,17 @@ class Swerve(
 
     var pdh = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
+    private var lastVisionUpdate = -3;
+
+    private var currentUpdate = 0;
+
+    private var visionPose: Pose2d;
+
+
     init {
         // poseEstimator.referencePose = Pose3d()
 
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW
         swerveDrive.setHeadingCorrection(false)
 
         var getPose = {
@@ -139,10 +146,13 @@ class Swerve(
                 SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4.15686), 6.12, 1.0)
 
         SmartDashboard.putNumber("drive conversion factor", driveConversionFactor)
+
+        visionPose = getVisionPose()
     }
 
     /** This method will be called once per scheduler run */
     override fun periodic() {
+        currentUpdate = currentUpdate + 1;
 
         // SmartDashboard.putNumber("front left", frontleftCanCoder.getAbsolutePosition().value)
         // SmartDashboard.putNumber("front right", frontrightCanCoder.getAbsolutePosition().value)
@@ -231,12 +241,21 @@ class Swerve(
         return swerveDrive.fieldVelocity
     }
 
+    fun getVisionPose(): Pose2d {
+        if (lastVisionUpdate < currentUpdate) {
+            visionPose = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
+            lastVisionUpdate = currentUpdate
+        }
+
+        return getPos()
+    }
+
     fun speakerAngle(): Rotation2d {
         // val poseEstimation = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d()
         // SmartDashboard.putString("Pose Estimation for speaker angle", poseEstimation?.let { "hello there is a thing here" } ?: "null")
         // val location = poseEstimation ?: getPos()
 
-        val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
+        val location = getVisionPose()
 
         val aimingLoc:Double = Constants.Camera.yPositionOfSpeaker;
         // if (Math.abs(location.getY() - Constants.Camera.yPositionOfSpeaker) <= Constants.Camera.offset) {
@@ -264,7 +283,7 @@ class Swerve(
 
     fun speakerDistance(): Double {
         // val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos()
-        val location = cameraPoseEstimator.update().toNullable()?.estimatedPose?.toPose2d() ?: getPos();
+        val location = getVisionPose();
 
         val aimingLoc:Double = Constants.Camera.yPositionOfSpeaker;
 
@@ -278,8 +297,12 @@ class Swerve(
 
         val ydif = aimingLoc - location.getY()
         val xdif = Constants.Camera.xPositionOfSpeaker() - location.getX()
+        
+        val distance = Math.sqrt(ydif*ydif+xdif*xdif) - 0.2286/2.0;
 
-        return Math.sqrt(ydif*ydif+xdif*xdif) - 0.2286/2.0;
+        SmartDashboard.putNumber("speaker distance", distance);
+
+        return distance;
     }
 
     /** This method will be called once per scheduler run during simulation */

@@ -31,6 +31,16 @@ class Pickup(
                         },
                         shooter
                     ),
+                    GotoPose(
+                            shooter,
+                            elevator,
+                            if (high) {
+                                Constants.Poses.highPickup
+                            } else {
+                                Constants.Poses.pickup
+                            },
+                            false
+                    ),
                     InstantCommand(
                         object : Runnable {
                             override fun run() {
@@ -45,16 +55,6 @@ class Pickup(
                         },
                         shooter,
                         intake
-                    ),
-                    GotoPose(
-                            shooter,
-                            elevator,
-                            if (high) {
-                                Constants.Poses.highPickup
-                            } else {
-                                Constants.Poses.pickup
-                            },
-                            false
                     ),
                     WaitUntilCommand(supplier),
                     WaitCommand(

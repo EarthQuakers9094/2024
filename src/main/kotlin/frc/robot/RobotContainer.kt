@@ -140,7 +140,7 @@ class RobotContainer {
             )
             NamedCommands.registerCommand(
                     "facedown",
-                    FaceDirection(swerveDrive, { Rotation2d.fromRadians(-Math.PI / 2.0) }, false)
+                    FaceDirection(swerveDrive, { Rotation2d.fromRadians(0.0) }, false)
             )
             NamedCommands.registerCommand(
                 "shootSpeaker",

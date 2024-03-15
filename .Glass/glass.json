@@ -2,6 +2,9 @@
   "NetworkTables": {
     "transitory": {
       "CameraPublisher": {
+        "front_Port_1184_Output_MJPEG_Server": {
+          "open": true
+        },
         "open": true
       },
       "PathPlanner": {
