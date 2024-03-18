@@ -65,9 +65,9 @@ import kotlin.math.sign
 class RobotContainer {
         // The robot's subsystems and commands are defined here...
 
-        private val aprilCamera = PhotonCamera("ATBack")
+        private val aprilCamera = PhotonCamera("ATFront")
         //private val backNoteCamera = PhotonCamera("NTFront")
-        private val backNoteCamera = PhotonCamera("NTBack")
+        //private val backNoteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
         var elevator: Elevator? = null
@@ -160,18 +160,18 @@ class RobotContainer {
                         }
                 }
            ))
-           NamedCommands.registerCommand(
-                "autoPickup",
-                CollectNote(
-                        PIDConstants(0.045, 0.0, 0.001000),
-                                backNoteCamera,
+        //    NamedCommands.registerCommand(
+        //         "autoPickup",
+        //         CollectNote(
+        //                 PIDConstants(0.045, 0.0, 0.001000),
+        //                         backNoteCamera,
                                                        
-                                swerveDrive,
-                                10,
-                                {->shooter!!.noteIn()},
-                                false, intake!!
-                        ),
-        )
+        //                         swerveDrive,
+        //                         10,
+        //                         {->shooter!!.noteIn()},
+        //                         false, intake!!
+        //                 ),
+        //)
 
            NamedCommands.registerCommand("move forward", InstantCommand(
                 object : Runnable {
@@ -317,8 +317,11 @@ class RobotContainer {
                                                 AimShooter(
                                                         
                                                         shooter!!,
+                                                        
                                                         swerveDrive,
-                                                        false
+                                                        
+                                                        false,
+                                                        aprilCamera
                                                 )
                                         )
                                         .finallyDo({ _ -> faceSpeaker = false })
@@ -367,22 +370,22 @@ JoystickButton(driverRightStick, 3)
             JoystickButton(driverRightStick, 2)
                     .whileTrue(ParallelCommandGroup(
                         Pickup(shooter!!, elevator!!, intake!!, false, false).build(),
-                        SequentialCommandGroup(
-                                        WaitUntilCommand { ->
-                                                backNoteCamera.latestResult.hasTargets() ||
-                                                                backNoteCamera.latestResult.hasTargets()
-                                        },
-                                        CollectNote(
-                                                        PIDConstants(0.045, 0.0, 0.001000),
-                                                        backNoteCamera,
+                        // SequentialCommandGroup(
+                        //                 WaitUntilCommand { ->
+                        //                         backNoteCamera.latestResult.hasTargets() ||
+                        //                                         backNoteCamera.latestResult.hasTargets()
+                        //                 },
+                        //                 CollectNote(
+                        //                                 PIDConstants(0.045, 0.0, 0.001000),
+                        //                                 backNoteCamera,
                                                        
-                                                        swerveDrive,
-                                                        10,
-                                            {->shooter!!.noteIn()},
-                                            true, intake!!
-                                        ),
+                        //                                 swerveDrive,
+                        //                                 10,
+                        //                     {->shooter!!.noteIn()},
+                        //                     true, intake!!
+                        //                 ),
 
-                        )
+                        // )
                 ))
                 JoystickButton(driverRightStick, 1)
                     .whileTrue(
@@ -517,7 +520,8 @@ JoystickButton(driverRightStick, 3)
                                                 
                                                 shooter!!,
                                                 swerveDrive,
-                                                false
+                                                false,
+                                                aprilCamera
                                         )
                                 )
                                 .finallyDo({ _ -> faceSpeaker = false })

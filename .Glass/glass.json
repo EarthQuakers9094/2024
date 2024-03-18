@@ -25,6 +25,9 @@
             "open": true
           }
         },
+        "joint pid": {
+          "open": true
+        },
         "open": true
       },
       "photonvision": {
