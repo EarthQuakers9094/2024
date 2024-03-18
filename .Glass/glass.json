@@ -25,10 +25,7 @@
             "open": true
           }
         },
-        "open": true,
-        "turning pid": {
-          "open": true
-        }
+        "open": true
       },
       "photonvision": {
         "open": true
@@ -247,7 +244,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }

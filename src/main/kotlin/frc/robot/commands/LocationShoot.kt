@@ -4,6 +4,7 @@ import frc.robot.Constants
 import frc.robot.commands.CommandSequence
 import frc.robot.commands.GotoPosePar
 import frc.robot.subsystems.Elevator
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import frc.robot.subsystems.Shooter
 
 class LocationShoot(
@@ -23,7 +24,8 @@ class LocationShoot(
                         },
                 ),
                 GotoPosePar(shooter, elevator, pose),
-                Shoot(shooter,elevator,false).build()
+                Shoot(shooter,elevator,false).build(),
+                WaitCommand(1.0)
             )
 
     override fun finally(interrupted: Boolean) {

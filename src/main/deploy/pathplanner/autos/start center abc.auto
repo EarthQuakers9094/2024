@@ -22,21 +22,28 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "rev shooter"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "start center to middle"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pickup"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "rev shooter"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -53,15 +60,22 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "pickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "rev shooter"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pickup"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "rev shooter"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -71,6 +85,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "move forward"
           }
         },
         {
@@ -90,18 +110,31 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "rev shooter"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "pickup"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "pickup"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "rev shooter"
+                      }
+                    }
+                  ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "move forward"
           }
         },
         {

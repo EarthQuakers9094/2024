@@ -14,8 +14,8 @@ import java.util.function.BooleanSupplier
 
 class CollectNote(
         private val rotationPidConstants: PIDConstants,
-        private val frontCamera: PhotonCamera,
-        //private val backCamera: PhotonCamera,
+        //private val frontCamera: PhotonCamera,
+        private val backCamera: PhotonCamera,
         private val swerve: Swerve,
         private val dataInconsistency: Int,
         private val hasNote: BooleanSupplier,
@@ -53,7 +53,7 @@ class CollectNote(
      */
     override fun execute() {
         SmartDashboard.putData("notepid", rotationPID)
-        val camera = frontCamera 
+        val camera = backCamera
         val res = camera.latestResult
         var calculation = 0.0
         var speedFactor = 1.0
@@ -111,7 +111,7 @@ class CollectNote(
 
     companion object {
         fun pickDirection(frontCamera: PhotonCamera, backCamera: PhotonCamera): Boolean {
-            return true
+            return false
             val frontResult = frontCamera.latestResult
             val backResult = backCamera.latestResult
            if(frontResult.hasTargets() && backResult.hasTargets()) {

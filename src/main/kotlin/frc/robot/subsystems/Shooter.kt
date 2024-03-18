@@ -90,7 +90,7 @@ class Shooter(
 
     private var currentSetSpeed = 0.0
 
-    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(60.0, 72.0))
+    private var profile = TrapezoidProfile(TrapezoidProfile.Constraints(60.0, 72.0*0.9))
 
     private var currentState = TrapezoidProfile.State(startingPosition, 0.0)
 
@@ -141,6 +141,9 @@ class Shooter(
         configureSparkMax {followerSparkMax.pidController.setP(Constants.Shooter.p)}
         configureSparkMax {followerSparkMax.pidController.setI(Constants.Shooter.i)}
         configureSparkMax {followerSparkMax.pidController.setD(Constants.Shooter.d)}
+        // configureSparkMax {shooterSparkMax.pidController.setPositionPIDWrappingEnabled(true)}
+        // configureSparkMax {shooterSparkMax.pidController.setPositionPIDWrappingMinInput(-Math.PI)}
+        // configureSparkMax {shooterSparkMax.pidController.setPositionPIDWrappingMaxInput(Math.PI)}
 
         configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kBrake)}
         configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kBrake)}
@@ -151,6 +154,9 @@ class Shooter(
         configureSparkMax {followerSparkMax.follow(shooterSparkMax)}
                 // configureSparkMax {followerSparkMax.follow(shooterSparkMax)}
 
+        jointMotor1.burnFlash()
+        shooterSparkMax.burnFlash()
+        followerSparkMax.burnFlash()
     }
 
     fun resetAngle() {
@@ -254,6 +260,11 @@ class Shooter(
         DriverStation.reportError("hello :3 from shooter", true)
     }
 
+    fun coastMode() {
+        configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kCoast)}
+        configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kCoast)}
+    }
+
     fun atAngle(): Boolean {
         // return true
         return Math.abs(angleRollingAverage.getAverage() - desiredAngle) <= 0.1
@@ -267,6 +278,9 @@ class Shooter(
 
     fun intake() {
         setIntakingSpeed(Constants.Shooter.intakeSpeed)
+        configureSparkMax {shooterSparkMax.setIdleMode(IdleMode.kBrake)}
+        configureSparkMax {followerSparkMax.setIdleMode(IdleMode.kBrake)}
+
     }
 
     fun stopIntaking() {
@@ -482,7 +496,7 @@ class Shooter(
         }
 
         return if (amp) {
-            speed <= Constants.Shooter.ampShootingRotationSpeed
+            speed <= -2700.0
         } else {
             speed <= -4500.0
         }

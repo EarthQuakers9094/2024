@@ -156,16 +156,19 @@ object Constants {
     }
 
     object Poses {
-        val amp = Pose(-0.473801, 33.523514)
+        val amp = Pose(-0.473801, 37.0)
+        // val amp = Pose(-0.473801, 33.523514)
+
         val pickup = Pose(0.95, Elevator.minHeight)
         val resting = Pose(0.0, Elevator.minHeight)
         val highPickup = Pose(0.598419, 11.523871 - 1.0)
         // val speakerShoot = Pose(0.887, Elevator.minHeight)
-        val speakerShoot = Pose(0.870, Elevator.minHeight)
+        val speakerShoot = Pose(0.90, Elevator.minHeight)
+        // val speakerShootAuton = Pose(0.90, Elevator.minHeight)
 
         val lob = Pose(Math.PI/4.0, Elevator.minHeight)
         val halfUp = Pose(0.8, 33.3)
         val allUp = Pose(0.0, Elevator.maxHeight)
-        val highShot = Pose(Math.PI/12.0,40.0)
+        val highShot = Pose(Math.PI/10.0,40.0)
     }
 }

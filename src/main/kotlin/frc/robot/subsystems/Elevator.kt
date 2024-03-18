@@ -76,8 +76,8 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
 
         configureSparkMax {liftSparkMax.encoder.setPositionConversionFactor(1.0)};
         configureSparkMax {liftSparkMax.encoder.setPosition(0.0)};
-        configureSparkMax {liftSparkMax.setSmartCurrentLimit(40, 40)};
-        configureSparkMax {followMotor.setSmartCurrentLimit(40, 40)};
+        configureSparkMax {liftSparkMax.setSmartCurrentLimit(60, 60)};
+        configureSparkMax {followMotor.setSmartCurrentLimit(60, 60)};
 
         configureSparkMax {liftSparkMax.pidController.setP(Constants.Elevator.pid.kP)};
         configureSparkMax {liftSparkMax.pidController.setI(Constants.Elevator.pid.kI)};
@@ -96,6 +96,8 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
         }
 
         averagePostion.setAverage(liftSparkMax.encoder.position)
+        liftSparkMax.burnFlash()
+        followMotor.burnFlash()
     }
 
     fun enable() {
@@ -136,6 +138,9 @@ class Elevator(private val liftMotorId: Int, private val followMotorID: Int) : S
             // SmartDashboard.putNumber("elevator output", output); 
 
             SmartDashboard.putNumber("elevator trapazoid position", nextPosition.position);
+            SmartDashboard.putNumber("elevator current", liftSparkMax.outputCurrent)
+            SmartDashboard.putNumber("elevator follower current", followMotor.outputCurrent)
+
 
 
 

@@ -54,6 +54,7 @@ import java.util.Optional
 import Lob
 import LocationShoot
 import kotlin.math.sign
+// import SpeakerShootAuton
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -65,7 +66,7 @@ class RobotContainer {
         // The robot's subsystems and commands are defined here...
 
         private val aprilCamera = PhotonCamera("ATBack")
-        private val frontNoteCamera = PhotonCamera("NTFront")
+        //private val backNoteCamera = PhotonCamera("NTFront")
         private val backNoteCamera = PhotonCamera("NTBack")
         private val swerveDrive = Swerve(/*aprilCamera*/ )
 
@@ -85,6 +86,7 @@ class RobotContainer {
         private var intake: Intake? = null
 
     private var faceSpeaker = false
+    private var amping = false
 
     private var readyShoot = false
     private var autoChooser: SendableChooser<Command>;
@@ -146,24 +148,29 @@ class RobotContainer {
                 "shootSpeaker",
                 SpeakerShoot(elevator!!, shooter!!).build()
            )
+        //    NamedCommands.registerCommand(
+        //        "shootSpeaker",
+        //        SpeakerShootAuton(elevator!!, shooter!!).build()
+        //    )
            NamedCommands.registerCommand("rev shooter", InstantCommand(
                 object : Runnable {
                         override fun run() {
                                 shooter!!.startShooting(false);
+                                shooter!!.setAngle(Constants.Poses.speakerShoot.angle)
                         }
                 }
            ))
            NamedCommands.registerCommand(
                 "autoPickup",
                 CollectNote(
-                                                        PIDConstants(0.045, 0.0, 0.001000),
-                                                        frontNoteCamera,
+                        PIDConstants(0.045, 0.0, 0.001000),
+                                backNoteCamera,
                                                        
-                                                        swerveDrive,
-                                                        10,
-                                            {->shooter!!.noteIn()},
-                                            false, intake!!
-                                        ),
+                                swerveDrive,
+                                10,
+                                {->shooter!!.noteIn()},
+                                false, intake!!
+                        ),
         )
 
            NamedCommands.registerCommand("move forward", InstantCommand(
@@ -362,12 +369,12 @@ JoystickButton(driverRightStick, 3)
                         Pickup(shooter!!, elevator!!, intake!!, false, false).build(),
                         SequentialCommandGroup(
                                         WaitUntilCommand { ->
-                                                frontNoteCamera.latestResult.hasTargets() ||
+                                                backNoteCamera.latestResult.hasTargets() ||
                                                                 backNoteCamera.latestResult.hasTargets()
                                         },
                                         CollectNote(
                                                         PIDConstants(0.045, 0.0, 0.001000),
-                                                        frontNoteCamera,
+                                                        backNoteCamera,
                                                        
                                                         swerveDrive,
                                                         10,
@@ -426,7 +433,7 @@ JoystickButton(driverRightStick, 3)
                 Commands.startEnd(
                 object : Runnable {
                         override fun run() {
-                                shooter!!.startShooting(false);
+                                shooter!!.startShooting(true);
                         }
                 },
                 object : Runnable {
@@ -474,7 +481,25 @@ JoystickButton(driverRightStick, 3)
                 )
 
             operatorExtra.povUp().toggleOnTrue(Lob(shooter!!,elevator!!).build())
-            operatorExtra.povDown().toggleOnTrue(Shoot(shooter!!,elevator!!,true).build())
+            operatorExtra.leftBumper().onTrue(Shoot(shooter!!,elevator!!,true).build())
+
+            operatorExtra.leftTrigger(0.5).whileTrue(Shoot(shooter!!,elevator!!,false).build());
+            operatorExtra.x().whileTrue(
+                Commands.startEnd(
+                        object : Runnable {
+                                override fun run() {
+                                        shooter!!.startShooting(false);
+                                }
+                        },
+                        object : Runnable {
+                                override fun run() {
+                                        shooter?.stopShooting();
+                                }
+                        }
+                        )
+            )
+
+            
 
             operatorExtra.povLeft().toggleOnTrue(LocationShoot(elevator!!,shooter!!,Constants.Poses.highShot,true).build());
 

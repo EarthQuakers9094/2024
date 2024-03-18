@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8469733513470332,
-        "y": 4.25096767376225
+        "x": 2.463171542119166,
+        "y": 2.7573209344891976
       },
       "isLocked": false,
       "linkedName": "pickup edge "
@@ -36,8 +36,8 @@
         "y": 4.5
       },
       "prevControl": {
-        "x": 2.4422122972394,
-        "y": 2.746806525540265
+        "x": 2.327394374890532,
+        "y": 2.9662088840717122
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.4,
-      "rotationDegrees": -144.75174086760575,
+      "rotationDegrees": -114.21571534410307,
       "rotateFast": false
     },
     {
@@ -56,15 +56,15 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": -143.40891173260073,
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": -118.3070179481139,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.75,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0

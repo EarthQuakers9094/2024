@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 4.5
+      "x": 0.7718481866382481,
+      "y": 6.534327279805212
     },
-    "rotation": 115.16513679656705
+    "rotation": -118.00393826568038
   },
   "command": {
     "type": "sequential",
@@ -22,9 +22,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "rev"
+                  "pathName": "Amp side to C"
                 }
               },
               {
@@ -34,24 +34,12 @@
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "pickup edge center"
+                  "name": "rev"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "move forward"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "move forward"
           }
         },
         {

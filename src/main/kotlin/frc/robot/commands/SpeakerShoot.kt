@@ -22,7 +22,7 @@ class SpeakerShoot(private val elevator: Elevator, private val shooter: Shooter)
                         },
                         shooter
                 ),
-                GotoPose(shooter, elevator, Constants.Poses.speakerShoot, true),
+                GotoPose(shooter, elevator, Constants.Poses.speakerShoot, false),
                 Shoot(shooter,elevator,false).build()
             )
 

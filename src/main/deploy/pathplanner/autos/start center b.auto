@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7,
-      "y": 4.5
+      "x": 1.1993994471449507,
+      "y": 5.493753074020143
     },
-    "rotation": 115.16513679656705
+    "rotation": 178.9959734733617
   },
   "command": {
     "type": "sequential",
@@ -22,9 +22,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "rev"
+                  "pathName": "start center to middle"
                 }
               },
               {
@@ -34,24 +34,12 @@
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "pickup edge center"
+                  "name": "rev"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "move forward"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "move forward"
           }
         },
         {

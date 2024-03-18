@@ -41,6 +41,8 @@ class Intake(
         //frontIntakeMotor.setSmartCurrentLimit(40, 40)
         configureSparkMax {intakeFollowSparkMax.setSmartCurrentLimit(40, 40)}
         configureSparkMax {intakeSparkMax.setSmartCurrentLimit(40, 40)}
+        intakeSparkMax.burnFlash()
+        intakeFollowSparkMax.burnFlash()
     }
 
     fun startIntaking() {

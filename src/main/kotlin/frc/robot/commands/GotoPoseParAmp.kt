@@ -17,6 +17,6 @@ class GotoPoseParAmp(private val shooter: Shooter,private val elevator: Elevator
         val angle = SetValue.setShootingAngle(shooter, Constants.Poses.amp.angle);
         
 
-        addCommands(height.alongWith(WaitCommand(0.25).andThen(angle)));
+        addCommands(height.alongWith(WaitCommand(0.4).andThen(angle)));
     }
 }
